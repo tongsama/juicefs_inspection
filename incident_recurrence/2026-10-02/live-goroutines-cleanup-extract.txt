@@ -1,0 +1,289 @@
+goroutine 450 [select]:
+github.com/juicedata/juicefs/pkg/utils.WithTimeout({0x4f98080, 0x7cf7180}, 0x61b21e0d890, 0xdf8475800)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/utils/utils.go:119 +0x191
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).delete(0x61b1b132008, {0x61b380f7200, 0x1d})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:340 +0xf3
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).delete(0x61b1da23d88, 0x61b380f71a0?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:184 +0x35
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).Remove(0x61b1da23d88)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:204 +0xfe
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).Remove(0x7236223c8a00?, 0x61b2760c008?, 0x61b40d5ee50?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:1175 +0x28
+github.com/juicedata/juicefs/cmd.registerMetaMsg.func1({0x61b2303ad60?, 0x3e375a0?, 0x8?})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/cmd/mount.go:343 +0x63
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).newMsg(0x61b1b100008, 0x3e8, {0x61b2303ad60, 0x2, 0x2})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:705 +0x142
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).deleteSlice_(0x61b1b100008, 0x3e4f82, 0x4000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:3034 +0xd3
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks.func1(0x61b1d180000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:848 +0xb6
+created by github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks in goroutine 1
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:837 +0x125
+
+goroutine 451 [select]:
+github.com/juicedata/juicefs/pkg/utils.WithTimeout({0x4f98080, 0x7cf7180}, 0x61b1dadf020, 0xdf8475800)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/utils/utils.go:119 +0x191
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).delete(0x61b1b132008, {0x61b2fbcb740, 0x1e})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:340 +0xf3
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).delete(0x61b1b6e9d88, 0x61b2fbcb6c0?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:184 +0x35
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).Remove(0x61b1b6e9d88)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:204 +0xfe
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).Remove(0x7236223c92f8?, 0x61b1a808008?, 0x61b26a71420?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:1175 +0x28
+github.com/juicedata/juicefs/cmd.registerMetaMsg.func1({0x61b24079620?, 0x3e375a0?, 0x8?})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/cmd/mount.go:343 +0x63
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).newMsg(0x61b1b100008, 0x3e8, {0x61b24079620, 0x2, 0x2})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:705 +0x142
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).deleteSlice_(0x61b1b100008, 0x3e45a6, 0x25000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:3034 +0xd3
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks.func1(0x61b1d180000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:848 +0xb6
+created by github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks in goroutine 1
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:837 +0x125
+
+goroutine 452 [select]:
+github.com/juicedata/juicefs/pkg/utils.WithTimeout({0x4f98080, 0x7cf7180}, 0x61b21e0cae0, 0xdf8475800)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/utils/utils.go:119 +0x191
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).delete(0x61b1b132008, {0x61b380f7100, 0x1d})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:340 +0xf3
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).delete(0x61b26ca3d88, 0x61b380f70c0?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:184 +0x35
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).Remove(0x61b26ca3d88)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:204 +0xfe
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).Remove(0x7236223c8a00?, 0x61b19f79008?, 0x61b40d5ecc0?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:1175 +0x28
+github.com/juicedata/juicefs/cmd.registerMetaMsg.func1({0x61b2303a520?, 0x3e375a0?, 0x8?})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/cmd/mount.go:343 +0x63
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).newMsg(0x61b1b100008, 0x3e8, {0x61b2303a520, 0x2, 0x2})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:705 +0x142
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).deleteSlice_(0x61b1b100008, 0x3e42a5, 0x3000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:3034 +0xd3
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks.func1(0x61b1d180000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:848 +0xb6
+created by github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks in goroutine 1
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:837 +0x125
+
+goroutine 453 [select]:
+github.com/juicedata/juicefs/pkg/utils.WithTimeout({0x4f98080, 0x7cf7180}, 0x61b244027e0, 0xdf8475800)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/utils/utils.go:119 +0x191
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).delete(0x61b1b132008, {0x61b33f85ba0, 0x1c})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:340 +0xf3
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).delete(0x61b226abd88, 0x61b33f85b60?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:184 +0x35
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).Remove(0x61b226abd88)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:204 +0xfe
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).Remove(0x7236223cb6d8?, 0x61b1a881808?, 0x61b30f0d160?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:1175 +0x28
+github.com/juicedata/juicefs/cmd.registerMetaMsg.func1({0x61b243e8d40?, 0x3e375a0?, 0x8?})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/cmd/mount.go:343 +0x63
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).newMsg(0x61b1b100008, 0x3e8, {0x61b243e8d40, 0x2, 0x2})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:705 +0x142
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).deleteSlice_(0x61b1b100008, 0x3e3785, 0x1000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:3034 +0xd3
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks.func1(0x61b1d180000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:848 +0xb6
+created by github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks in goroutine 1
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:837 +0x125
+
+goroutine 454 [select]:
+github.com/juicedata/juicefs/pkg/utils.WithTimeout({0x4f98080, 0x7cf7180}, 0x61b241cb2f0, 0xdf8475800)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/utils/utils.go:119 +0x191
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).delete(0x61b1b132008, {0x61b380f6c60, 0x1f})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:340 +0xf3
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).delete(0x61b1bdebd88, 0x61b427c0e00?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:184 +0x35
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).Remove(0x61b1bdebd88)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:204 +0xfe
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).Remove(0x7236223cb6d8?, 0x61b19f79008?, 0x61b2c4c0530?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:1175 +0x28
+github.com/juicedata/juicefs/cmd.registerMetaMsg.func1({0x61b22426a20?, 0x3e375a0?, 0x8?})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/cmd/mount.go:343 +0x63
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).newMsg(0x61b1b100008, 0x3e8, {0x61b22426a20, 0x2, 0x2})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:705 +0x142
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).deleteSlice_(0x61b1b100008, 0x3e5423, 0x4000000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:3034 +0xd3
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks.func1(0x61b1d180000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:848 +0xb6
+created by github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks in goroutine 1
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:837 +0x125
+
+goroutine 455 [select]:
+github.com/juicedata/juicefs/pkg/utils.WithTimeout({0x4f98080, 0x7cf7180}, 0x61b24403920, 0xdf8475800)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/utils/utils.go:119 +0x191
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).delete(0x61b1b132008, {0x61b33f85dc0, 0x1c})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:340 +0xf3
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).delete(0x61b265e5d88, 0x61b33f85d80?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:184 +0x35
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).Remove(0x61b265e5d88)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:204 +0xfe
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).Remove(0x7236223cb6d8?, 0x61b1b2ee008?, 0x61b30f0d680?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:1175 +0x28
+github.com/juicedata/juicefs/cmd.registerMetaMsg.func1({0x61b243e9720?, 0x3e375a0?, 0x8?})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/cmd/mount.go:343 +0x63
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).newMsg(0x61b1b100008, 0x3e8, {0x61b243e9720, 0x2, 0x2})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:705 +0x142
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).deleteSlice_(0x61b1b100008, 0x3e34e6, 0x1000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:3034 +0xd3
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks.func1(0x61b1d180000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:848 +0xb6
+created by github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks in goroutine 1
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:837 +0x125
+
+goroutine 456 [select]:
+github.com/juicedata/juicefs/pkg/utils.WithTimeout({0x4f98080, 0x7cf7180}, 0x61b23f15c20, 0xdf8475800)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/utils/utils.go:119 +0x191
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).delete(0x61b1b132008, {0x61b41f88ac0, 0x1c})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:340 +0xf3
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).delete(0x61b1c611d88, 0x61b41f88a20?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:184 +0x35
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).Remove(0x61b1c611d88)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:204 +0xfe
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).Remove(0x7236223ca4e8?, 0x61b1a808008?, 0x61b2a185000?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:1175 +0x28
+github.com/juicedata/juicefs/cmd.registerMetaMsg.func1({0x61b2421a140?, 0x3e375a0?, 0x8?})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/cmd/mount.go:343 +0x63
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).newMsg(0x61b1b100008, 0x3e8, {0x61b2421a140, 0x2, 0x2})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:705 +0x142
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).deleteSlice_(0x61b1b100008, 0x3e4376, 0x1000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:3034 +0xd3
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks.func1(0x61b1d180000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:848 +0xb6
+created by github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks in goroutine 1
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:837 +0x125
+
+goroutine 457 [select]:
+github.com/juicedata/juicefs/pkg/utils.WithTimeout({0x4f98080, 0x7cf7180}, 0x61b24304900, 0xdf8475800)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/utils/utils.go:119 +0x191
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).delete(0x61b1b132008, {0x61b380f7400, 0x1d})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:340 +0xf3
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).delete(0x61b200f5d88, 0x61b380f73c0?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:184 +0x35
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).Remove(0x61b200f5d88)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:204 +0xfe
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).Remove(0x7236223c8a00?, 0x61b21306008?, 0x61b40d5f190?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:1175 +0x28
+github.com/juicedata/juicefs/cmd.registerMetaMsg.func1({0x61b2303b660?, 0x3e375a0?, 0x8?})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/cmd/mount.go:343 +0x63
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).newMsg(0x61b1b100008, 0x3e8, {0x61b2303b660, 0x2, 0x2})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:705 +0x142
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).deleteSlice_(0x61b1b100008, 0x3e5a87, 0xb000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:3034 +0xd3
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks.func1(0x61b1d180000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:848 +0xb6
+created by github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks in goroutine 1
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:837 +0x125
+
+goroutine 458 [select]:
+github.com/juicedata/juicefs/pkg/utils.WithTimeout({0x4f98080, 0x7cf7180}, 0x61b242b23f0, 0xdf8475800)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/utils/utils.go:119 +0x191
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).delete(0x61b1b132008, {0x61b2fbcbbc0, 0x1c})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:340 +0xf3
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).delete(0x61b40d3bd88, 0x61b2fbcbb40?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:184 +0x35
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).Remove(0x61b40d3bd88)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:204 +0xfe
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).Remove(0x7236223c92f8?, 0x61b1a808008?, 0x61b26a71920?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:1175 +0x28
+github.com/juicedata/juicefs/cmd.registerMetaMsg.func1({0x61b242b8080?, 0x3e375a0?, 0x8?})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/cmd/mount.go:343 +0x63
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).newMsg(0x61b1b100008, 0x3e8, {0x61b242b8080, 0x2, 0x2})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:705 +0x142
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).deleteSlice_(0x61b1b100008, 0x3e41ed, 0x1000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:3034 +0xd3
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks.func1(0x61b1d180000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:848 +0xb6
+created by github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks in goroutine 1
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:837 +0x125
+
+goroutine 459 [select]:
+github.com/juicedata/juicefs/pkg/utils.WithTimeout({0x4f98080, 0x7cf7180}, 0x61b23fb77a0, 0xdf8475800)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/utils/utils.go:119 +0x191
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).delete(0x61b1b132008, {0x61b33f859a0, 0x1c})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:340 +0xf3
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).delete(0x61b1d4b1d88, 0x61b33f85900?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:184 +0x35
+github.com/juicedata/juicefs/pkg/chunk.(*rSlice).Remove(0x61b1d4b1d88)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:204 +0xfe
+github.com/juicedata/juicefs/pkg/chunk.(*cachedStore).Remove(0x7236223cb6d8?, 0x61b1afc9008?, 0x61b30f0ce90?)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:1175 +0x28
+github.com/juicedata/juicefs/cmd.registerMetaMsg.func1({0x61b243e84a0?, 0x3e375a0?, 0x8?})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/cmd/mount.go:343 +0x63
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).newMsg(0x61b1b100008, 0x3e8, {0x61b243e84a0, 0x2, 0x2})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:705 +0x142
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).deleteSlice_(0x61b1b100008, 0x3e53aa, 0x2000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:3034 +0xd3
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks.func1(0x61b1d180000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:848 +0xb6
+created by github.com/juicedata/juicefs/pkg/meta.(*baseMeta).startDeleteSliceTasks in goroutine 1
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:837 +0x125
+
+goroutine 461 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x61b1a88185f?, 0x8?, 0x61b41c52c28?)
+	/home/kwatanabe/.goenv/versions/1.26.4/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x61b1b1020f0)
+	/home/kwatanabe/.goenv/versions/1.26.4/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/kwatanabe/.goenv/versions/1.26.4/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/kwatanabe/.goenv/versions/1.26.4/src/sync/mutex.go:46
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).deleteSlice(0x61b1b100008, 0x3e53fb, 0x11000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:3047 +0x6f
+github.com/juicedata/juicefs/pkg/meta.(*redisMeta).doCleanupSlices.func1({0x61b258a2000, 0x4e20, 0x61b1d104800?})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/redis.go:3530 +0x1c8
+github.com/juicedata/juicefs/pkg/meta.(*redisMeta).hscan(0x61b19f462d0, {0x7235d82ecde0, 0x61b1d104800}, {0x4849e43, 0x8}, 0x61b41c52e10)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/redis.go:3988 +0xd6
+github.com/juicedata/juicefs/pkg/meta.(*redisMeta).doCleanupSlices(0x61b19f462d0, {0x4fc2ab8, 0x61b1d104800}, 0x61b2484bb50)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/redis.go:3521 +0xb9
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).cleanupSlices.func1({0x4fc2ab8?, 0x61b1b170ac0?}, 0x61b1b100008)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:1054 +0xdb
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).cleanupSlices(0x61b1b100008, {0x4fc2ab8, 0x61b1b170ac0})
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:1063 +0x18c
+created by github.com/juicedata/juicefs/pkg/meta.(*baseMeta).NewSession in goroutine 1
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:810 +0x60f
+
+goroutine 4543137 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x61b37f12f50?, 0x1?, 0x2?)
+	/home/kwatanabe/.goenv/versions/1.26.4/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x61b1b1020f0)
+	/home/kwatanabe/.goenv/versions/1.26.4/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/kwatanabe/.goenv/versions/1.26.4/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/kwatanabe/.goenv/versions/1.26.4/src/sync/mutex.go:46
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).deleteSlice(0x61b1b100008, 0x3f7234, 0x9000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:3047 +0x6f
+github.com/juicedata/juicefs/pkg/meta.(*redisMeta).doCompactChunk(0x61b19f462d0, 0x918b8, 0x26, {0x61b23b5e000, 0x3b88, 0x3b88}, {0x61b21a2c008, 0x27b, 0x27b}, 0x0, ...)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/redis.go:3858 +0x4e5
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).compactChunk(0x61b1b100008, 0x918b8, 0x26, 0x0, 0x0, 0x0)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:2936 +0x1287
+created by github.com/juicedata/juicefs/pkg/meta.(*baseMeta).Write in goroutine 4542888
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:2196 +0x907
+
+goroutine 4362673 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x61b37f12f50?, 0x1?, 0x2?)
+	/home/kwatanabe/.goenv/versions/1.26.4/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x61b1b1020f0)
+	/home/kwatanabe/.goenv/versions/1.26.4/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/kwatanabe/.goenv/versions/1.26.4/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/kwatanabe/.goenv/versions/1.26.4/src/sync/mutex.go:46
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).deleteSlice(0x61b1b100008, 0x3f5e0e, 0x1000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:3047 +0x6f
+github.com/juicedata/juicefs/pkg/meta.(*redisMeta).doCompactChunk(0x61b19f462d0, 0x918b8, 0x17, {0x61b249d8000, 0x5d00, 0x5d00}, {0x61b252b2008, 0x3e0, 0x3e0}, 0x0, ...)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/redis.go:3858 +0x4e5
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).compactChunk(0x61b1b100008, 0x918b8, 0x17, 0x0, 0x0, 0x0)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:2936 +0x1287
+created by github.com/juicedata/juicefs/pkg/meta.(*baseMeta).Write in goroutine 4362178
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:2196 +0x907
+
+goroutine 4533415 [select]:
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).deleteSlice(0x61b1b100008, 0x3f76f7, 0x1000)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:3053 +0x15c
+github.com/juicedata/juicefs/pkg/meta.(*redisMeta).doCompactChunk(0x61b19f462d0, 0x918b8, 0x27, {0x61b28711000, 0x4e78, 0x4e78}, {0x61b1a1c3a88, 0x345, 0x345}, 0x0, ...)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/redis.go:3858 +0x4e5
+github.com/juicedata/juicefs/pkg/meta.(*baseMeta).compactChunk(0x61b1b100008, 0x918b8, 0x27, 0x0, 0x0, 0x0)
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:2936 +0x1287
+created by github.com/juicedata/juicefs/pkg/meta.(*baseMeta).Write in goroutine 4533233
+	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go:2196 +0x907

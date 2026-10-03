@@ -1,0 +1,52 @@
+PUT・GC・staging定量所見（2026-10-03固定manifest prefix）
+
+計測方法
+- 元ログを各一回だけprefix_bytesまでstream read。先行logの4,907,086行、耐久log36,536,314行、直近log1,603,566行を処理。ログ・source・実機設定は変更していない。
+- 主PIDは順に413172、683253、1156153。wrapper PIDは統計対象イベント0。分類は同PID同prefix内のslice finish ID、compaction phase=object出力ID、Found staging block exact keyとの突合。
+- PUTレコード数は88,831、233,452、12,962。すべてnormalまたはcompactionへ分類され、startup stage key・未分類・payload_missingは0。これはこの範囲でFound staging blockを観測しなかった意味であり、起動前やログ外のstage存在否定ではない。
+- PUT/DELETEは完了時ログ。successはerr:<nil>、failedはそれ以外。試行数はJuiceFS外側retryを含む、SDK内部試行は含まない。payload bytesはchunk->object storage境界の圧縮済みbuffer長、wire bytesではない。
+- raw key suffixは圧縮前block長。finish raw_length合計はslice長の総量で、アプリwrite bytesではない。実stagingファイルはraw+checksum/footerになり得る。ログだけから物理ファイルstat長は算出しない。
+
+主PID比較
+比較1: PID413172（補正前、30s/10s、window16、約5.265h）
+  normal finish 101,766 IDs、raw slice合計2,755,293,376 bytes。
+  normal PUT 73,463 success/112 failed、0.72298試行/finish、全観測時間平均13,975試行/h。
+  normal成功payload<1KiB 50,683/73,463=68.99%、raw4KiB 47,043/73,463=64.04%。
+  compaction PUT 15,241 success/15 failed。
+  DELETE 247,351 success/12 failed、latency p50 0.001231s/p95 2.602660s/p99 6.999374s/max30.001941s。
+  notneeded drop 6,879行、abandoned56行。notneeded keyでPUT未観測6,879。
+
+比較2: PID683253（local retirement補正後、30s/10s、window16、約19.265h）
+  normal finish 843,306 IDs、raw slice合計35,823,013,348 bytes。
+  normal PUT 81,227 success/1,468 failed、0.09806試行/finish、全観測時間平均4,292試行/h。
+  normal成功payload<1KiB 47,414/81,227=58.37%、raw4KiB 46,493/81,227=57.24%。
+  compaction PUT 150,626 success/131 failed。
+  local retirement success880,895行、busy/error2,156行、remote deferred0行。
+  local retirement成功かつnormal ID、同範囲でPUT未観測762,146 IDs。
+  DELETE 1,049,531 success/439 failed、latency p50 0.000938s/p95 1.873081s/p99 4.691445s/max30.035306s。
+  notneeded drop103,386行、abandoned2,156行。notneeded keyでPUT未観測103,347。
+
+比較3: PID1156153（最近再起動、15s/10s、window16、64分15秒）
+  normal finish22,713 IDs、raw slice合計422,477,824 bytes。
+  normal PUT8,516 success/154 failed、0.38172試行/finish、全観測時間平均8,096試行/h。
+  normal成功payload<1KiB5,656/8,516=66.42%、raw4KiB5,385/8,516=63.23%。
+  compaction PUT4,286 success/6 failed。
+  local retirement success20,650行、busy/error268行、remote deferred0行。
+  local retirement成功かつnormal ID、同範囲でPUT未観測13,941 IDs。
+  DELETE24,636 success/107 failed、latency p50 0.726631s/p95 5.224213s/p99 16.070186s/max30.001998s。
+  notneeded drop12,611行、abandoned268行。notneeded keyでPUT未観測12,611。
+
+評価
+- 補正前と補正後耐久のnormal PUT試行/finishは0.723→0.098（約86.4%低下）。設定wait/idle/windowが同じなので、local retirementでobsolete stageをcloud PUT前に取り消せる動作の観測と整合する。単独の対照実験ではないためGC方式だけの因果効果とは断定しない。
+- retiredかつPUT未観測は『この期間に観測したPUTを伴わない退役ID』であり、反事実のupload回避数・欠落数ではない。上書き/compaction原因、ログ外PUT、期間末pendingを区別できない。
+- compaction成功PUT比率は17.18%→64.97%→33.48%、成功payload総量に占めるcompaction比率は98.89%→99.24%→99.15%。normalのcloud PUT削減だけで全体cloud負荷が同程度減るとは言えない。
+- 15s版のtiny比率・PUT/finishは30s耐久より高いが、restart、観測長、負荷、compaction量、旧PIDのdrainが異なる。30→15単独の悪化・改善とは断定しない。15s版の長期耐久合格とも言わない。
+- DELETE p95/p99は直近で高く、継続object storage待ちは残る。PUT/DELETE failedは『永続データ喪失』とは同義ではなくretry/error証拠として別担当healthと突合する。
+- 全観測時間rateはidle/drainingを含むためworkload rateを等しくした比較ではない。payload_minute_bins.csvでactive時刻を選択しwriter/barrier統計と比較できる。
+- PUTと成功DELETE両方のkeyは85,380→217,143→10,050。compact setsに時刻順を保持していないため『PUT後DELETE』とは呼ばずunordered相関に限定する。
+
+出力
+payload_summary.json: PID別・分類別exact counters、bounded payload histogram、DELETE latency、相関。
+payload_minute_bins.csv: 完了時刻minute/PID/categoryごとの試行数・成功数・raw/payload試行bytes。
+payload_rates.csv: 主PID分類別観測時間rateと成功tiny/raw4KiB比率。
+payload_analyze.py: 元ログを一回ずつ読み取る解析script（実行時は現在manifest roleを参照）。

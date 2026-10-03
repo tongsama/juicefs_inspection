@@ -1,0 +1,5 @@
+{
+  "directory": "/tmp/juicefs-retirement-redis-io-e6nm1a3s",
+  "port": 6379,
+  "pidfile": "/tmp/juicefs-retirement-redis-io-e6nm1a3s/redis.pid"
+}

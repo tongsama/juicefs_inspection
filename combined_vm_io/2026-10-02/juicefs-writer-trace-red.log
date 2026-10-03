@@ -1,0 +1,133 @@
+--- FAIL: TestWriterFlushOriginContext (0.00s)
+    writer_trace_test.go:55: 
+        	Error Trace:	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/vfs/writer_trace_test.go:55
+        	Error:      	Not equal: 
+        	            	expected: "read"
+        	            	actual  : "unknown"
+        	            	
+        	            	Diff:
+        	            	--- Expected
+        	            	+++ Actual
+        	            	@@ -1 +1 @@
+        	            	-read
+        	            	+unknown
+        	Test:       	TestWriterFlushOriginContext
+2026/10/02 13:34:31.433768 juicefs[317712] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/02 13:34:31.433988 juicefs[317712] <WARNING>: Existing volume will be overwrited: {
+  "Name": "test",
+  "UUID": "",
+  "Storage": "",
+  "Tiers": null,
+  "Bucket": "",
+  "BlockSize": 0,
+  "TrashDays": 0,
+  "DirStats": true,
+  "EnableACL": false
+} [update@config.go:126]
+2026/10/02 13:34:31.435976 juicefs[317712] <WARNING>: compact 4 0 with 10 slices: message 1001 is not supported [compactChunk@base.go:2920]
+2026/10/02 13:34:31.436230 juicefs[317712] <WARNING>: compact 4 0 with 11 slices: message 1001 is not supported [compactChunk@base.go:2920]
+2026/10/02 13:34:31.436295 juicefs[317712] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/02 13:34:31.436438 juicefs[317712] <WARNING>: Existing volume will be overwrited: {
+  "Name": "test",
+  "UUID": "653ad061-2f47-4862-8b15-07be276f6d7f",
+  "Storage": "mem",
+  "Tiers": null,
+  "Bucket": "",
+  "BlockSize": 4096,
+  "Compression": "lz4",
+  "TrashDays": 0,
+  "DirStats": true,
+  "EnableACL": false
+} [update@config.go:126]
+--- FAIL: TestWriterReuseWindow (0.00s)
+    --- FAIL: TestWriterReuseWindow/16 (0.00s)
+        writer_trace_test.go:75: 
+            	Error Trace:	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/vfs/writer_trace_test.go:75
+            	Error:      	Should be false
+            	Test:       	TestWriterReuseWindow/16
+--- FAIL: TestWriterFlushTraceCorrelation (0.00s)
+    writer_trace_test.go:98: 
+        	Error Trace:	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/vfs/writer_trace_test.go:98
+        	Error:      	"map[]" should have 3 item(s), but has 0
+        	Test:       	TestWriterFlushTraceCorrelation
+        	Messages:   	origin origin0: 2026/10/02 13:34:31.437182 juicefs[317712] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+        	            	2026/10/02 13:34:31.437277 juicefs[317712] <WARNING>: Existing volume will be overwrited: {
+        	            	  "Name": "test",
+        	            	  "UUID": "9c89b959-2946-4cdf-9ad2-30313a4d4d2e",
+        	            	  "Storage": "mem",
+        	            	  "Tiers": null,
+        	            	  "Bucket": "",
+        	            	  "BlockSize": 4096,
+        	            	  "Compression": "lz4",
+        	            	  "TrashDays": 0,
+        	            	  "DirStats": true,
+        	            	  "EnableACL": false
+        	            	} [update@config.go:126]
+        	            	2026/10/02 13:34:31.437313 juicefs[317712] <DEBUG>: Creating mem storage at endpoint  [CreateStorage@object_storage.go:185]
+        	            	2026/10/02 13:34:31.437526 juicefs[317712] <DEBUG>: slice freeze inode=8 chunk=0 slice=4 off=0 raw_length=4 reason=explicit_flush age=52.25µs idle=32.221µs started_unix_ns=1790915671437456258 [freeze@writer.go:118]
+        	            	2026/10/02 13:34:31.437550 juicefs[317712] <DEBUG>: slice finish inode=8 chunk=0 slice=4 off=0 raw_length=4 started_unix_ns=1790915671437456258 [flushData@writer.go:131]
+        	            	2026/10/02 13:34:31.437568 juicefs[317712] <DEBUG>: PUT chunks/0/0/4_0_4 payload_bytes=5 (req_id: "", err: <nil>, cost: 934ns) [logRequest@cached_store.go:701]
+        	            	2026/10/02 13:34:31.437583 juicefs[317712] <DEBUG>: slice commit inode=8 chunk=0 slice=4 phase=metadata [commitThread@writer.go:224]
+        	            	2026/10/02 13:34:31.437589 juicefs[317712] <DEBUG>: metadata write inode=8 chunk=0 slice=4 phase=lock_wait [Write@base.go:2178]
+        	            	2026/10/02 13:34:31.437601 juicefs[317712] <DEBUG>: metadata write inode=8 chunk=0 slice=4 phase=doWrite lock_wait=80ns [Write@base.go:2189]
+        	            	2026/10/02 13:34:31.437601 juicefs[317712] <DEBUG>: slice freeze inode=11 chunk=0 slice=6 off=0 raw_length=4 reason=explicit_flush age=53.157µs idle=31.814µs started_unix_ns=1790915671437544921 [freeze@writer.go:118]
+        	            	2026/10/02 13:34:31.437592 juicefs[317712] <DEBUG>: slice freeze inode=10 chunk=0 slice=0 off=0 raw_length=4 reason=explicit_flush age=76.989µs idle=60.561µs started_unix_ns=1790915671437512172 [freeze@writer.go:118]
+        	            	2026/10/02 13:34:31.437616 juicefs[317712] <DEBUG>: metadata write inode=8 chunk=0 slice=4 phase=stat slices=1 doWrite=10µs [Write@base.go:2194]
+        	            	2026/10/02 13:34:31.437624 juicefs[317712] <DEBUG>: slice finish inode=11 chunk=0 slice=6 off=0 raw_length=4 started_unix_ns=1790915671437544921 [flushData@writer.go:131]
+        	            	2026/10/02 13:34:31.437630 juicefs[317712] <DEBUG>: metadata write inode=8 chunk=0 slice=4 phase=done errno=errno 0 [Write@base.go:2210]
+        	            	2026/10/02 13:34:31.437634 juicefs[317712] <DEBUG>: slice finish inode=10 chunk=0 slice=8 off=0 raw_length=4 started_unix_ns=1790915671437512172 [flushData@writer.go:131]
+        	            	2026/10/02 13:34:31.437644 juicefs[317712] <DEBUG>: slice freeze inode=13 chunk=0 slice=0 off=0 raw_length=4 reason=explicit_flush age=48.082µs idle=29.448µs started_unix_ns=1790915671437595254 [freeze@writer.go:118]
+        	            	2026/10/02 13:34:31.437648 juicefs[317712] <DEBUG>: PUT chunks/0/0/6_0_4 payload_bytes=5 (req_id: "", err: <nil>, cost: 876ns) [logRequest@cached_store.go:701]
+        	            	2026/10/02 13:34:31.437661 juicefs[317712] <DEBUG>: PUT chunks/0/0/8_0_4 payload_bytes=5 (req_id: "", err: <nil>, cost: 1.018µs) [logRequest@cached_store.go:701]
+        	            	2026/10/02 13:34:31.437663 juicefs[317712] <DEBUG>: slice freeze inode=12 chunk=0 slice=7 off=0 raw_length=4 reason=explicit_flush age=88.719µs idle=73.981µs started_unix_ns=1790915671437573322 [freeze@writer.go:118]
+        	            	2026/10/02 13:34:31.437664 juicefs[317712] <DEBUG>: slice freeze inode=14 chunk=0 slice=10 off=0 raw_length=4 reason=explicit_flush age=36.051µs idle=33.175µs started_unix_ns=1790915671437627440 [freeze@writer.go:118]
+        	            	2026/10/02 13:34:31.437663 juicefs[317712] <DEBUG>: slice commit inode=11 chunk=0 slice=6 phase=metadata [commitThread@writer.go:224]
+        	            	2026/10/02 13:34:31.437674 juicefs[317712] <DEBUG>: slice freeze inode=9 chunk=0 slice=5 off=0 raw_length=4 reason=explicit_flush age=187.281µs idle=171.974µs started_unix_ns=1790915671437486128 [freeze@writer.go:118]
+        	            	2026/10/02 13:34:31.437678 juicefs[317712] <DEBUG>: slice finish inode=14 chunk=0 slice=10 off=0 raw_length=4 started_unix_ns=1790915671437627440 [flushData@writer.go:131]
+        	            	2026/10/02 13:34:31.437677 juicefs[317712] <DEBUG>: metadata write inode=11 chunk=0 slice=6 phase=lock_wait [Write@base.go:2178]
+        	            	2026/10/02 13:34:31.437703 juicefs[317712] <DEBUG>: PUT chunks/0/0/10_0_4 payload_bytes=5 (req_id: "", err: <nil>, cost: 920ns) [logRequest@cached_store.go:701]
+        	            	2026/10/02 13:34:31.437705 juicefs[317712] <DEBUG>: metadata write inode=11 chunk=0 slice=6 phase=doWrite lock_wait=161ns [Write@base.go:2189]
+        	            	2026/10/02 13:34:31.437655 juicefs[317712] <DEBUG>: slice freeze inode=15 chunk=0 slice=0 off=0 raw_length=4 reason=explicit_flush age=13.514µs idle=10.622µs started_unix_ns=1790915671437639381 [freeze@writer.go:118]
+        	            	2026/10/02 13:34:31.437714 juicefs[317712] <DEBUG>: slice commit inode=14 chunk=0 slice=10 phase=metadata [commitThread@writer.go:224]
+        	            	2026/10/02 13:34:31.437719 juicefs[317712] <DEBUG>: metadata write inode=11 chunk=0 slice=6 phase=stat slices=1 doWrite=7.824µs [Write@base.go:2194]
+        	            	2026/10/02 13:34:31.437722 juicefs[317712] <DEBUG>: metadata write inode=14 chunk=0 slice=10 phase=lock_wait [Write@base.go:2178]
+        	            	2026/10/02 13:34:31.437727 juicefs[317712] <DEBUG>: slice finish inode=15 chunk=0 slice=11 off=0 raw_length=4 started_unix_ns=1790915671437639381 [flushData@writer.go:131]
+        	            	2026/10/02 13:34:31.437732 juicefs[317712] <DEBUG>: metadata write inode=14 chunk=0 slice=10 phase=doWrite lock_wait=63ns [Write@base.go:2189]
+        	            	2026/10/02 13:34:31.437751 juicefs[317712] <DEBUG>: metadata write inode=14 chunk=0 slice=10 phase=stat slices=1 doWrite=5.442µs [Write@base.go:2194]
+        	            	2026/10/02 13:34:31.437756 juicefs[317712] <DEBUG>: metadata write inode=14 chunk=0 slice=10 phase=done errno=errno 0 [Write@base.go:2210]
+        	            	2026/10/02 13:34:31.437764 juicefs[317712] <DEBUG>: PUT chunks/0/0/11_0_4 payload_bytes=5 (req_id: "", err: <nil>, cost: 10.915µs) [logRequest@cached_store.go:701]
+        	            	2026/10/02 13:34:31.437655 juicefs[317712] <DEBUG>: slice finish inode=13 chunk=0 slice=9 off=0 raw_length=4 started_unix_ns=1790915671437595254 [flushData@writer.go:131]
+        	            	2026/10/02 13:34:31.437726 juicefs[317712] <DEBUG>: metadata write inode=11 chunk=0 slice=6 phase=done errno=errno 0 [Write@base.go:2210]
+        	            	2026/10/02 13:34:31.437772 juicefs[317712] <DEBUG>: slice commit inode=15 chunk=0 slice=11 phase=metadata [commitThread@writer.go:224]
+        	            	2026/10/02 13:34:31.437789 juicefs[317712] <DEBUG>: PUT chunks/0/0/9_0_4 payload_bytes=5 (req_id: "", err: <nil>, cost: 879ns) [logRequest@cached_store.go:701]
+        	            	2026/10/02 13:34:31.437685 juicefs[317712] <DEBUG>: slice finish inode=9 chunk=0 slice=5 off=0 raw_length=4 started_unix_ns=1790915671437486128 [flushData@writer.go:131]
+        	            	2026/10/02 13:34:31.437798 juicefs[317712] <DEBUG>: slice commit inode=13 chunk=0 slice=9 phase=metadata [commitThread@writer.go:224]
+        	            	2026/10/02 13:34:31.437803 juicefs[317712] <DEBUG>: metadata write inode=13 chunk=0 slice=9 phase=lock_wait [Write@base.go:2178]
+        	            	2026/10/02 13:34:31.437812 juicefs[317712] <DEBUG>: metadata write inode=13 chunk=0 slice=9 phase=doWrite lock_wait=78ns [Write@base.go:2189]
+        	            	2026/10/02 13:34:31.437823 juicefs[317712] <DEBUG>: metadata write inode=13 chunk=0 slice=9 phase=stat slices=1 doWrite=5.404µs [Write@base.go:2194]
+        	            	2026/10/02 13:34:31.437828 juicefs[317712] <DEBUG>: metadata write inode=13 chunk=0 slice=9 phase=done errno=errno 0 [Write@base.go:2210]
+        	            	2026/10/02 13:34:31.437792 juicefs[317712] <DEBUG>: metadata write inode=15 chunk=0 slice=11 phase=lock_wait [Write@base.go:2178]
+        	            	2026/10/02 13:34:31.437843 juicefs[317712] <DEBUG>: metadata write inode=15 chunk=0 slice=11 phase=doWrite lock_wait=48ns [Write@base.go:2189]
+        	            	2026/10/02 13:34:31.437851 juicefs[317712] <DEBUG>: metadata write inode=15 chunk=0 slice=11 phase=stat slices=1 doWrite=3.439µs [Write@base.go:2194]
+        	            	2026/10/02 13:34:31.437859 juicefs[317712] <DEBUG>: metadata write inode=15 chunk=0 slice=11 phase=done errno=errno 0 [Write@base.go:2210]
+        	            	2026/10/02 13:34:31.437680 juicefs[317712] <DEBUG>: slice commit inode=10 chunk=0 slice=8 phase=metadata [commitThread@writer.go:224]
+        	            	2026/10/02 13:34:31.437869 juicefs[317712] <DEBUG>: metadata write inode=10 chunk=0 slice=8 phase=lock_wait [Write@base.go:2178]
+        	            	2026/10/02 13:34:31.437882 juicefs[317712] <DEBUG>: metadata write inode=10 chunk=0 slice=8 phase=doWrite lock_wait=101ns [Write@base.go:2189]
+        	            	2026/10/02 13:34:31.437889 juicefs[317712] <DEBUG>: metadata write inode=10 chunk=0 slice=8 phase=stat slices=1 doWrite=2.824µs [Write@base.go:2194]
+        	            	2026/10/02 13:34:31.437893 juicefs[317712] <DEBUG>: metadata write inode=10 chunk=0 slice=8 phase=done errno=errno 0 [Write@base.go:2210]
+        	            	2026/10/02 13:34:31.437809 juicefs[317712] <DEBUG>: PUT chunks/0/0/5_0_4 payload_bytes=5 (req_id: "", err: <nil>, cost: 742ns) [logRequest@cached_store.go:701]
+        	            	2026/10/02 13:34:31.437906 juicefs[317712] <DEBUG>: slice commit inode=9 chunk=0 slice=5 phase=metadata [commitThread@writer.go:224]
+        	            	2026/10/02 13:34:31.437910 juicefs[317712] <DEBUG>: metadata write inode=9 chunk=0 slice=5 phase=lock_wait [Write@base.go:2178]
+        	            	2026/10/02 13:34:31.437916 juicefs[317712] <DEBUG>: metadata write inode=9 chunk=0 slice=5 phase=doWrite lock_wait=34ns [Write@base.go:2189]
+        	            	2026/10/02 13:34:31.437938 juicefs[317712] <DEBUG>: metadata write inode=9 chunk=0 slice=5 phase=stat slices=1 doWrite=4.154µs [Write@base.go:2194]
+        	            	2026/10/02 13:34:31.437943 juicefs[317712] <DEBUG>: metadata write inode=9 chunk=0 slice=5 phase=done errno=errno 0 [Write@base.go:2210]
+        	            	2026/10/02 13:34:31.437672 juicefs[317712] <DEBUG>: slice finish inode=12 chunk=0 slice=7 off=0 raw_length=4 started_unix_ns=1790915671437573322 [flushData@writer.go:131]
+        	            	2026/10/02 13:34:31.437994 juicefs[317712] <DEBUG>: PUT chunks/0/0/7_0_4 payload_bytes=5 (req_id: "", err: <nil>, cost: 799ns) [logRequest@cached_store.go:701]
+        	            	2026/10/02 13:34:31.438003 juicefs[317712] <DEBUG>: slice commit inode=12 chunk=0 slice=7 phase=metadata [commitThread@writer.go:224]
+        	            	2026/10/02 13:34:31.438008 juicefs[317712] <DEBUG>: metadata write inode=12 chunk=0 slice=7 phase=lock_wait [Write@base.go:2178]
+        	            	2026/10/02 13:34:31.438017 juicefs[317712] <DEBUG>: metadata write inode=12 chunk=0 slice=7 phase=doWrite lock_wait=137ns [Write@base.go:2189]
+        	            	2026/10/02 13:34:31.438029 juicefs[317712] <DEBUG>: metadata write inode=12 chunk=0 slice=7 phase=stat slices=1 doWrite=7.223µs [Write@base.go:2194]
+        	            	2026/10/02 13:34:31.438035 juicefs[317712] <DEBUG>: metadata write inode=12 chunk=0 slice=7 phase=done errno=errno 0 [Write@base.go:2210]
+FAIL
+FAIL	github.com/juicedata/juicefs/pkg/vfs	0.031s
+FAIL

@@ -1,0 +1,34 @@
+{
+  "captured_at": "2026-10-03T15:33:19.628289+09:00",
+  "files": [
+    {
+      "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-145808.log",
+      "role": "combined_before_local_retirement",
+      "prefix_bytes": 794809736,
+      "size_at_capture": 794809736,
+      "mtime_ns": 1790939648724667875
+    },
+    {
+      "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-201718.log",
+      "role": "retirement_endurance_wait30_idle10",
+      "prefix_bytes": 5976434018,
+      "size_at_capture": 5976434018,
+      "mtime_ns": 1791009199002005128
+    },
+    {
+      "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261003-142854.log",
+      "role": "recent_restart_wait15_idle10",
+      "prefix_bytes": 267671574,
+      "size_at_capture": 267671574,
+      "mtime_ns": 1791009199318010553
+    }
+  ],
+  "user_setting_report": {
+    "before_recent_restart": "wait30s idle10s (user corrected chronology)",
+    "after_recent_restart": "wait15s idle10s",
+    "writer_timeout": "0s",
+    "reuse_window": 16,
+    "correction": "Earlier user statement was reversed; the endurance test was at 30s/10s."
+  },
+  "source_logs_mutated": false
+}

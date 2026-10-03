@@ -1,0 +1,28 @@
+--- FAIL: TestRetireIndependentOfRemoteDelete (0.00s)
+    retire_test.go:147: 
+        	Error Trace:	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/retire_test.go:147
+        	Error:      	Should be zero, but was 1
+        	Test:       	TestRetireIndependentOfRemoteDelete
+        	Messages:   	Retire must not issue remote DELETE
+2026/10/02 17:08:40.627001 juicefs[487013] <INFO>: Key chunks/0/0/7_0_8 is not needed, abandoned, err: injected DELETE failure [uploadStagingFile@cached_store.go:1092]
+--- FAIL: TestRetireUploadInFlight (0.00s)
+    --- FAIL: TestRetireUploadInFlight/queued (0.00s)
+        retire_test.go:196: 
+            	Error Trace:	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/retire_test.go:196
+            	Error:      	Should be zero, but was 2
+            	Test:       	TestRetireUploadInFlight/queued
+    --- FAIL: TestRetireUploadInFlight/immediate (0.00s)
+        retire_test.go:196: 
+            	Error Trace:	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/retire_test.go:196
+            	Error:      	Should be zero, but was 2
+            	Test:       	TestRetireUploadInFlight/immediate
+2026/10/02 17:08:40.627493 juicefs[487013] <WARNING>: remove stage /tmp/TestRetireStageRemovalError2045634001/001/rawstaging/chunks/0/0/9_0_8 failed: remove /tmp/TestRetireStageRemovalError2045634001/001/rawstaging/chunks/0/0/9_0_8: directory not empty [remove@disk_cache.go:662]
+--- FAIL: TestRetireStageRemovalError (0.00s)
+    retire_test.go:235: 
+        	Error Trace:	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/retire_test.go:235
+        	Error:      	An error is expected but got nil.
+        	Test:       	TestRetireStageRemovalError
+        	Messages:   	filesystem unlink errors must not be hidden
+FAIL
+FAIL	command-line-arguments	0.033s
+FAIL

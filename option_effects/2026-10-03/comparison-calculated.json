@@ -1,0 +1,46 @@
+{
+  "rows": [
+    {
+      "run": "vm-io-20261002-145808",
+      "normal_slice_finish": 101766,
+      "normal_put_success": 73463,
+      "normal_put_attempts": 73575,
+      "compaction_put_success": 15241,
+      "total_put_attempts": 88831,
+      "normal_put_attempts_per_finish": 0.7229821354872944,
+      "total_put_attempts_per_finish": 0.8728946799520468,
+      "retired_normal_ids_without_put": 0,
+      "normal_tiny_success_fraction": 0.6899119284537795,
+      "compaction_payload_fraction": 0.9888764016558185
+    },
+    {
+      "run": "vm-io-20261002-201718",
+      "normal_slice_finish": 843306,
+      "normal_put_success": 81227,
+      "normal_put_attempts": 82695,
+      "compaction_put_success": 150626,
+      "total_put_attempts": 233452,
+      "normal_put_attempts_per_finish": 0.09806049049811101,
+      "total_put_attempts_per_finish": 0.27682952570004243,
+      "retired_normal_ids_without_put": 762146,
+      "normal_tiny_success_fraction": 0.58372216135029,
+      "compaction_payload_fraction": 0.9924051537720259
+    },
+    {
+      "run": "vm-io-20261003-142854",
+      "normal_slice_finish": 22713,
+      "normal_put_success": 8516,
+      "normal_put_attempts": 8670,
+      "compaction_put_success": 4286,
+      "total_put_attempts": 12962,
+      "normal_put_attempts_per_finish": 0.38171971998415005,
+      "total_put_attempts_per_finish": 0.5706863910535817,
+      "retired_normal_ids_without_put": 13941,
+      "normal_tiny_success_fraction": 0.6641615782057304,
+      "compaction_payload_fraction": 0.9914968865384467
+    }
+  ],
+  "normal_ratio_reduction": 0.8643666479642438,
+  "total_ratio_reduction": 0.6828603357792828,
+  "interpretation": "normalized observed counts across different workloads, not a controlled causal improvement percentage"
+}

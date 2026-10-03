@@ -1,0 +1,637 @@
+{
+  "manifest_spec": {
+    "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-145808.log",
+    "role": "combined_before_local_retirement",
+    "prefix_bytes": 794809736,
+    "size_at_capture": 794809736,
+    "mtime_ns": 1790939648724667875
+  },
+  "sha256_prefix": "ebe46a6587ddbf3b21fee843e2c77c27e9f7a404a352fc27edb126d8ea57fc94",
+  "line_count": 4907086,
+  "last_byte_newline": true,
+  "first_timestamp": "2026/10/02 14:58:15.025628",
+  "last_timestamp": "2026/10/02 20:14:08.732209",
+  "pids": {
+    "413139": 2,
+    "413153": 12,
+    "413172": 4907070
+  },
+  "versions": [
+    "2026/10/02 14:58:17.298667 juicefs[413172] <INFO>: JuiceFS version 1.4.1+2026-10-02.3bed0d82-vm-io-combined-local [mount@mount.go:695]"
+  ],
+  "level_line_counts": {
+    "DEBUG": 4897659,
+    "INFO": 126,
+    "WARNING": 9299,
+    "untagged": 2
+  },
+  "level_bytes": {
+    "DEBUG": 792776862,
+    "INFO": 20438,
+    "WARNING": 2012317,
+    "untagged": 119
+  },
+  "checksum_lines": 2878464,
+  "checksum_bytes": 477513355,
+  "checksum_line_share": 0.5865933468457655,
+  "checksum_byte_share": 0.6007895139825011,
+  "checksum_mismatches": 0,
+  "health_counts": {
+    "prefetch_context_canceled": 1038,
+    "slow_operation_OK": 41,
+    "sync_compact_trigger_2500": 1
+  },
+  "writer_counts": {
+    "begin": 47696,
+    "end": 47696,
+    "errno_0": 47696
+  },
+  "writer_origin_latency_seconds": {
+    "vfs.Flush": {
+      "count": 29,
+      "sum": 0.002589522,
+      "mean": 8.929386206896552e-05,
+      "median": 7.870699999999999e-05,
+      "p95": 0.000191574,
+      "p99": 0.000204831,
+      "max": 0.000204831
+    },
+    "vfs.Release": {
+      "count": 29,
+      "sum": 0.002506426,
+      "mean": 8.642848275862068e-05,
+      "median": 8.0504e-05,
+      "p95": 0.00012699899999999998,
+      "p99": 0.00021982,
+      "max": 0.00021982
+    },
+    "internal.close": {
+      "count": 29,
+      "sum": 0.002078173,
+      "mean": 7.166113793103448e-05,
+      "median": 5.3749e-05,
+      "p95": 0.000184103,
+      "p99": 0.00019153899999999998,
+      "max": 0.00019153899999999998
+    },
+    "vfs.Read": {
+      "count": 22145,
+      "sum": 445.067710743,
+      "mean": 0.020097887141250846,
+      "median": 7.0335e-05,
+      "p95": 0.043308367,
+      "p99": 0.275329059,
+      "max": 20.561718877
+    },
+    "vfs.Fsync": {
+      "count": 24471,
+      "sum": 3214.613206438,
+      "mean": 0.1313641946155858,
+      "median": 0.042936563,
+      "p95": 0.449291084,
+      "p99": 1.419758053,
+      "max": 14.210586302
+    },
+    "vfs.Fallocate": {
+      "count": 993,
+      "sum": 450.496697521,
+      "mean": 0.4536724043514602,
+      "median": 0.030431012,
+      "p95": 2.458648883,
+      "p99": 8.747292224,
+      "max": 15.772826168
+    }
+  },
+  "slow_operation_latency_seconds": {
+    "read_OK": {
+      "count": 26,
+      "sum": 565.40702,
+      "mean": 21.746423846153846,
+      "median": 12.5255285,
+      "p95": 46.681902,
+      "p99": 46.786693,
+      "max": 46.786693
+    },
+    "write_OK": {
+      "count": 4,
+      "sum": 88.949542,
+      "mean": 22.2373855,
+      "median": 15.905849499999999,
+      "p95": 46.666022,
+      "p99": 46.666022,
+      "max": 46.666022
+    },
+    "fallocate_OK": {
+      "count": 8,
+      "sum": 96.912474,
+      "mean": 12.11405925,
+      "median": 10.7948715,
+      "p95": 15.81104,
+      "p99": 15.81104,
+      "max": 15.81104
+    },
+    "fsync_OK": {
+      "count": 3,
+      "sum": 35.757941,
+      "mean": 11.919313666666666,
+      "median": 11.038539,
+      "p95": 14.210638,
+      "p99": 14.210638,
+      "max": 14.210638
+    }
+  },
+  "compaction_phase_counts": {
+    "read": 1075,
+    "object": 1060,
+    "metadata": 1059,
+    "done": 1059
+  },
+  "completed_slow_compaction_latency_seconds": {
+    "once_false_total": {
+      "count": 1058,
+      "sum": 22796.402291047998,
+      "mean": 21.546694036907372,
+      "median": 13.332995504500001,
+      "p95": 47.468426828,
+      "p99": 139.031655893,
+      "max": 1340.92444489
+    },
+    "once_false_queue_wait": {
+      "count": 1058,
+      "sum": 0.0020543429999999997,
+      "mean": 1.9417230623818526e-06,
+      "median": 1.5334999999999998e-06,
+      "p95": 3.7029999999999995e-06,
+      "p99": 6.575e-06,
+      "max": 4.2877e-05
+    },
+    "once_false_object": {
+      "count": 1058,
+      "sum": 22686.710574264,
+      "mean": 21.443015665655956,
+      "median": 13.238664975999999,
+      "p95": 47.368305638,
+      "p99": 138.934239004,
+      "max": 1340.768258507
+    },
+    "once_false_metadata": {
+      "count": 1058,
+      "sum": 97.508840557,
+      "mean": 0.0921633653657845,
+      "median": 0.0831187535,
+      "p95": 0.130902324,
+      "p99": 0.178637251,
+      "max": 0.91632183
+    },
+    "once_true_total": {
+      "count": 1,
+      "sum": 9.580373853,
+      "mean": 9.580373853,
+      "median": 9.580373853,
+      "p95": 9.580373853,
+      "p99": 9.580373853,
+      "max": 9.580373853
+    },
+    "once_true_queue_wait": {
+      "count": 1,
+      "sum": 2.358e-06,
+      "mean": 2.358e-06,
+      "median": 2.358e-06,
+      "p95": 2.358e-06,
+      "p99": 2.358e-06,
+      "max": 2.358e-06
+    },
+    "once_true_object": {
+      "count": 1,
+      "sum": 9.341755953,
+      "mean": 9.341755953,
+      "median": 9.341755953,
+      "p95": 9.341755953,
+      "p99": 9.341755953,
+      "max": 9.341755953
+    },
+    "once_true_metadata": {
+      "count": 1,
+      "sum": 0.158824583,
+      "mean": 0.158824583,
+      "median": 0.158824583,
+      "p95": 0.158824583,
+      "p99": 0.158824583,
+      "max": 0.158824583
+    }
+  },
+  "sync_metadata_writes_ge2500": [
+    {
+      "timestamp": "2026/10/02 16:02:12.651715",
+      "slices": 2500,
+      "total_s": 9.711943558,
+      "compact_s": 9.580389976,
+      "line": "2026/10/02 16:02:12.651715 juicefs[413172] <WARNING>: slow metadata write inode=596152 chunk=39 slice=4209208 slices=2500 total=9.711943558s lock_wait=84.905841ms doWrite=46.527446ms stat=759ns compact=9.580389976s errno=errno 0 [Write@base.go:2182]"
+    }
+  ],
+  "top_source_categories": [
+    {
+      "source": "ReadAt@disk_cache.go",
+      "lines": 2878464,
+      "bytes": 477513355,
+      "byte_share": 0.6007895139825011
+    },
+    {
+      "source": "txn@redis.go",
+      "lines": 807316,
+      "bytes": 102832775,
+      "byte_share": 0.12938036657366764
+    },
+    {
+      "source": "logRequest@cached_store.go",
+      "lines": 342994,
+      "bytes": 63863617,
+      "byte_share": 0.08035082373475103
+    },
+    {
+      "source": "Write@base.go",
+      "lines": 407087,
+      "bytes": 61857353,
+      "byte_share": 0.07782661711129316
+    },
+    {
+      "source": "logFreeze@writer_trace.go",
+      "lines": 101766,
+      "bytes": 28475126,
+      "byte_share": 0.03582634272109621
+    },
+    {
+      "source": "logFinish@writer_trace.go",
+      "lines": 101766,
+      "bytes": 19993277,
+      "byte_share": 0.025154796292027305
+    },
+    {
+      "source": "commitThread@writer.go",
+      "lines": 101788,
+      "bytes": 14702442,
+      "byte_share": 0.01849806479974976
+    },
+    {
+      "source": "end@writer_trace.go",
+      "lines": 47696,
+      "bytes": 8139809,
+      "byte_share": 0.010241204443424181
+    },
+    {
+      "source": "beginWriterFlush@writer_trace.go",
+      "lines": 47696,
+      "bytes": 7554588,
+      "byte_share": 0.009504901183042378
+    },
+    {
+      "source": "cleanupFull-range1@disk_cache.go",
+      "lines": 33069,
+      "bytes": 4544567,
+      "byte_share": 0.00571780489613932
+    },
+    {
+      "source": "getDirParent@quota.go",
+      "lines": 20910,
+      "bytes": 2685342,
+      "byte_share": 0.003378597264691785
+    },
+    {
+      "source": "compactChunk@base.go",
+      "lines": 6373,
+      "bytes": 1085712,
+      "byte_share": 0.001366002391294311
+    },
+    {
+      "source": "uploadStagingFile@cached_store.go",
+      "lines": 6935,
+      "bytes": 1036299,
+      "byte_share": 0.001303832795525796
+    },
+    {
+      "source": "readSlice@reader.go",
+      "lines": 1038,
+      "bytes": 191417,
+      "byte_share": 0.00024083373835269678
+    },
+    {
+      "source": "Compact@compact.go",
+      "lines": 1061,
+      "bytes": 140400,
+      "byte_share": 0.0001766460495395844
+    },
+    {
+      "source": "upload@cached_store.go",
+      "lines": 127,
+      "bytes": 52766,
+      "byte_share": 6.638821545588112e-05
+    },
+    {
+      "source": "replyAttr@fuse.go",
+      "lines": 376,
+      "bytes": 37224,
+      "byte_share": 4.683385005741802e-05
+    },
+    {
+      "source": "scanCached@disk_cache.go",
+      "lines": 165,
+      "bytes": 31872,
+      "byte_share": 4.010016304078087e-05
+    },
+    {
+      "source": "Readdir@vfs.go",
+      "lines": 187,
+      "bytes": 21311,
+      "byte_share": 2.6812706280185778e-05
+    },
+    {
+      "source": "cleanupFull@disk_cache.go",
+      "lines": 53,
+      "bytes": 12671,
+      "byte_share": 1.594218015467289e-05
+    },
+    {
+      "source": "add@disk_cache.go",
+      "lines": 53,
+      "bytes": 10706,
+      "byte_share": 1.3469890358766314e-05
+    },
+    {
+      "source": "logit@accesslog.go",
+      "lines": 41,
+      "bytes": 6063,
+      "byte_share": 7.628240729049147e-06
+    },
+    {
+      "source": "deleteSlice_@base.go",
+      "lines": 10,
+      "bytes": 4288,
+      "byte_share": 5.395001854884173e-06
+    },
+    {
+      "source": "doUploadPart@sync.go",
+      "lines": 24,
+      "bytes": 3648,
+      "byte_share": 4.5897776974387745e-06
+    },
+    {
+      "source": "Backup@backup.go",
+      "lines": 9,
+      "bytes": 1455,
+      "byte_share": 1.8306267954422742e-06
+    }
+  ],
+  "selected_health_events": [
+    {
+      "line_number": 357610,
+      "timestamp": "2026/10/02 15:02:23.016252",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 15:02:23.016252 juicefs[413172] <WARNING>: slow compaction inode=596153 chunk=5 once=false force=false slices=229 bytes=67108864 total=1m14.088814393s queue_wait=2.443µs object=1m13.937558394s metadata=141.4905ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 382999,
+      "timestamp": "2026/10/02 15:02:34.664322",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 15:02:34.664322 juicefs[413172] <WARNING>: slow compaction inode=596156 chunk=2 once=false force=false slices=13 bytes=67108864 total=1m6.689883814s queue_wait=2.131µs object=1m6.601036906s metadata=78.560454ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 470129,
+      "timestamp": "2026/10/02 15:05:02.205379",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 15:05:02.205379 juicefs[413172] <WARNING>: slow compaction inode=596156 chunk=12 once=false force=false slices=27 bytes=67108864 total=1m9.545131942s queue_wait=2.885µs object=1m9.456663426s metadata=78.4329ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 545706,
+      "timestamp": "2026/10/02 15:07:08.149340",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 15:07:08.149340 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=40 once=false force=false slices=203 bytes=67108864 total=3m13.733026717s queue_wait=1.698µs object=3m13.641585573s metadata=81.015901ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 785088,
+      "timestamp": "2026/10/02 15:13:12.574494",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 15:13:12.574494 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=15 once=false force=false slices=50 bytes=67108864 total=1m27.473521523s queue_wait=1.469µs object=1m27.376852505s metadata=86.183974ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 948335,
+      "timestamp": "2026/10/02 15:25:18.153345",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 15:25:18.153345 juicefs[413172] <WARNING>: slow compaction inode=596153 chunk=6 once=false force=false slices=1000 bytes=63111168 total=22m20.92444489s queue_wait=1.237µs object=22m20.768258507s metadata=136.033965ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 973369,
+      "timestamp": "2026/10/02 15:27:32.937692",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 15:27:32.937692 juicefs[413172] <WARNING>: slow compaction inode=596153 chunk=3 once=false force=false slices=1000 bytes=67108864 total=1m52.970194268s queue_wait=1.511µs object=1m52.800539709s metadata=138.88022ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 1084626,
+      "timestamp": "2026/10/02 15:36:41.085510",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 15:36:41.085510 juicefs[413172] <WARNING>: slow compaction inode=596153 chunk=6 once=false force=false slices=374 bytes=67108864 total=9m8.147794711s queue_wait=996ns object=9m8.039937492s metadata=97.336412ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 1170156,
+      "timestamp": "2026/10/02 15:42:18.109694",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 15:42:18.109694 juicefs[413172] <WARNING>: slow compaction inode=596153 chunk=4 once=false force=false slices=236 bytes=67108864 total=5m4.985622656s queue_wait=737ns object=5m4.890984316s metadata=85.125158ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 1382423,
+      "timestamp": "2026/10/02 15:50:30.645537",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 15:50:30.645537 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=20 once=false force=false slices=38 bytes=67108864 total=1m40.600750338s queue_wait=2.186µs object=1m40.51384389s metadata=76.987957ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 1478919,
+      "timestamp": "2026/10/02 15:52:31.188136",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 15:52:31.188136 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=22 once=false force=false slices=39 bytes=67108864 total=1m40.023890723s queue_wait=1.15µs object=1m39.931801046s metadata=79.449953ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 1638897,
+      "timestamp": "2026/10/02 15:55:17.670096",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 15:55:17.670096 juicefs[413172] <WARNING>: slow compaction inode=596156 chunk=6 once=false force=false slices=122 bytes=67108864 total=1m16.951077153s queue_wait=1.067µs object=1m16.861817937s metadata=79.465543ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 1691319,
+      "timestamp": "2026/10/02 15:56:21.089866",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 15:56:21.089866 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=23 once=false force=false slices=96 bytes=67108864 total=3m49.901684384s queue_wait=1.334µs object=3m49.810699323s metadata=79.338375ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 1732126,
+      "timestamp": "2026/10/02 15:57:07.467202",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 15:57:07.467202 juicefs[413172] <WARNING>: slow compaction inode=596158 chunk=3 once=false force=false slices=90 bytes=67108864 total=1m34.060789324s queue_wait=883ns object=1m33.971833246s metadata=78.742828ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 1790715,
+      "timestamp": "2026/10/02 15:58:16.749633",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 15:58:16.749633 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=0 once=false force=false slices=196 bytes=67108864 total=1m55.659742591s queue_wait=1.182µs object=1m55.563349111s metadata=85.900682ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 1923305,
+      "timestamp": "2026/10/02 16:00:35.781342",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 16:00:35.781342 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=8 once=false force=false slices=161 bytes=67108864 total=2m19.031655893s queue_wait=3.271µs object=2m18.934239004s metadata=86.297399ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 1998901,
+      "timestamp": "2026/10/02 16:01:38.931394",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 16:01:38.931394 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=3 once=false force=false slices=194 bytes=67108864 total=1m3.149995388s queue_wait=1.309µs object=1m3.058139427s metadata=81.557042ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 2047832,
+      "timestamp": "2026/10/02 16:02:52.113452",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 16:02:52.113452 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=40 once=false force=false slices=510 bytes=67108864 total=1m3.075088451s queue_wait=1.728µs object=1m2.934237925s metadata=119.943156ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 2136511,
+      "timestamp": "2026/10/02 16:05:01.670309",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 16:05:01.670309 juicefs[413172] <WARNING>: slow compaction inode=596152 chunk=23 once=false force=false slices=881 bytes=67108864 total=10m23.284028016s queue_wait=1.1µs object=10m23.130120638s metadata=131.054176ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 2249100,
+      "timestamp": "2026/10/02 16:07:50.876568",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 16:07:50.876568 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=39 once=false force=false slices=230 bytes=67108864 total=4m47.968089934s queue_wait=1.224µs object=4m47.873993727s metadata=83.483607ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 2480664,
+      "timestamp": "2026/10/02 16:10:26.279458",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 16:10:26.279458 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=30 once=false force=false slices=23 bytes=67108864 total=1m31.737581398s queue_wait=1.547µs object=1m31.646962323s metadata=80.511059ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 2550190,
+      "timestamp": "2026/10/02 16:11:49.932159",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 16:11:49.932159 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=14 once=false force=false slices=19 bytes=67108864 total=1m23.652659028s queue_wait=1.378µs object=1m23.538577683s metadata=102.9863ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 2751021,
+      "timestamp": "2026/10/02 16:14:41.106924",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 16:14:41.106924 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=18 once=false force=false slices=109 bytes=67108864 total=2m51.174668366s queue_wait=2.622µs object=2m51.085799706s metadata=78.631158ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 2850809,
+      "timestamp": "2026/10/02 16:17:05.907883",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 16:17:05.907883 juicefs[413172] <WARNING>: slow compaction inode=596152 chunk=24 once=false force=false slices=60 bytes=67108864 total=1m12.35274929s queue_wait=1.256µs object=1m11.851176234s metadata=491.587437ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 2944969,
+      "timestamp": "2026/10/02 16:20:13.826782",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 16:20:13.826782 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=9 once=false force=false slices=39 bytes=67108864 total=1m55.398051414s queue_wait=1.167µs object=1m55.278005773s metadata=109.28202ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 2946245,
+      "timestamp": "2026/10/02 16:20:23.618201",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 16:20:23.618201 juicefs[413172] <WARNING>: slow compaction inode=596152 chunk=19 once=false force=false slices=50 bytes=67108864 total=1m11.423735522s queue_wait=996ns object=1m11.282472596s metadata=130.902324ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 3010260,
+      "timestamp": "2026/10/02 16:25:12.600904",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 16:25:12.600904 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=13 once=false force=false slices=76 bytes=67108864 total=1m25.325577051s queue_wait=1.165µs object=1m25.232853464s metadata=82.336165ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 3069732,
+      "timestamp": "2026/10/02 16:29:51.726161",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 16:29:51.726161 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=12 once=false force=false slices=99 bytes=67108864 total=3m6.315103607s queue_wait=1.358µs object=3m6.213689263s metadata=83.024476ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 3107007,
+      "timestamp": "2026/10/02 16:32:47.688793",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 16:32:47.688793 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=19 once=false force=false slices=84 bytes=67108864 total=2m55.96257208s queue_wait=1.033µs object=2m55.861335053s metadata=91.145539ms [compactChunk@base.go:2868]"
+    },
+    {
+      "line_number": 3129021,
+      "timestamp": "2026/10/02 16:34:07.516789",
+      "categories": [
+        "compaction_ge60s"
+      ],
+      "line": "2026/10/02 16:34:07.516789 juicefs[413172] <WARNING>: slow compaction inode=596155 chunk=24 once=false force=false slices=30 bytes=67108864 total=1m19.827963393s queue_wait=1.261µs object=1m19.737204398s metadata=80.228291ms [compactChunk@base.go:2868]"
+    }
+  ],
+  "file_size_after_analysis": 794809736,
+  "elapsed_analysis_seconds": 53.10252503299853,
+  "interpretation_notes": [
+    "writer flush end errno0 is not proof of no read-side error.",
+    "nonzero_metadata_errno includes a compaction EINVAL; ordinary metadata write failure is a separate category.",
+    "slow compaction once=false mixes force=true recursive call frames in the original aggregate; use health_compaction_modes.json for background-only comparison.",
+    "force=true total includes recursive child calls because recursion occurs before the deferred log; the arithmetic residual is not measured stall time."
+  ],
+  "critical_health_events": [],
+  "metadata_write_nonzero_count": 0,
+  "critical_health_events_after_20261003_1429": []
+}

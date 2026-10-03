@@ -1,0 +1,156 @@
+{
+  "log": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-145808.log",
+  "prefix_bytes": 534837717,
+  "sha256": "6daa85eb928399999f2922854a9bfcc12925099f8e399b398c4b876ee5a82f8f",
+  "line_count": 3254271,
+  "first_timestamp": "2026/10/02 14:58:15.025628",
+  "last_timestamp": "2026/10/02 16:42:15.808344",
+  "compaction_output_slices": 768,
+  "normal_metadata_slices": 77831,
+  "startup_staging_keys": 0,
+  "metadata_phases": {
+    "lock_wait": 77831,
+    "doWrite": 77831,
+    "stat": 77831,
+    "done": 77831,
+    "compact": 1
+  },
+  "object_totals": {
+    "GET_success": 6583,
+    "PUT_success": 32399,
+    "DELETE_success": 25310,
+    "PUT_failure": 120,
+    "DELETE_failure": 11
+  },
+  "object_lineage_counts": [
+    {
+      "op": "DELETE",
+      "lineage": "compaction_output",
+      "status": "success",
+      "count": 1598
+    },
+    {
+      "op": "DELETE",
+      "lineage": "normal_metadata_write",
+      "status": "failure",
+      "count": 11
+    },
+    {
+      "op": "DELETE",
+      "lineage": "normal_metadata_write",
+      "status": "success",
+      "count": 17078
+    },
+    {
+      "op": "DELETE",
+      "lineage": "unclassified",
+      "status": "success",
+      "count": 6634
+    },
+    {
+      "op": "GET",
+      "lineage": "compaction_output",
+      "status": "success",
+      "count": 792
+    },
+    {
+      "op": "GET",
+      "lineage": "normal_metadata_write",
+      "status": "success",
+      "count": 60
+    },
+    {
+      "op": "GET",
+      "lineage": "unclassified",
+      "status": "success",
+      "count": 5731
+    },
+    {
+      "op": "PUT",
+      "lineage": "compaction_output",
+      "status": "failure",
+      "count": 13
+    },
+    {
+      "op": "PUT",
+      "lineage": "compaction_output",
+      "status": "success",
+      "count": 10979
+    },
+    {
+      "op": "PUT",
+      "lineage": "normal_metadata_write",
+      "status": "failure",
+      "count": 107
+    },
+    {
+      "op": "PUT",
+      "lineage": "normal_metadata_write",
+      "status": "success",
+      "count": 21420
+    }
+  ],
+  "request_failure_kinds": [
+    {
+      "op": "PUT",
+      "kind": "timeout",
+      "count": 112
+    },
+    {
+      "op": "PUT",
+      "kind": "HTTP500",
+      "count": 8
+    },
+    {
+      "op": "DELETE",
+      "kind": "timeout",
+      "count": 9
+    },
+    {
+      "op": "DELETE",
+      "kind": "HTTP500",
+      "count": 2
+    }
+  ],
+  "unneeded_staging_events": {
+    "drop": 1942,
+    "abandoned": 18
+  },
+  "cleanup_clue_count": 1963,
+  "normal_written_slice_ids_with_later_successful_delete": 17060,
+  "normal_write_later_delete_events": 17078,
+  "delete_costs": {
+    "count": 25321,
+    "sum": 61331.061257673,
+    "mean": 2.422142145163027,
+    "median": 1.501756902,
+    "p95": 9.214568625,
+    "max": 30.001941608
+  },
+  "max_delete_minute": {
+    "minute": "2026/10/02 15:38",
+    "op": "DELETE",
+    "count": 550,
+    "success": 550,
+    "failure": 0,
+    "payload_sum": 0,
+    "cost_sum": 564.3582547460001,
+    "cost_mean": 1.02610591772,
+    "cost_median": 0.995644055,
+    "cost_p95": 3.194235122,
+    "cost_max": 9.517898199
+  },
+  "recent1540": {
+    "DELETE_success": 16599,
+    "PUT_success": 18717,
+    "GET_success": 4163,
+    "PUT_failure": 46,
+    "DELETE_failure": 11
+  },
+  "normal_slice_remote_observations": {
+    "successful_put_slice_ids": 21410,
+    "successful_delete_slice_ids": 17060,
+    "put_and_delete_slice_ids": 14462,
+    "neither_successful_put_nor_delete_slice_ids": 53823
+  }
+}

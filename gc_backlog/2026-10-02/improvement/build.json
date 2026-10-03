@@ -1,0 +1,13 @@
+{
+  "command": [
+    "go",
+    "build",
+    "-ldflags",
+    "-X github.com/juicedata/juicefs/pkg/version.revision=3bed0d82-vm-io-gc-retire-local -X github.com/juicedata/juicefs/pkg/version.revisionDate=2026-10-02",
+    "-o",
+    "/tmp/juicefs-vm-io-gc-retire-20261002",
+    "."
+  ],
+  "exit_code": 0,
+  "wall_seconds": 10.181500630998926
+}

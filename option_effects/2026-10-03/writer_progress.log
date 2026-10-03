@@ -1,0 +1,27 @@
+combined_before_local_retirement 268435556 / 794809736 elapsed 5.6
+combined_before_local_retirement 536870996 / 794809736 elapsed 12.5
+DONE combined_before_local_retirement 4907086 seconds 19.5 pids {'413172': 298924}
+retirement_endurance_before_restart 268435616 / 5976434018 elapsed 8.4
+retirement_endurance_before_restart 536871067 / 5976434018 elapsed 16.1
+retirement_endurance_before_restart 805306498 / 5976434018 elapsed 23.9
+retirement_endurance_before_restart 1073741865 / 5976434018 elapsed 33.6
+retirement_endurance_before_restart 1342177332 / 5976434018 elapsed 45.7
+retirement_endurance_before_restart 1610612891 / 5976434018 elapsed 58.0
+retirement_endurance_before_restart 1879048340 / 5976434018 elapsed 67.8
+retirement_endurance_before_restart 2147483664 / 5976434018 elapsed 79.0
+retirement_endurance_before_restart 2415919247 / 5976434018 elapsed 89.6
+retirement_endurance_before_restart 2684354589 / 5976434018 elapsed 99.1
+retirement_endurance_before_restart 2952790183 / 5976434018 elapsed 110.9
+retirement_endurance_before_restart 3221225596 / 5976434018 elapsed 121.9
+retirement_endurance_before_restart 3489661000 / 5976434018 elapsed 130.5
+retirement_endurance_before_restart 3758096430 / 5976434018 elapsed 138.0
+retirement_endurance_before_restart 4026531885 / 5976434018 elapsed 144.1
+retirement_endurance_before_restart 4294967388 / 5976434018 elapsed 149.7
+retirement_endurance_before_restart 4563402803 / 5976434018 elapsed 155.9
+retirement_endurance_before_restart 4831838336 / 5976434018 elapsed 161.6
+retirement_endurance_before_restart 5100273780 / 5976434018 elapsed 168.3
+retirement_endurance_before_restart 5368709285 / 5976434018 elapsed 175.2
+retirement_endurance_before_restart 5637144684 / 5976434018 elapsed 182.6
+retirement_endurance_before_restart 5905580160 / 5976434018 elapsed 190.1
+DONE retirement_endurance_before_restart 36536314 seconds 191.4 pids {'683253': 2806820}
+DONE after_recent_restart_wait30_idle10 1603566 seconds 10.5 pids {'1156153': 209894}

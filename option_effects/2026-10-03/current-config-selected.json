@@ -1,0 +1,31 @@
+{
+  "Version": "1.4.1+2026-10-02.3bed0d82-vm-io-gc-retire-local",
+  "Pid": 1156153,
+  "SliceFlushWait": 15000000000,
+  "SliceFlushIdle": 10000000000,
+  "WriterReuseWindow": 16,
+  "WriterFlushTimeout": 0,
+  "FuseTimeout": 0,
+  "Meta": {
+    "CompactionGCMode": "deferred",
+    "CompactionScheduler": "priority",
+    "MaxDeletes": 10,
+    "NoBGJob": false
+  },
+  "Format": {
+    "Compression": "zstd",
+    "BlockSize": 4096,
+    "TrashDays": 0
+  },
+  "Chunk": {
+    "BlockSize": 4194304,
+    "MaxUpload": 18,
+    "MaxDownload": 60,
+    "MaxStageWrite": 0,
+    "UploadDelay": 0,
+    "Writeback": true,
+    "WritebackThresholdSize": 4194305,
+    "BufferSize": 1073741824,
+    "Compress": "zstd"
+  }
+}

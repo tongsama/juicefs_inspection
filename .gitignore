@@ -1,0 +1,12 @@
+# original software repository located in separate directory.
+/juicefs
+
+*.swp
+*.swo
+*.swn
+
+
+
+# Generated Python analysis caches.
+__pycache__/
+*.py[cod]

@@ -1,0 +1,447 @@
+{
+  "method": "single prefix streaming pass; PID epochs; request completion timestamps; attempted bytes include errors/retries; unordered key correlations do not establish event order; no workload write-byte counter present",
+  "files": [
+    {
+      "file": {
+        "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-145808.log",
+        "role": "combined_before_local_retirement",
+        "prefix_bytes": 794809736,
+        "size_at_capture": 794809736,
+        "mtime_ns": 1790939648724667875
+      },
+      "lines": 4907086,
+      "epochs": [
+        {
+          "pid": 413139,
+          "start": "2026-10-02T14:58:15",
+          "end": "2026-10-02T14:58:15",
+          "seconds": 1,
+          "normal_finish_ids": 0,
+          "normal_raw_slice_bytes": 0,
+          "normal_slice_lt1KiB": 0,
+          "normal_slice_4KiB": 0,
+          "compaction_output_ids": 0,
+          "startup_stage_keys": 0,
+          "counters": {},
+          "delete_latency_seconds": {
+            "p50": null,
+            "p95": null,
+            "p99": null,
+            "max": null
+          },
+          "put_categories": {},
+          "normal_put_calls_per_finish": null,
+          "correlations": {
+            "put_and_success_delete_keys_unordered": 0,
+            "notneeded_without_any_put_keys": 0,
+            "retired_normal_ids_without_put": 0,
+            "startup_stage_without_put_keys": 0
+          }
+        },
+        {
+          "pid": 413153,
+          "start": "2026-10-02T14:58:15",
+          "end": "2026-10-02T20:14:08",
+          "seconds": 18953,
+          "normal_finish_ids": 0,
+          "normal_raw_slice_bytes": 0,
+          "normal_slice_lt1KiB": 0,
+          "normal_slice_4KiB": 0,
+          "compaction_output_ids": 0,
+          "startup_stage_keys": 0,
+          "counters": {},
+          "delete_latency_seconds": {
+            "p50": null,
+            "p95": null,
+            "p99": null,
+            "max": null
+          },
+          "put_categories": {},
+          "normal_put_calls_per_finish": null,
+          "correlations": {
+            "put_and_success_delete_keys_unordered": 0,
+            "notneeded_without_any_put_keys": 0,
+            "retired_normal_ids_without_put": 0,
+            "startup_stage_without_put_keys": 0
+          }
+        },
+        {
+          "pid": 413172,
+          "start": "2026-10-02T14:58:15",
+          "end": "2026-10-02T20:14:08",
+          "seconds": 18953,
+          "normal_finish_ids": 101766,
+          "normal_raw_slice_bytes": 2755293376,
+          "normal_slice_lt1KiB": 24,
+          "normal_slice_4KiB": 66181,
+          "compaction_output_ids": 1060,
+          "startup_stage_keys": 0,
+          "counters": {
+            "delete_success": 247351,
+            "metadata_started": 101766,
+            "notneeded_drop_lines": 6879,
+            "abandoned_lines": 56,
+            "delete_failed": 12
+          },
+          "delete_latency_seconds": {
+            "p50": 0.001231,
+            "p95": 2.60266,
+            "p99": 6.999374,
+            "max": 30.001941
+          },
+          "put_categories": {
+            "compaction": {
+              "success": 15241,
+              "raw_bytes_attempted": 63519023104,
+              "payload_bytes_attempted": 9257840644,
+              "latency_us_total": 83439589762,
+              "success_raw_bytes": 63456108544,
+              "success_payload_bytes": 9248027251,
+              "unique_put_keys": 15241,
+              "success_payload_lt1KiB": 351,
+              "failed": 15,
+              "payload_range_0..1023": 352,
+              "payload_range_1024..4095": 18,
+              "payload_range_4096..16383": 20,
+              "payload_range_16384..65535": 317,
+              "payload_range_65536..262143": 6583,
+              "payload_range_262144..1048575": 4739,
+              "payload_range_1048576..4194303": 2917,
+              "payload_range_>=4194304": 310,
+              "calls_per_observed_hour": 2897.77871577059,
+              "successful_payload_lt1KiB_percent": 2.3029984909126697,
+              "successful_raw_4KiB_percent": 0.0
+            },
+            "normal": {
+              "success": 73463,
+              "raw_bytes_attempted": 2301096080,
+              "payload_bytes_attempted": 104169762,
+              "latency_us_total": 417954748958,
+              "success_raw_bytes": 2292093056,
+              "success_payload_bytes": 104028512,
+              "success_payload_lt1KiB": 50683,
+              "success_raw_4KiB": 47043,
+              "unique_put_keys": 73463,
+              "failed": 112,
+              "payload_range_0..1023": 50758,
+              "payload_range_1024..4095": 17591,
+              "payload_range_4096..16383": 4962,
+              "payload_range_16384..65535": 187,
+              "payload_range_65536..262143": 56,
+              "payload_range_262144..1048575": 21,
+              "calls_per_observed_hour": 13975.096290824671,
+              "successful_payload_lt1KiB_percent": 68.99119284537795,
+              "successful_raw_4KiB_percent": 64.03631760205818
+            }
+          },
+          "normal_put_calls_per_finish": 0.7229821354872944,
+          "correlations": {
+            "put_and_success_delete_keys_unordered": 85380,
+            "notneeded_without_any_put_keys": 6879,
+            "retired_normal_ids_without_put": 0,
+            "startup_stage_without_put_keys": 0
+          },
+          "compaction_success_put_share_percent": 17.181863275613274,
+          "compaction_success_payload_share_percent": 98.88764016558184
+        }
+      ]
+    },
+    {
+      "file": {
+        "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-201718.log",
+        "role": "retirement_endurance_wait30_idle10",
+        "prefix_bytes": 5976434018,
+        "size_at_capture": 5976434018,
+        "mtime_ns": 1791009199002005128
+      },
+      "lines": 36536314,
+      "epochs": [
+        {
+          "pid": 683219,
+          "start": "2026-10-02T20:17:23",
+          "end": "2026-10-02T20:17:23",
+          "seconds": 1,
+          "normal_finish_ids": 0,
+          "normal_raw_slice_bytes": 0,
+          "normal_slice_lt1KiB": 0,
+          "normal_slice_4KiB": 0,
+          "compaction_output_ids": 0,
+          "startup_stage_keys": 0,
+          "counters": {},
+          "delete_latency_seconds": {
+            "p50": null,
+            "p95": null,
+            "p99": null,
+            "max": null
+          },
+          "put_categories": {},
+          "normal_put_calls_per_finish": null,
+          "correlations": {
+            "put_and_success_delete_keys_unordered": 0,
+            "notneeded_without_any_put_keys": 0,
+            "retired_normal_ids_without_put": 0,
+            "startup_stage_without_put_keys": 0
+          }
+        },
+        {
+          "pid": 683232,
+          "start": "2026-10-02T20:17:23",
+          "end": "2026-10-02T20:17:29",
+          "seconds": 6,
+          "normal_finish_ids": 0,
+          "normal_raw_slice_bytes": 0,
+          "normal_slice_lt1KiB": 0,
+          "normal_slice_4KiB": 0,
+          "compaction_output_ids": 0,
+          "startup_stage_keys": 0,
+          "counters": {},
+          "delete_latency_seconds": {
+            "p50": null,
+            "p95": null,
+            "p99": null,
+            "max": null
+          },
+          "put_categories": {},
+          "normal_put_calls_per_finish": null,
+          "correlations": {
+            "put_and_success_delete_keys_unordered": 0,
+            "notneeded_without_any_put_keys": 0,
+            "retired_normal_ids_without_put": 0,
+            "startup_stage_without_put_keys": 0
+          }
+        },
+        {
+          "pid": 683253,
+          "start": "2026-10-02T20:17:24",
+          "end": "2026-10-03T15:33:19",
+          "seconds": 69355,
+          "normal_finish_ids": 843306,
+          "normal_raw_slice_bytes": 35823013348,
+          "normal_slice_lt1KiB": 44,
+          "normal_slice_4KiB": 346039,
+          "compaction_output_ids": 9882,
+          "startup_stage_keys": 0,
+          "counters": {
+            "metadata_started": 843306,
+            "retirement_success": 880895,
+            "delete_success": 1049531,
+            "retirement_error": 2156,
+            "retirement_busy": 2156,
+            "notneeded_drop_lines": 103386,
+            "abandoned_lines": 2156,
+            "delete_failed": 439
+          },
+          "delete_latency_seconds": {
+            "p50": 0.000938,
+            "p95": 1.873081,
+            "p99": 4.691445,
+            "max": 30.035306
+          },
+          "put_categories": {
+            "compaction": {
+              "success": 150626,
+              "raw_bytes_attempted": 629992100245,
+              "payload_bytes_attempted": 105687405609,
+              "latency_us_total": 713727782027,
+              "success_raw_bytes": 629444010389,
+              "success_payload_bytes": 105593999098,
+              "unique_put_keys": 150626,
+              "success_payload_lt1KiB": 1089,
+              "failed": 131,
+              "payload_range_0..1023": 1089,
+              "payload_range_1024..4095": 93,
+              "payload_range_4096..16383": 117,
+              "payload_range_16384..65535": 1335,
+              "payload_range_65536..262143": 52562,
+              "payload_range_262144..1048575": 61189,
+              "payload_range_1048576..4194303": 31561,
+              "payload_range_>=4194304": 2811,
+              "calls_per_observed_hour": 7825.321894600245,
+              "successful_payload_lt1KiB_percent": 0.7229827519817296,
+              "successful_raw_4KiB_percent": 0.0
+            },
+            "normal": {
+              "success": 81227,
+              "raw_bytes_attempted": 4467372048,
+              "payload_bytes_attempted": 847211518,
+              "latency_us_total": 359636601502,
+              "success_raw_bytes": 4359630864,
+              "success_payload_bytes": 808107639,
+              "success_payload_lt1KiB": 47414,
+              "success_raw_4KiB": 46493,
+              "unique_put_keys": 81308,
+              "failed": 1468,
+              "payload_range_0..1023": 47804,
+              "payload_range_1024..4095": 22300,
+              "payload_range_4096..16383": 10100,
+              "payload_range_16384..65535": 1006,
+              "payload_range_65536..262143": 674,
+              "payload_range_262144..1048575": 630,
+              "payload_range_1048576..4194303": 181,
+              "calls_per_observed_hour": 4292.437459447769,
+              "successful_payload_lt1KiB_percent": 58.37221613502899,
+              "successful_raw_4KiB_percent": 57.23835670405161
+            }
+          },
+          "normal_put_calls_per_finish": 0.09806049049811101,
+          "correlations": {
+            "put_and_success_delete_keys_unordered": 217143,
+            "notneeded_without_any_put_keys": 103347,
+            "retired_normal_ids_without_put": 762146,
+            "startup_stage_without_put_keys": 0
+          },
+          "compaction_success_put_share_percent": 64.9661639055781,
+          "compaction_success_payload_share_percent": 99.2405153772026
+        }
+      ]
+    },
+    {
+      "file": {
+        "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261003-142854.log",
+        "role": "recent_restart_wait15_idle10",
+        "prefix_bytes": 267671574,
+        "size_at_capture": 267671574,
+        "mtime_ns": 1791009199318010553
+      },
+      "lines": 1603566,
+      "epochs": [
+        {
+          "pid": 1155704,
+          "start": "2026-10-03T14:29:02",
+          "end": "2026-10-03T14:29:02",
+          "seconds": 1,
+          "normal_finish_ids": 0,
+          "normal_raw_slice_bytes": 0,
+          "normal_slice_lt1KiB": 0,
+          "normal_slice_4KiB": 0,
+          "compaction_output_ids": 0,
+          "startup_stage_keys": 0,
+          "counters": {},
+          "delete_latency_seconds": {
+            "p50": null,
+            "p95": null,
+            "p99": null,
+            "max": null
+          },
+          "put_categories": {},
+          "normal_put_calls_per_finish": null,
+          "correlations": {
+            "put_and_success_delete_keys_unordered": 0,
+            "notneeded_without_any_put_keys": 0,
+            "retired_normal_ids_without_put": 0,
+            "startup_stage_without_put_keys": 0
+          }
+        },
+        {
+          "pid": 1155723,
+          "start": "2026-10-03T14:29:02",
+          "end": "2026-10-03T14:29:09",
+          "seconds": 7,
+          "normal_finish_ids": 0,
+          "normal_raw_slice_bytes": 0,
+          "normal_slice_lt1KiB": 0,
+          "normal_slice_4KiB": 0,
+          "compaction_output_ids": 0,
+          "startup_stage_keys": 0,
+          "counters": {},
+          "delete_latency_seconds": {
+            "p50": null,
+            "p95": null,
+            "p99": null,
+            "max": null
+          },
+          "put_categories": {},
+          "normal_put_calls_per_finish": null,
+          "correlations": {
+            "put_and_success_delete_keys_unordered": 0,
+            "notneeded_without_any_put_keys": 0,
+            "retired_normal_ids_without_put": 0,
+            "startup_stage_without_put_keys": 0
+          }
+        },
+        {
+          "pid": 1156153,
+          "start": "2026-10-03T14:29:04",
+          "end": "2026-10-03T15:33:19",
+          "seconds": 3855,
+          "normal_finish_ids": 22713,
+          "normal_raw_slice_bytes": 422477824,
+          "normal_slice_lt1KiB": 0,
+          "normal_slice_4KiB": 14265,
+          "compaction_output_ids": 276,
+          "startup_stage_keys": 0,
+          "counters": {
+            "metadata_started": 22713,
+            "retirement_success": 20650,
+            "delete_success": 24636,
+            "retirement_error": 268,
+            "retirement_busy": 268,
+            "notneeded_drop_lines": 12611,
+            "abandoned_lines": 268,
+            "delete_failed": 107
+          },
+          "delete_latency_seconds": {
+            "p50": 0.726631,
+            "p95": 5.224213,
+            "p99": 16.070186,
+            "max": 30.001998
+          },
+          "put_categories": {
+            "normal": {
+              "success": 8516,
+              "raw_bytes_attempted": 278339584,
+              "payload_bytes_attempted": 23746015,
+              "latency_us_total": 44562074444,
+              "success_raw_bytes": 234639360,
+              "success_payload_bytes": 20785247,
+              "success_payload_lt1KiB": 5656,
+              "success_raw_4KiB": 5385,
+              "unique_put_keys": 8516,
+              "failed": 154,
+              "payload_range_0..1023": 5771,
+              "payload_range_1024..4095": 2306,
+              "payload_range_4096..16383": 495,
+              "payload_range_16384..65535": 31,
+              "payload_range_65536..262143": 48,
+              "payload_range_262144..1048575": 19,
+              "calls_per_observed_hour": 8096.498054474709,
+              "successful_payload_lt1KiB_percent": 66.41615782057303,
+              "successful_raw_4KiB_percent": 63.23391263503993
+            },
+            "compaction": {
+              "success": 4286,
+              "raw_bytes_attempted": 17956716544,
+              "payload_bytes_attempted": 2441063845,
+              "latency_us_total": 20439549909,
+              "success_raw_bytes": 17931550720,
+              "success_payload_bytes": 2423642561,
+              "unique_put_keys": 4286,
+              "success_payload_lt1KiB": 56,
+              "failed": 6,
+              "payload_range_0..1023": 56,
+              "payload_range_1024..4095": 7,
+              "payload_range_4096..16383": 4,
+              "payload_range_16384..65535": 43,
+              "payload_range_65536..262143": 1918,
+              "payload_range_262144..1048575": 1631,
+              "payload_range_1048576..4194303": 493,
+              "payload_range_>=4194304": 140,
+              "calls_per_observed_hour": 4008.093385214008,
+              "successful_payload_lt1KiB_percent": 1.306579561362576,
+              "successful_raw_4KiB_percent": 0.0
+            }
+          },
+          "normal_put_calls_per_finish": 0.38171971998415005,
+          "correlations": {
+            "put_and_success_delete_keys_unordered": 10050,
+            "notneeded_without_any_put_keys": 12611,
+            "retired_normal_ids_without_put": 13941,
+            "startup_stage_without_put_keys": 0
+          },
+          "compaction_success_put_share_percent": 33.47914388376816,
+          "compaction_success_payload_share_percent": 99.14968865384468
+        }
+      ]
+    }
+  ]
+}

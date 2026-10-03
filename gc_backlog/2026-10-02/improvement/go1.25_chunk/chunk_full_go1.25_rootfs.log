@@ -1,0 +1,751 @@
+# github.com/mattn/go-sqlite3
+sqlite3-binding.c: In function ‘sqlite3ShadowTableName’:
+sqlite3-binding.c:123934:9: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+123934 |   zTail = strrchr(zName, '_');
+       |         ^
+
+Mockey check failed, please add -gcflags="all=-N -l".
+(Set env MOCKEY_CHECK_GCFLAGS=false to disable gcflags check) 
+		
+=== RUN   TestStoreDefault
+2026/10/02 18:40:15.647948 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:15.648347 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:15.648385 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestStoreDefault (0.11s)
+=== RUN   TestStoreMemCache
+--- PASS: TestStoreMemCache (0.11s)
+=== RUN   TestStoreCompressed
+2026/10/02 18:40:15.864614 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:15.864686 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:15.864710 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestStoreCompressed (0.10s)
+=== RUN   TestStoreLimited
+2026/10/02 18:40:15.967367 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:15.967460 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:15.967482 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestStoreLimited (4.07s)
+=== RUN   TestStoreFull
+2026/10/02 18:40:20.038902 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:20.038952 juicefs[608452] <WARNING>: not enough space (80%) or inodes (95%) for caching in /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/: free ratio should be >= 99% [newCacheStore@disk_cache.go:152]
+2026/10/02 18:40:20.038971 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:20.038978 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 6712 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestStoreFull (0.11s)
+=== RUN   TestStoreSmallBuffer
+2026/10/02 18:40:20.143969 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:20.144020 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:20.144038 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestStoreSmallBuffer (0.10s)
+=== RUN   TestStoreAsync
+2026/10/02 18:40:20.248950 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:20.249018 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:20.249033 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:20.249434 juicefs[608452] <INFO>: Found 1 staging blocks (4 B) in /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/ with 295.921µs [scanStaging@disk_cache.go:1074]
+--- PASS: TestStoreAsync (0.16s)
+=== RUN   TestForceUpload
+2026/10/02 18:40:20.404747 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:20.405021 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:20.405055 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:20.405137 juicefs[608452] <INFO>: delay uploading by 1h0m0s [NewCachedStore@cached_store.go:939]
+--- PASS: TestForceUpload (0.00s)
+=== RUN   TestStoreDelayed
+2026/10/02 18:40:20.406370 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:20.406398 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:20.406405 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:20.406442 juicefs[608452] <WARNING>: delay uploading by 200ms (this value is too small, and is not recommended) [NewCachedStore@cached_store.go:937]
+--- PASS: TestStoreDelayed (2.11s)
+=== RUN   TestStoreMultiBuckets
+2026/10/02 18:40:22.511739 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:22.511788 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:22.511798 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestStoreMultiBuckets (0.10s)
+=== RUN   TestFillCache
+2026/10/02 18:40:22.616981 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:22.617182 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:22.617206 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 66437776 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestFillCache (1.10s)
+=== RUN   TestStoreRetry
+2026/10/02 18:40:23.720010 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:23.720075 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:23.720093 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestStoreRetry (0.00s)
+=== RUN   TestDiskCacheState
+2026/10/02 18:40:23.720459 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:23.720532 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/001/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:23.720555 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:24.721688 juicefs[608452] <INFO>: disk cache /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/001/ state change from normal to unstable [event@disk_cache_state.go:283]
+2026/10/02 18:40:26.723077 juicefs[608452] <INFO>: disk cache /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/001/ state change from unstable to normal [event@disk_cache_state.go:283]
+2026/10/02 18:40:28.722683 juicefs[608452] <INFO>: disk cache /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/001/ state change from unstable to down [event@disk_cache_state.go:283]
+2026/10/02 18:40:28.723853 juicefs[608452] <INFO>: stop checkFreeSpace at /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/001/ [checkFreeSpace@disk_cache.go:371]
+2026/10/02 18:40:28.723907 juicefs[608452] <ERROR>: cache dir `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/001/`(382cb1b1-cf78-4519-959c-e8af965b46a5) is unavailable, removed [removeStore@disk_cache.go:1236]
+2026/10/02 18:40:29.724742 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:29.724828 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:29.724839 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:29.724939 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:29.724957 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:29.724995 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:29.725012 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:29.725041 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:29.725060 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:29.725166 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:29.725186 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:29.725223 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/007/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:29.725248 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:29.725284 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:29.725303 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:29.725342 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:29.725358 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:29.725385 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:29.725402 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:29.725436 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:29.725465 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:30.726051 juicefs[608452] <INFO>: disk cache /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/007/ state change from normal to unstable [event@disk_cache_state.go:283]
+2026/10/02 18:40:32.727686 juicefs[608452] <INFO>: disk cache /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/007/ state change from unstable to normal [event@disk_cache_state.go:283]
+2026/10/02 18:40:34.728581 juicefs[608452] <INFO>: disk cache /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/007/ state change from unstable to down [event@disk_cache_state.go:283]
+2026/10/02 18:40:34.729847 juicefs[608452] <WARNING>: Can't create cache file /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/007/raw/probe/03/0/3_0_3.tmp: cache down [flushPage@disk_cache.go:530]
+--- PASS: TestDiskCacheState (12.01s)
+=== RUN   TestNewCacheStore
+2026/10/02 18:40:35.728734 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:35.728759 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:35.728776 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:35.728780 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:35.728796 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:35.728800 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:35.728806 juicefs[608452] <INFO>: stop checkFreeSpace at /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/007/ [checkFreeSpace@disk_cache.go:371]
+2026/10/02 18:40:35.728813 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:35.728820 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:35.728825 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:35.728834 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:35.728838 juicefs[608452] <ERROR>: cache dir `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/007/`(4eb38433-843a-4f9e-8023-641042538669) is unavailable, removed [removeStore@disk_cache.go:1236]
+2026/10/02 18:40:35.728934 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:35.728961 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestNewCacheStore (0.00s)
+=== RUN   TestMetrics
+2026/10/02 18:40:35.729107 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:35.729260 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:35.729280 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestMetrics (0.10s)
+=== RUN   TestScanCached
+--- PASS: TestScanCached (0.00s)
+=== RUN   TestChecksum
+2026/10/02 18:40:35.831601 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:35.831631 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 66437776 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:36.729828 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:36.729877 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:36.729882 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:36.729890 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:36.729899 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:36.729911 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:36.729905 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:36.729931 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:36.729940 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:36.729948 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:36.729937 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:37.730770 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:37.730818 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:37.730829 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:37.730847 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:37.730845 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:37.730861 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:37.730857 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:37.730867 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:37.730875 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:37.730860 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:37.730899 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:38.731769 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:38.731799 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:38.731803 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:38.731824 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:38.731817 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:38.731835 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:38.731848 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:38.731855 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:38.731864 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:38.731863 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:38.731870 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:39.726067 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:39.726120 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:39.726122 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:39.726144 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:39.726151 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:39.726151 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:39.726148 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:39.726159 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:39.726162 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:39.726201 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:39.726169 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:39.726228 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:39.726170 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:39.726243 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:39.726161 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:39.726251 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:39.726110 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:39.726273 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:39.732698 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:39.732728 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:39.732735 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:39.732745 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:39.732750 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:39.732814 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:39.732823 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:39.732840 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:39.732843 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:39.732854 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:39.732862 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:40.733436 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:40.733486 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:40.733503 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:40.733519 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:40.733537 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:40.733548 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:40.733556 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:40.733567 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:40.733526 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:40.733544 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:40.733523 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+--- PASS: TestChecksum (5.01s)
+=== RUN   TestExpand
+--- PASS: TestExpand (0.00s)
+=== RUN   TestCheckPath
+--- PASS: TestCheckPath (0.00s)
+=== RUN   TestCacheManager
+2026/10/02 18:40:40.838912 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:40.838982 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestCacheManager596245623/001/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:40.839013 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:40.839060 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestCacheManager596245623/002/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:40.839080 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:40.839108 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestCacheManager596245623/003/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:40.839127 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 60397976 items [setLimitByFreeRatio@disk_cache.go:191]
+
+  test getDiskUsage [32m✔[0m
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+2026/10/02 18:40:40.839579 juicefs[608452] <WARNING>: Close cache file /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestCacheManager596245623/003/raw/k1.tmp failed: cache down [flushPage@disk_cache.go:572]
+2026/10/02 18:40:41.733738 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:41.733772 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:41.733782 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:41.733787 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:41.733809 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:41.733802 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:41.733811 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:41.733842 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:41.733831 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:41.733836 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:41.733834 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:41.836510 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:41.839775 juicefs[608452] <ERROR>: cache dir `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestCacheManager596245623/003/`(983d7b5e-081f-4b17-ab22-fe903017e42d) is unavailable, removed [removeStore@disk_cache.go:1236]
+2026/10/02 18:40:41.839754 juicefs[608452] <INFO>: stop checkFreeSpace at /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestCacheManager596245623/003/ [checkFreeSpace@disk_cache.go:371]
+2026/10/02 18:40:42.734070 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:42.734120 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:42.734126 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:42.734139 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:42.734133 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:42.734144 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:42.734146 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:42.734156 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:42.734152 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:42.734166 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:42.734185 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:42.836670 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:43.734607 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:43.734656 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:43.734675 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:43.734681 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:43.734689 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:43.734696 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:43.734723 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:43.734714 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:43.734718 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:43.734720 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:43.734712 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:43.837434 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:44.735508 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:44.735552 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:44.735577 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:44.735543 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:44.735610 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:44.735572 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:44.735580 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:44.735597 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:44.735568 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:44.735550 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:44.735577 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:44.838328 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:44.841621 juicefs[608452] <INFO>: stop checkFreeSpace at /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestCacheManager596245623/001/ [checkFreeSpace@disk_cache.go:371]
+2026/10/02 18:40:44.841679 juicefs[608452] <INFO>: stop checkFreeSpace at /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestCacheManager596245623/002/ [checkFreeSpace@disk_cache.go:371]
+2026/10/02 18:40:44.841684 juicefs[608452] <ERROR>: cache dir `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestCacheManager596245623/001/`(7cb20695-9bad-411e-947b-76405ad0e180) is unavailable, removed [removeStore@disk_cache.go:1236]
+2026/10/02 18:40:44.841709 juicefs[608452] <ERROR>: cache dir `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestCacheManager596245623/002/`(b8e3700b-4d4f-4c07-9b6d-8304bbe1f164) is unavailable, removed [removeStore@disk_cache.go:1236]
+2026/10/02 18:40:45.729559 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:45.729610 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:45.729608 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:45.729635 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:45.736053 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:45.736093 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:45.736073 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:45.736121 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:45.736131 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:45.736135 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:45.736089 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:45.736108 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:45.736080 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:45.736120 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:45.736146 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:45.832892 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:45.832970 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:45.839244 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:46.736851 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:46.737017 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:46.737048 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:46.737064 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:46.737083 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:46.737092 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:46.737086 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:46.737086 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:46.737095 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:46.737097 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:46.737127 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:46.839743 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+--- PASS: TestCacheManager (6.00s)
+=== RUN   TestAtimeNotLost
+2026/10/02 18:40:46.841154 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:46.841189 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 65095600 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:47.737569 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:47.737597 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:47.737625 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:47.737607 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:47.737658 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:47.737669 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:47.737662 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:47.737689 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:47.737678 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:47.737680 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:47.737722 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:47.840334 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:48.738167 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:48.738192 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:48.738206 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:48.738232 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:48.738199 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:48.738248 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:48.738252 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:48.738209 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:48.738237 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:48.738239 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:48.738244 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:48.840932 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:49.726760 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:49.726810 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:49.726812 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:49.726837 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:49.726857 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:49.726799 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:49.726870 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:49.726840 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:49.726796 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:49.726888 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:49.726786 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:49.726903 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:49.726793 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:49.726959 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:49.726826 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:49.726973 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:49.726828 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:49.726986 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:49.738562 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:49.738589 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:49.738609 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:49.738593 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:49.738640 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:49.738598 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:49.738647 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:49.738628 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:49.738641 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:49.738644 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:49.738635 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:49.841441 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:49.841548 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:49.841586 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 65095600 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:50.739637 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:50.739660 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:50.739675 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:50.739694 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:50.739714 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:50.739715 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:50.739721 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:50.739677 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:50.739728 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:50.739712 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:50.739691 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:50.842630 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:51.740493 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:51.740523 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:51.740542 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:51.740538 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:51.740555 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:51.740550 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:51.740561 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:51.740552 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:51.740571 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:51.740572 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:51.740578 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:51.843752 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:52.741460 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:52.741485 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:52.741502 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:52.741506 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:52.741488 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:52.741525 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:52.741522 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:52.741532 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:52.741534 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:52.741523 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:52.741556 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:52.842154 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:52.842195 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 0 to 65095600 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:40:52.844292 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:53.742003 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:53.742027 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:53.742046 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:53.742051 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:53.742062 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:53.742051 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:53.742064 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:53.742086 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:53.742094 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:53.742095 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:53.742092 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:53.845338 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:54.742601 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:54.742647 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:54.742741 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:54.742772 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:54.742756 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:54.742781 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:54.742770 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:54.742787 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:54.742789 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:54.742792 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:54.742822 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:54.845727 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:55.730299 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:55.730347 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:55.730319 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:55.730369 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:55.742848 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:55.742897 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:55.742888 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:55.742909 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:55.742920 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:55.742930 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:55.742934 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:55.742941 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:55.742957 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:55.742960 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:55.742966 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:55.833355 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:55.833405 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [inRootVolume@utils_unix.go:54]
+--- PASS: TestAtimeNotLost (9.00s)
+=== RUN   TestSetlimitByFreeRatio
+2026/10/02 18:40:55.842763 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:55.842948 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934055842756579): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:55.843023 juicefs[608452] <INFO>: Adjusted cache capacity based on freeratio: from 1073741824 to 858993472 bytes [setLimitByFreeRatio@disk_cache.go:177]
+2026/10/02 18:40:55.843040 juicefs[608452] <INFO>: Adjusted max items based on freeratio: from 1000 to 800 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestSetlimitByFreeRatio (0.00s)
+=== RUN   TestSetLimitByFreeRatioUnknownInodesKeepExplicitMaxItems
+2026/10/02 18:40:55.843147 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:55.843287 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934055843144665): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:55.843342 juicefs[608452] <INFO>: Adjusted cache capacity based on freeratio: from 1073741824 to 858993472 bytes [setLimitByFreeRatio@disk_cache.go:177]
+--- PASS: TestSetLimitByFreeRatioUnknownInodesKeepExplicitMaxItems (0.00s)
+=== RUN   TestUnknownInodeStatsShouldNotMarkCacheAsRawFull
+
+  unknown inode stats should not trigger rawFull 2026/10/02 18:40:55.843741 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:55.843797 juicefs[608452] <WARNING>: not enough space (100%) or inodes (0%) for caching in /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestUnknownInodeStatsShouldNotMarkCacheAsRawFull1410785321/001: free ratio should be >= 10% [newCacheStore@disk_cache.go:152]
+2026/10/02 18:40:55.843808 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestUnknownInodeStatsShouldNotMarkCacheAsRawFull1410785321/001): used ratio - [space 0%, inode 100%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:40:55.843816 juicefs[608452] <INFO>: Adjusted cache capacity based on freeratio: from 1073741824 to 966367616 bytes [setLimitByFreeRatio@disk_cache.go:177]
+
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+--- PASS: TestUnknownInodeStatsShouldNotMarkCacheAsRawFull (1.50s)
+=== RUN   Test2RandomEviction
+
+  Test2RandomEviction-CacheFull 2026/10/02 18:40:57.344435 juicefs[608452] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:40:57.344647 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/Test2RandomEviction3257889313/001/diskCache): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+--- PASS: Test2RandomEviction (0.00s)
+=== RUN   TestLruEviction
+
+  TestLruEviction-CacheFull 2026/10/02 18:40:57.345335 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestLruEviction2667364324/001/diskCache): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+
+  TestLruEviction-WriteBack 2026/10/02 18:40:57.345798 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestLruEviction2667364324/002/diskCache): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+--- PASS: TestLruEviction (0.00s)
+=== RUN   TestCooldownAtimeOnWriteFixedOnLoad
+2026/10/02 18:40:57.347126 juicefs[608452] <INFO>: Disk cache (/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestCooldownAtimeOnWriteFixedOnLoad3841720304/001): used ratio - [space 19.2%, inode 4.4%] [newCacheStore@disk_cache.go:154]
+
+  mock time.Now to avoid drift 
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+--- PASS: TestCooldownAtimeOnWriteFixedOnLoad (0.00s)
+=== RUN   TestUploadStagingToFreeCalculation
+
+  uploadStaging should only upload enough blocks to satisfy freeRatio 
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+--- PASS: TestUploadStagingToFreeCalculation (0.00s)
+=== RUN   TestUploadStagingInodeToFree
+
+  uploadStaging respects inode pressure 
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+--- PASS: TestUploadStagingInodeToFree (0.00s)
+=== RUN   TestSpaceToFreeNoAction
+
+  uploadStaging does nothing when disk has enough space 
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+--- PASS: TestSpaceToFreeNoAction (0.00s)
+=== RUN   TestOpenCacheFileReads
+=== RUN   TestOpenCacheFileReads/data_only
+=== RUN   TestOpenCacheFileReads/checksum_only
+=== RUN   TestOpenCacheFileReads/checksum_and_tier
+=== RUN   TestOpenCacheFileReads/tier_only
+=== RUN   TestOpenCacheFileReads/tier_without_checksum_no_collision
+--- PASS: TestOpenCacheFileReads (0.00s)
+    --- PASS: TestOpenCacheFileReads/data_only (0.00s)
+    --- PASS: TestOpenCacheFileReads/checksum_only (0.00s)
+    --- PASS: TestOpenCacheFileReads/checksum_and_tier (0.00s)
+    --- PASS: TestOpenCacheFileReads/tier_only (0.00s)
+    --- PASS: TestOpenCacheFileReads/tier_without_checksum_no_collision (0.00s)
+=== RUN   TestEncodeStageFooterLengthParity
+--- PASS: TestEncodeStageFooterLengthParity (0.00s)
+=== RUN   TestOpenCacheFileRejectsInvalidSize
+=== RUN   TestOpenCacheFileRejectsInvalidSize/extra_smaller_than_checksum
+=== RUN   TestOpenCacheFileRejectsInvalidSize/truncated_data
+--- PASS: TestOpenCacheFileRejectsInvalidSize (0.00s)
+    --- PASS: TestOpenCacheFileRejectsInvalidSize/extra_smaller_than_checksum (0.00s)
+    --- PASS: TestOpenCacheFileRejectsInvalidSize/truncated_data (0.00s)
+=== RUN   TestOpenCacheFileParsesStageFooter
+=== RUN   TestOpenCacheFileParsesStageFooter/truncated_header
+=== RUN   TestOpenCacheFileParsesStageFooter/bad_magic
+=== RUN   TestOpenCacheFileParsesStageFooter/trailing_data
+=== RUN   TestOpenCacheFileParsesStageFooter/invalid_tier_clamped_to_zero
+--- PASS: TestOpenCacheFileParsesStageFooter (0.00s)
+    --- PASS: TestOpenCacheFileParsesStageFooter/truncated_header (0.00s)
+    --- PASS: TestOpenCacheFileParsesStageFooter/bad_magic (0.00s)
+    --- PASS: TestOpenCacheFileParsesStageFooter/trailing_data (0.00s)
+    --- PASS: TestOpenCacheFileParsesStageFooter/invalid_tier_clamped_to_zero (0.00s)
+=== RUN   TestStageFooterRoundTrip
+=== RUN   TestStageFooterRoundTrip/tier0_cstrue
+=== RUN   TestStageFooterRoundTrip/tier0_csfalse
+=== RUN   TestStageFooterRoundTrip/tier1_cstrue
+=== RUN   TestStageFooterRoundTrip/tier1_csfalse
+=== RUN   TestStageFooterRoundTrip/tier2_cstrue
+=== RUN   TestStageFooterRoundTrip/tier2_csfalse
+=== RUN   TestStageFooterRoundTrip/tier3_cstrue
+=== RUN   TestStageFooterRoundTrip/tier3_csfalse
+--- PASS: TestStageFooterRoundTrip (0.00s)
+    --- PASS: TestStageFooterRoundTrip/tier0_cstrue (0.00s)
+    --- PASS: TestStageFooterRoundTrip/tier0_csfalse (0.00s)
+    --- PASS: TestStageFooterRoundTrip/tier1_cstrue (0.00s)
+    --- PASS: TestStageFooterRoundTrip/tier1_csfalse (0.00s)
+    --- PASS: TestStageFooterRoundTrip/tier2_cstrue (0.00s)
+    --- PASS: TestStageFooterRoundTrip/tier2_csfalse (0.00s)
+    --- PASS: TestStageFooterRoundTrip/tier3_cstrue (0.00s)
+    --- PASS: TestStageFooterRoundTrip/tier3_csfalse (0.00s)
+=== RUN   TestPage
+--- PASS: TestPage (0.00s)
+=== RUN   TestPageReader
+--- PASS: TestPageReader (0.00s)
+=== RUN   TestPrefetcher
+=== RUN   TestPrefetcher/should_fetch_given_keys
+=== RUN   TestPrefetcher/should_ignore_duplicate_keys
+=== RUN   TestPrefetcher/should_drop_keys_when_pending_queue_is_full
+--- PASS: TestPrefetcher (0.05s)
+    --- PASS: TestPrefetcher/should_fetch_given_keys (0.00s)
+    --- PASS: TestPrefetcher/should_ignore_duplicate_keys (0.00s)
+    --- PASS: TestPrefetcher/should_drop_keys_when_pending_queue_is_full (0.05s)
+=== RUN   TestRetireIndependentOfRemoteDelete
+--- PASS: TestRetireIndependentOfRemoteDelete (0.00s)
+=== RUN   TestRetireUploadInFlight
+=== RUN   TestRetireUploadInFlight/queued
+2026/10/02 18:40:57.410245 juicefs[608452] <INFO>: Key chunks/0/0/7_0_8 is not needed, abandoned, err: injected DELETE failure [finishStagingUpload@cached_store.go:1185]
+=== RUN   TestRetireUploadInFlight/immediate
+2026/10/02 18:40:57.411623 juicefs[608452] <INFO>: Key chunks/0/0/7_0_8 is not needed, abandoned, err: injected DELETE failure [finishStagingUpload@cached_store.go:1185]
+--- PASS: TestRetireUploadInFlight (0.00s)
+    --- PASS: TestRetireUploadInFlight/queued (0.00s)
+    --- PASS: TestRetireUploadInFlight/immediate (0.00s)
+=== RUN   TestRetireStageRemovalError
+--- PASS: TestRetireStageRemovalError (0.00s)
+=== RUN   TestRetireIdempotentMemory
+--- PASS: TestRetireIdempotentMemory (0.00s)
+=== RUN   TestRetireQueuedUploadCanceled
+--- PASS: TestRetireQueuedUploadCanceled (0.00s)
+=== RUN   TestRetireLateStageCallback
+2026/10/02 18:40:57.436938 juicefs[608452] <WARNING>: write chunks/0/0/23_0_10 to disk: timeout after 20ms: function timeout, upload it directly [upload@cached_store.go:456]
+--- PASS: TestRetireLateStageCallback (0.02s)
+=== RUN   TestRetireScannerDuringUnlink
+2026/10/02 18:40:57.440831 juicefs[608452] <INFO>: Key chunks/0/0/31_0_7 is not needed, abandoned, err: <nil> [finishStagingUpload@cached_store.go:1185]
+--- PASS: TestRetireScannerDuringUnlink (0.00s)
+=== RUN   TestRetireFailedImmediateUploadDoesNotRequeue
+2026/10/02 18:40:57.745065 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:57.745113 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:57.745124 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:57.745127 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:57.745136 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:57.745155 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:57.745143 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:57.745162 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:57.745169 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:57.745169 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:57.745183 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:57.843943 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934055842756579: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:57.845214 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestUnknownInodeStatsShouldNotMarkCacheAsRawFull1410785321/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:57.845205 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934055843144665: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:57.847717 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.345693 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestLruEviction2667364324/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.345753 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/Test2RandomEviction3257889313/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.346946 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestLruEviction2667364324/002/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.348146 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestCooldownAtimeOnWriteFixedOnLoad3841720304/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.746213 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.746268 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.746278 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.746283 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.746304 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.746297 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.746324 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.746327 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.746335 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.746343 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.746352 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.844336 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934055842756579: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.845704 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934055843144665: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.845718 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestUnknownInodeStatsShouldNotMarkCacheAsRawFull1410785321/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:58.847811 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.346456 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestLruEviction2667364324/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.346512 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/Test2RandomEviction3257889313/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.347619 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestLruEviction2667364324/002/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.348782 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestCooldownAtimeOnWriteFixedOnLoad3841720304/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.727799 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:59.727844 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:59.727842 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:59.727856 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:59.727870 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:59.727858 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:59.727872 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:59.727890 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:59.727832 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:59.727913 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:59.727829 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:59.727923 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:59.727864 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:59.727934 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:59.727825 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:59.727954 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:59.727834 juicefs[608452] <INFO>: lockfile /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:40:59.727968 juicefs[608452] <WARNING>: stat `/home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/`: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:40:59.746627 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.746686 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.746697 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.746697 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.746709 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.746728 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.746717 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.746740 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.746750 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.746756 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.746764 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.844491 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934055842756579: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.845856 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestUnknownInodeStatsShouldNotMarkCacheAsRawFull1410785321/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.845869 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934055843144665: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:40:59.847917 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.347154 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestLruEviction2667364324/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.347225 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/Test2RandomEviction3257889313/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.348429 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestLruEviction2667364324/002/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.349694 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestCooldownAtimeOnWriteFixedOnLoad3841720304/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.747524 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.747584 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.747590 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.747607 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.747605 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.747633 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.747621 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.747648 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.747652 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.747661 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.747658 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.844946 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934055842756579: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.846147 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestUnknownInodeStatsShouldNotMarkCacheAsRawFull1410785321/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.846149 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934055843144665: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:00.848507 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.347988 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/Test2RandomEviction3257889313/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.348091 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestLruEviction2667364324/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.349220 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestLruEviction2667364324/002/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.350354 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestCooldownAtimeOnWriteFixedOnLoad3841720304/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.748458 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.748520 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.748548 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.748558 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.748554 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.748586 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.748577 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.748630 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.748643 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.748669 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.748679 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.846357 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934055842756579: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.846501 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934055843144665: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.846511 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestUnknownInodeStatsShouldNotMarkCacheAsRawFull1410785321/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:01.848838 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.348247 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/Test2RandomEviction3257889313/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.348306 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestLruEviction2667364324/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.349497 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestLruEviction2667364324/002/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.350715 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestCooldownAtimeOnWriteFixedOnLoad3841720304/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+--- PASS: TestRetireFailedImmediateUploadDoesNotRequeue (5.01s)
+=== RUN   TestRetireStagingStatErrorRetainsIntent
+2026/10/02 18:41:02.454448 juicefs[608452] <WARNING>: staging admission could not stat chunks/0/0/53_0_5: stat /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestRetireStagingStatErrorRetainsIntent2788688985/002/regular/child: not a directory; pending intent retained [addDelayedStaging@cached_store.go:1214]
+--- PASS: TestRetireStagingStatErrorRetainsIntent (0.00s)
+=== RUN   TestSingleFlight
+2026/10/02 18:41:02.749474 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.749954 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.750096 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/008/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.750126 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035728726250: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.750159 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.750211 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.750240 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035729074497/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.750255 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.750267 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.750336 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.750350 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestDiskCacheState1114946559/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.846644 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934055842756579: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.846731 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/TestUnknownInodeStatsShouldNotMarkCacheAsRawFull1410785321/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.846767 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934055843144665: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:41:02.849916 juicefs[608452] <WARNING>: statfs /home/kwatanabe/.jfs-chunk-test-bs7J3D/diskCache-608452/1790934035831460301: no such file or directory [getDiskUsage@utils_unix.go:39]
+--- PASS: TestSingleFlight (0.85s)
+=== RUN   TestInRootVolume
+--- PASS: TestInRootVolume (0.00s)
+PASS
+ok  	github.com/juicedata/juicefs/pkg/chunk	47.695s

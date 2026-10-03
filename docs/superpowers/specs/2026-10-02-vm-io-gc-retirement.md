@@ -1,0 +1,24 @@
+# VM I/O: staging回収とリモート削除の分離
+
+> この文書は調査プロジェクト側へ移設した記録です。`pkg/`・`cmd/` などのソースパスと Go コマンドは、別管理の `juicefs/` リポジトリを基準にします。記載の作業状況は当時の履歴で、最新の知見は調査ルートの README と `docs/findings.md` を参照してください。
+
+ユーザーは既存調査で提案した改善を「改善して」と承認した。既存fix/vm-io-wait-policyのFUSE待機・writer待機・Readerror修正は保持し、本番変更を行わずローカル補正と検証済みbinaryを作る。
+
+## 問題と範囲
+
+既存deferredのdispatcherはremote DELETE queueへ送るだけで、stage取消はremote workerに到達してから行う。遅いremote DELETEが後続local retirementを遅らせる。source上の依存を補正する。実機53,823stageがすべてdeadという意味ではなく、未metadata照合の限界を保持する。legacydefault、priority/window/FUSE/writer設定は変えない。legacyのqueue待ち方針は保持するが、共通chunk層の進行中upload guardとlocalunlinkerror伝播はlegacyにも適用する。
+
+## 処理
+
+- 新meta message RetireSlice(id uint64,size uint32)は、metadata減算commitでdead確定したsliceのlocal-only callback。cmdはoptional Retire(id uint64,size int) errorをtypeassertし、cachedStoreへ渡す。未対応customstoreはno-opを登録し従来Removeを維持する。ChunkStoreinterfaceを一括変更しない。
+- 有界dispatcherはlocal retireを先に行い、成功後に既存dslicesへ非待機送信する。満杯ならremote削除通知だけ延期し、markerを残して後続hintのlocal retireを進める。localerrorならremoteへ渡さない。
+- local retireは全blockのpending取消とstage/cache除去。localfilesystem errorを返し、remote成功扱いで回復根拠を消さない。Removeも共通処理を使う。
+- WBのstage成功後はmetadata側への成功通知より先にpending登録する。Retireと進行中upload開始は同mutexで協調する。進行中uploadがあればlocal取消後retryable errorとしてremote DELETE/marker消去を延期する。queued未開始uploadはpending取消でPUTを始めない。
+- 同cachedStore内ではPUT完了後のabandoned cleanupを維持し、失敗してもdead markerによる次回回収が可能であることを検証する。他clientとの進行中PUT競合はprocesslocal状態では解決せず、既存の分散upload lease不在の制約として残す。即時WB PUT経路もpending取消と完了を同様に管理する。
+- markerは物理Remove完了まで保持。sharedrefはRetire対象にしない。既存Redis copy/clone snapshotguards保持。
+- queue容量/worker上限は維持する。hint overflow時のlocal回収は依然既存周期回復まで遅れる制約を記載し、overflow/localerror/remotedeferredを観測可能にする。全file/chunk走査や毎write追加DB参照は導入しない。
+- shutdownはlocaldispatcherをjoinしてからremotechannel closeする。新unboundedgoroutineは追加しない。
+
+## 成功条件
+
+remotequeueが満杯・remote DELETEが停止していても、受理済み後続hintのstagingが取り除かれる。live/sharedslice、readback/fsync/writererrorは保持。進行中PUT後のremoteDeletefailureでmarkerが失われない。MemKV/SQLite/isolatedRedisで安全性を検証し、PostgreSQL実試験はユーザー指示どおり行わない。

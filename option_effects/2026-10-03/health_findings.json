@@ -1,0 +1,292 @@
+{
+  "captured_at": "2026-10-03T15:33:19.628289+09:00",
+  "user_setting_report": {
+    "before_recent_restart": "wait30s idle10s (user corrected chronology)",
+    "after_recent_restart": "wait15s idle10s",
+    "writer_timeout": "0s",
+    "reuse_window": 16,
+    "correction": "Earlier user statement was reversed; the endurance test was at 30s/10s."
+  },
+  "configuration_interpretation": [
+    "User correction: both 145808 and 201718 used wait30s/idle10s/window16. Current 142854 uses wait15s/idle10s/window16.",
+    "201718 old mount remains active alongside 142854 after 14:29; the overlap is not an independent single-process experiment.",
+    "Health/log-byte totals for 201718 are whole fixed-prefix values; critical events after 14:29 are separately available.",
+    "No original diagnostic logs were removed, truncated, compressed, or changed.",
+    "Latest GET NoSuchKey denotes one failed request reported twice; payload agent confirms same key GET success at14:36:23.204."
+  ],
+  "rows": [
+    {
+      "run": "vm-io-20261002-145808",
+      "role": "combined_before_local_retirement",
+      "prefix_bytes": 794809736,
+      "lines": 4907086,
+      "first": "2026/10/02 14:58:15.025628",
+      "last": "2026/10/02 20:14:08.732209",
+      "sha256": "ebe46a6587ddbf3b21fee843e2c77c27e9f7a404a352fc27edb126d8ea57fc94",
+      "debug_byte_share": 0.9974423136658709,
+      "checksum_lines": 2878464,
+      "checksum_bytes": 477513355,
+      "checksum_byte_share": 0.6007895139825011,
+      "checksum_mismatches": 0,
+      "writer_end_count": 47696,
+      "writer_nonzero": 0,
+      "metadata_write_nonzero": 0,
+      "read_EIO_log": 0,
+      "raw2500_sync_triggers": 1,
+      "background_compact_count": 1058,
+      "background_metadata_p95_s": 0.130902324,
+      "background_object_p95_s": 47.368305638,
+      "fsync_slow_ok_count": 3,
+      "fsync_slow_ok_max_s": 14.210638
+    },
+    {
+      "run": "vm-io-20261002-201718",
+      "role": "retirement_endurance_wait30_idle10",
+      "prefix_bytes": 5976434018,
+      "lines": 36536314,
+      "first": "2026/10/02 20:17:23.831590",
+      "last": "2026/10/03 15:33:19.004972",
+      "sha256": "8f94525eec441995f331ddfc5e1db0459e968fb4ca96aba7f19ec9f1f5591a0c",
+      "debug_byte_share": 0.9990936909896961,
+      "checksum_lines": 22786514,
+      "checksum_bytes": 3786908356,
+      "checksum_byte_share": 0.6336401179356248,
+      "checksum_mismatches": 0,
+      "writer_end_count": 560104,
+      "writer_nonzero": 0,
+      "metadata_write_nonzero": 0,
+      "read_EIO_log": 1,
+      "raw2500_sync_triggers": 0,
+      "background_compact_count": 6234,
+      "background_metadata_p95_s": 0.168663522,
+      "background_object_p95_s": 42.00392222,
+      "fsync_slow_ok_count": 6,
+      "fsync_slow_ok_max_s": 14.756377
+    },
+    {
+      "run": "vm-io-20261003-142854",
+      "role": "recent_restart_wait15_idle10",
+      "prefix_bytes": 267671574,
+      "lines": 1603566,
+      "first": "2026/10/03 14:29:02.632003",
+      "last": "2026/10/03 15:33:19.320911",
+      "sha256": "ca11d874de1b1c2fcc91aa1c05ac890a67b7eb32f4df72d4f17210cc64237692",
+      "debug_byte_share": 0.9978970609706954,
+      "checksum_lines": 1151000,
+      "checksum_bytes": 192620471,
+      "checksum_byte_share": 0.7196149674077831,
+      "checksum_mismatches": 0,
+      "writer_end_count": 82234,
+      "writer_nonzero": 0,
+      "metadata_write_nonzero": 0,
+      "read_EIO_log": 0,
+      "raw2500_sync_triggers": 0,
+      "background_compact_count": 274,
+      "background_metadata_p95_s": 0.12014834399999999,
+      "background_object_p95_s": 37.807635345,
+      "fsync_slow_ok_count": 1,
+      "fsync_slow_ok_max_s": 14.191857
+    }
+  ],
+  "details": [
+    {
+      "run": "vm-io-20261002-145808",
+      "health_counts": {
+        "prefetch_context_canceled": 1038,
+        "slow_operation_OK": 41,
+        "sync_compact_trigger_2500": 1
+      },
+      "critical_events": [],
+      "versions": [
+        "2026/10/02 14:58:17.298667 juicefs[413172] <INFO>: JuiceFS version 1.4.1+2026-10-02.3bed0d82-vm-io-combined-local [mount@mount.go:695]"
+      ],
+      "top5categories": [
+        {
+          "source": "ReadAt@disk_cache.go",
+          "lines": 2878464,
+          "bytes": 477513355,
+          "byte_share": 0.6007895139825011
+        },
+        {
+          "source": "txn@redis.go",
+          "lines": 807316,
+          "bytes": 102832775,
+          "byte_share": 0.12938036657366764
+        },
+        {
+          "source": "logRequest@cached_store.go",
+          "lines": 342994,
+          "bytes": 63863617,
+          "byte_share": 0.08035082373475103
+        },
+        {
+          "source": "Write@base.go",
+          "lines": 407087,
+          "bytes": 61857353,
+          "byte_share": 0.07782661711129316
+        },
+        {
+          "source": "logFreeze@writer_trace.go",
+          "lines": 101766,
+          "bytes": 28475126,
+          "byte_share": 0.03582634272109621
+        }
+      ]
+    },
+    {
+      "run": "vm-io-20261002-201718",
+      "health_counts": {
+        "prefetch_context_canceled": 1636,
+        "slow_operation_OK": 31,
+        "ERROR": 2,
+        "EIO_text": 1,
+        "nonzero_metadata_errno": 1,
+        "readSlice_other_failure": 3,
+        "EINTR_return": 1
+      },
+      "critical_events": [
+        {
+          "line_number": 1195911,
+          "timestamp": "2026/10/02 20:42:48.624261",
+          "categories": [
+            "ERROR",
+            "EIO_text"
+          ],
+          "line": "2026/10/02 20:42:48.624261 juicefs[683253] <ERROR>: read file 596155: input/output error [done@reader.go:125]"
+        },
+        {
+          "line_number": 3085229,
+          "timestamp": "2026/10/02 21:11:24.002660",
+          "categories": [
+            "nonzero_metadata_errno"
+          ],
+          "line": "2026/10/02 21:11:24.002660 juicefs[683253] <DEBUG>: compaction inode=596155 chunk=0 slice=4334105 phase=done errno=invalid argument [compactChunk@base.go:2958]"
+        },
+        {
+          "line_number": 21867813,
+          "timestamp": "2026/10/03 02:33:13.667875",
+          "categories": [
+            "ERROR",
+            "EINTR_return"
+          ],
+          "line": "2026/10/03 02:33:13.667875 juicefs[683253] <ERROR>: walk error [inode 1]: interrupted system call [Compact@base.go:3022]"
+        }
+      ],
+      "versions": [
+        "2026/10/02 20:17:25.646089 juicefs[683253] <INFO>: JuiceFS version 1.4.1+2026-10-02.3bed0d82-vm-io-gc-retire-local [mount@mount.go:705]"
+      ],
+      "top5categories": [
+        {
+          "source": "ReadAt@disk_cache.go",
+          "lines": 22786514,
+          "bytes": 3786908356,
+          "byte_share": 0.6336401179356248
+        },
+        {
+          "source": "Write@base.go",
+          "lines": 3373284,
+          "bytes": 513895176,
+          "byte_share": 0.08598692371608811
+        },
+        {
+          "source": "txn@redis.go",
+          "lines": 4002177,
+          "bytes": 509649969,
+          "byte_share": 0.08527659930069022
+        },
+        {
+          "source": "logRequest@cached_store.go",
+          "lines": 1325832,
+          "bytes": 245828709,
+          "byte_share": 0.04113300812149952
+        },
+        {
+          "source": "logFreeze@writer_trace.go",
+          "lines": 843306,
+          "bytes": 238257488,
+          "byte_share": 0.03986616221017568
+        }
+      ]
+    },
+    {
+      "run": "vm-io-20261003-142854",
+      "health_counts": {
+        "prefetch_context_canceled": 397,
+        "slow_operation_OK": 8,
+        "NoSuchKey": 2,
+        "readSlice_other_failure": 1
+      },
+      "critical_events": [
+        {
+          "line_number": 634027,
+          "timestamp": "2026/10/03 14:36:19.571627",
+          "categories": [
+            "NoSuchKey"
+          ],
+          "line": "2026/10/03 14:36:19.571627 juicefs[1156153] <WARNING>: slow request: GET chunks/4/4913/4913906_3_4194304 (req_id: \"34D024F9D4BED23F\", err: operation error S3: GetObject, https response error StatusCode: 404, RequestID: 34D024F9D4BED23F, HostID: MzREMDI0RjlENEJFRDIzRjM0RDAyNEY5RDRCRUQyM0YzNEQwMjRGOUQ0QkVEMjNGMzREMDI0RjlENEJFRDIzRg==, NoSuchKey: , cost: 29.157302862s) [logRequest@cached_store.go:718]"
+        },
+        {
+          "line_number": 634028,
+          "timestamp": "2026/10/03 14:36:19.571703",
+          "categories": [
+            "NoSuchKey"
+          ],
+          "line": "2026/10/03 14:36:19.571703 juicefs[1156153] <WARNING>: fail to read sliceId 4913906 (off:13070336, size:12288, clen: 67108864, inode: 596156): get chunks/4/4913/4913906_3_4194304: operation error S3: GetObject, https response error StatusCode: 404, RequestID: 34D024F9D4BED23F, HostID: MzREMDI0RjlENEJFRDIzRjM0RDAyNEY5RDRCRUQyM0YzNEQwMjRGOUQ0QkVEMjNGMzREMDI0RjlENEJFRDIzRg==, NoSuchKey:  [readSlice@reader.go:830]"
+        }
+      ],
+      "versions": [
+        "2026/10/03 14:29:04.538198 juicefs[1156153] <INFO>: JuiceFS version 1.4.1+2026-10-02.3bed0d82-vm-io-gc-retire-local [mount@mount.go:705]"
+      ],
+      "top5categories": [
+        {
+          "source": "ReadAt@disk_cache.go",
+          "lines": 1151000,
+          "bytes": 192620471,
+          "byte_share": 0.7196149674077831
+        },
+        {
+          "source": "end@writer_trace.go",
+          "lines": 82234,
+          "bytes": 14007360,
+          "byte_share": 0.05233039799736075
+        },
+        {
+          "source": "Write@base.go",
+          "lines": 90852,
+          "bytes": 13889475,
+          "byte_share": 0.05188998888615644
+        },
+        {
+          "source": "beginWriterFlush@writer_trace.go",
+          "lines": 82234,
+          "bytes": 13072362,
+          "byte_share": 0.04883731882564415
+        },
+        {
+          "source": "logRequest@cached_store.go",
+          "lines": 38482,
+          "bytes": 7311675,
+          "byte_share": 0.0273158441545982
+        }
+      ]
+    }
+  ],
+  "forced_compaction_timing_interpretation": {
+    "source_file": "/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/meta/base.go",
+    "slow_log_defer_at_line": 2873,
+    "recursive_force_call_at_line": 2973,
+    "confirmed_mechanism": "compactChunk calls itself synchronously with force=true before its deferred slow-compaction log runs. A parent frame total therefore includes its own work plus all recursive descendant processing. object and metadata durations describe only that frame.",
+    "force_true_completed_log_frames": 3649,
+    "independent_manual_request_count": "not derivable from these 3649 log frames",
+    "total_minus_own_phase_durations": "Includes recursive descendant processing; is not a measured stall, queue wait, or Redis metadata wait.",
+    "background_comparison": "The once=false/force=false 6234 completed slow-log frames remain the ordinary background population; the forced population is excluded.",
+    "health_compaction_modes_residual_field": "unmeasured_residual is an arithmetic difference only; for force=true it is dominated by inclusive recursive time.",
+    "correction_to_prior_report": "The forced 3649 observations must be described as recursive force-mode call frames, not 3649 independent manual requests. The multi-hour total is not evidence of a multi-hour stall."
+  },
+  "additional_parent_reported_observation": {
+    "field": "EIO cumulative metrics snapshot",
+    "value": 1207,
+    "provenance": "Parent agent runtime metrics observation, not re-read by this health analysis.",
+    "interpretation": "Cumulative metric value is separate from selected explicit EIO log count; no equivalence to 1207 unique requests, guest failures, or the one explicit ERROR event is asserted."
+  }
+}

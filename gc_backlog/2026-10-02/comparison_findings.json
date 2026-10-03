@@ -1,0 +1,406 @@
+{
+  "old": {
+    "log": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-014922.log",
+    "prefix_bytes": 813182468,
+    "sha256": "bbc9556b9adbd20e06c63d3e85419ae52cd4f48c0498f41c8afd23033ccfa5b4",
+    "line_count": 5125719,
+    "first_timestamp": "2026/10/02 01:49:30.457741",
+    "last_timestamp": "2026/10/02 07:31:10.786546",
+    "compaction_output_slices": 1031,
+    "normal_metadata_slices": 131535,
+    "startup_staging_keys": 38809,
+    "metadata_phases": {
+      "lock_wait": 131535,
+      "doWrite": 131534,
+      "stat": 131533,
+      "done": 131533,
+      "compact": 2
+    },
+    "object_totals": {
+      "PUT_success": 109060,
+      "GET_success": 1743,
+      "DELETE_success": 171924,
+      "PUT_failure": 42,
+      "DELETE_failure": 64
+    },
+    "object_lineage_counts": [
+      {
+        "op": "DELETE",
+        "lineage": "compaction_output",
+        "status": "success",
+        "count": 12225
+      },
+      {
+        "op": "DELETE",
+        "lineage": "normal_metadata_write",
+        "status": "success",
+        "count": 68720
+      },
+      {
+        "op": "DELETE",
+        "lineage": "recovered_startup_staging",
+        "status": "failure",
+        "count": 41
+      },
+      {
+        "op": "DELETE",
+        "lineage": "recovered_startup_staging",
+        "status": "success",
+        "count": 59647
+      },
+      {
+        "op": "DELETE",
+        "lineage": "unclassified",
+        "status": "failure",
+        "count": 23
+      },
+      {
+        "op": "DELETE",
+        "lineage": "unclassified",
+        "status": "success",
+        "count": 31332
+      },
+      {
+        "op": "GET",
+        "lineage": "compaction_output",
+        "status": "success",
+        "count": 84
+      },
+      {
+        "op": "GET",
+        "lineage": "normal_metadata_write",
+        "status": "success",
+        "count": 35
+      },
+      {
+        "op": "GET",
+        "lineage": "unclassified",
+        "status": "success",
+        "count": 1624
+      },
+      {
+        "op": "PUT",
+        "lineage": "compaction_output",
+        "status": "failure",
+        "count": 8
+      },
+      {
+        "op": "PUT",
+        "lineage": "compaction_output",
+        "status": "success",
+        "count": 15290
+      },
+      {
+        "op": "PUT",
+        "lineage": "normal_metadata_write",
+        "status": "failure",
+        "count": 28
+      },
+      {
+        "op": "PUT",
+        "lineage": "normal_metadata_write",
+        "status": "success",
+        "count": 60521
+      },
+      {
+        "op": "PUT",
+        "lineage": "recovered_startup_staging",
+        "status": "failure",
+        "count": 6
+      },
+      {
+        "op": "PUT",
+        "lineage": "recovered_startup_staging",
+        "status": "success",
+        "count": 33249
+      }
+    ],
+    "request_failure_kinds": [
+      {
+        "op": "PUT",
+        "kind": "HTTP500",
+        "count": 7
+      },
+      {
+        "op": "PUT",
+        "kind": "timeout",
+        "count": 35
+      },
+      {
+        "op": "DELETE",
+        "kind": "timeout",
+        "count": 24
+      },
+      {
+        "op": "DELETE",
+        "kind": "HTTP500",
+        "count": 40
+      }
+    ],
+    "unneeded_staging_events": {
+      "drop": 1240,
+      "abandoned": 6
+    },
+    "cleanup_clue_count": 1259,
+    "normal_written_slice_ids_with_later_successful_delete": 50295,
+    "normal_write_later_delete_events": 68720,
+    "delete_costs": {
+      "count": 171988,
+      "sum": 180996.684552738,
+      "mean": 1.0523797273806197,
+      "median": 1.1096278465,
+      "p95": 3.231342374,
+      "max": 30.001892735
+    },
+    "max_delete_minute": {
+      "minute": "2026/10/02 07:04",
+      "op": "DELETE",
+      "count": 29199,
+      "success": 29199,
+      "failure": 0,
+      "payload_sum": 0,
+      "cost_sum": 352.686457543,
+      "cost_mean": 0.012078716995205315,
+      "cost_median": 0.0005855309999999999,
+      "cost_p95": 0.001235633,
+      "cost_max": 6.319286748
+    },
+    "recent1540": {}
+  },
+  "new": {
+    "log": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-145808.log",
+    "prefix_bytes": 534837717,
+    "sha256": "6daa85eb928399999f2922854a9bfcc12925099f8e399b398c4b876ee5a82f8f",
+    "line_count": 3254271,
+    "first_timestamp": "2026/10/02 14:58:15.025628",
+    "last_timestamp": "2026/10/02 16:42:15.808344",
+    "compaction_output_slices": 768,
+    "normal_metadata_slices": 77831,
+    "startup_staging_keys": 0,
+    "metadata_phases": {
+      "lock_wait": 77831,
+      "doWrite": 77831,
+      "stat": 77831,
+      "done": 77831,
+      "compact": 1
+    },
+    "object_totals": {
+      "GET_success": 6583,
+      "PUT_success": 32399,
+      "DELETE_success": 25310,
+      "PUT_failure": 120,
+      "DELETE_failure": 11
+    },
+    "object_lineage_counts": [
+      {
+        "op": "DELETE",
+        "lineage": "compaction_output",
+        "status": "success",
+        "count": 1598
+      },
+      {
+        "op": "DELETE",
+        "lineage": "normal_metadata_write",
+        "status": "failure",
+        "count": 11
+      },
+      {
+        "op": "DELETE",
+        "lineage": "normal_metadata_write",
+        "status": "success",
+        "count": 17078
+      },
+      {
+        "op": "DELETE",
+        "lineage": "unclassified",
+        "status": "success",
+        "count": 6634
+      },
+      {
+        "op": "GET",
+        "lineage": "compaction_output",
+        "status": "success",
+        "count": 792
+      },
+      {
+        "op": "GET",
+        "lineage": "normal_metadata_write",
+        "status": "success",
+        "count": 60
+      },
+      {
+        "op": "GET",
+        "lineage": "unclassified",
+        "status": "success",
+        "count": 5731
+      },
+      {
+        "op": "PUT",
+        "lineage": "compaction_output",
+        "status": "failure",
+        "count": 13
+      },
+      {
+        "op": "PUT",
+        "lineage": "compaction_output",
+        "status": "success",
+        "count": 10979
+      },
+      {
+        "op": "PUT",
+        "lineage": "normal_metadata_write",
+        "status": "failure",
+        "count": 107
+      },
+      {
+        "op": "PUT",
+        "lineage": "normal_metadata_write",
+        "status": "success",
+        "count": 21420
+      }
+    ],
+    "request_failure_kinds": [
+      {
+        "op": "PUT",
+        "kind": "timeout",
+        "count": 112
+      },
+      {
+        "op": "PUT",
+        "kind": "HTTP500",
+        "count": 8
+      },
+      {
+        "op": "DELETE",
+        "kind": "timeout",
+        "count": 9
+      },
+      {
+        "op": "DELETE",
+        "kind": "HTTP500",
+        "count": 2
+      }
+    ],
+    "unneeded_staging_events": {
+      "drop": 1942,
+      "abandoned": 18
+    },
+    "cleanup_clue_count": 1963,
+    "normal_written_slice_ids_with_later_successful_delete": 17060,
+    "normal_write_later_delete_events": 17078,
+    "delete_costs": {
+      "count": 25321,
+      "sum": 61331.061257673,
+      "mean": 2.422142145163027,
+      "median": 1.501756902,
+      "p95": 9.214568625,
+      "max": 30.001941608
+    },
+    "max_delete_minute": {
+      "minute": "2026/10/02 15:38",
+      "op": "DELETE",
+      "count": 550,
+      "success": 550,
+      "failure": 0,
+      "payload_sum": 0,
+      "cost_sum": 564.3582547460001,
+      "cost_mean": 1.02610591772,
+      "cost_median": 0.995644055,
+      "cost_p95": 3.194235122,
+      "cost_max": 9.517898199
+    },
+    "recent1540": {
+      "DELETE_success": 16599,
+      "PUT_success": 18717,
+      "GET_success": 4163,
+      "PUT_failure": 46,
+      "DELETE_failure": 11
+    },
+    "normal_slice_remote_observations": {
+      "successful_put_slice_ids": 21410,
+      "successful_delete_slice_ids": 17060,
+      "put_and_delete_slice_ids": 14462,
+      "neither_successful_put_nor_delete_slice_ids": 53823
+    }
+  },
+  "evidence_limits": [
+    "Run lengths and workload are different; total volumes are not a controlled causal comparison.",
+    "Normal metadata slice IDs are lineage evidence, not proof of negative reference state or which GC producer deleted them.",
+    "Successful remote operations do not identify exact asynchronous stage origin beyond normal metadata lineage.",
+    "cleanupSlices does not log job start/completion; nextCleanupSlices only shows a gate transaction.",
+    "Deferred hint drops and queue occupancy are not logged in this build.",
+    "53,823 no-successful-PUT/no-successful-DELETE normal slice IDs exactly matches parent supplied stage metric, but this observation alone cannot mark every staged item obsolete."
+  ],
+  "old_legacy_delete_minute_evidence": {
+    "minutes": 340,
+    "median_cost_lt10ms_minutes": 53,
+    "top5": [
+      {
+        "minute": "2026/10/02 07:04",
+        "count": 29199,
+        "mean_s": 0.012078716995205315,
+        "median_s": 0.0005855309999999999
+      },
+      {
+        "minute": "2026/10/02 07:03",
+        "count": 25801,
+        "mean_s": 0.01433393961354211,
+        "median_s": 0.000615487
+      },
+      {
+        "minute": "2026/10/02 02:07",
+        "count": 3379,
+        "mean_s": 0.16753634479668542,
+        "median_s": 0.000713476
+      },
+      {
+        "minute": "2026/10/02 02:05",
+        "count": 2942,
+        "mean_s": 0.19568131688443235,
+        "median_s": 0.0008927105
+      },
+      {
+        "minute": "2026/10/02 02:06",
+        "count": 1267,
+        "mean_s": 0.4661988974822415,
+        "median_s": 0.0008314809999999999
+      }
+    ]
+  },
+  "new_deferred_delete_minute_evidence": {
+    "minutes": 104,
+    "median_cost_lt10ms_minutes": 0,
+    "top5": [
+      {
+        "minute": "2026/10/02 15:38",
+        "count": 550,
+        "mean_s": 1.02610591772,
+        "median_s": 0.995644055
+      },
+      {
+        "minute": "2026/10/02 16:23",
+        "count": 540,
+        "mean_s": 1.0913906830537037,
+        "median_s": 1.320854965
+      },
+      {
+        "minute": "2026/10/02 15:46",
+        "count": 524,
+        "mean_s": 1.1422110321660306,
+        "median_s": 1.097046765
+      },
+      {
+        "minute": "2026/10/02 16:22",
+        "count": 502,
+        "mean_s": 1.2411797218884462,
+        "median_s": 1.2496630785
+      },
+      {
+        "minute": "2026/10/02 16:20",
+        "count": 460,
+        "mean_s": 1.3524164780543477,
+        "median_s": 1.236153218
+      }
+    ]
+  }
+}

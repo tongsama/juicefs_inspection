@@ -1,0 +1,13 @@
+{
+  "command": [
+    "go",
+    "test",
+    "./pkg/vfs",
+    "./pkg/fs",
+    "./pkg/fuse",
+    "-count=1",
+    "-timeout=3m"
+  ],
+  "exit_code": 1,
+  "wall_seconds": 19.031089737000002
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "file": "vm-io-20261002-145808",
+    "line_counts_agree": true,
+    "bytes_match": true,
+    "sha256": "ebe46a6587ddbf3b21fee843e2c77c27e9f7a404a352fc27edb126d8ea57fc94",
+    "source_still_at_least_prefix": true,
+    "complete_line": true
+  },
+  {
+    "file": "vm-io-20261002-201718",
+    "line_counts_agree": true,
+    "bytes_match": true,
+    "sha256": "8f94525eec441995f331ddfc5e1db0459e968fb4ca96aba7f19ec9f1f5591a0c",
+    "source_still_at_least_prefix": true,
+    "complete_line": true
+  },
+  {
+    "file": "vm-io-20261003-142854",
+    "line_counts_agree": true,
+    "bytes_match": true,
+    "sha256": "ca11d874de1b1c2fcc91aa1c05ac890a67b7eb32f4df72d4f17210cc64237692",
+    "source_still_at_least_prefix": true,
+    "complete_line": true
+  }
+]

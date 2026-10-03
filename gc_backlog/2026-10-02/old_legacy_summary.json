@@ -1,0 +1,168 @@
+{
+  "log": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-014922.log",
+  "prefix_bytes": 813182468,
+  "sha256": "bbc9556b9adbd20e06c63d3e85419ae52cd4f48c0498f41c8afd23033ccfa5b4",
+  "line_count": 5125719,
+  "first_timestamp": "2026/10/02 01:49:30.457741",
+  "last_timestamp": "2026/10/02 07:31:10.786546",
+  "compaction_output_slices": 1031,
+  "normal_metadata_slices": 131535,
+  "startup_staging_keys": 38809,
+  "metadata_phases": {
+    "lock_wait": 131535,
+    "doWrite": 131534,
+    "stat": 131533,
+    "done": 131533,
+    "compact": 2
+  },
+  "object_totals": {
+    "PUT_success": 109060,
+    "GET_success": 1743,
+    "DELETE_success": 171924,
+    "PUT_failure": 42,
+    "DELETE_failure": 64
+  },
+  "object_lineage_counts": [
+    {
+      "op": "DELETE",
+      "lineage": "compaction_output",
+      "status": "success",
+      "count": 12225
+    },
+    {
+      "op": "DELETE",
+      "lineage": "normal_metadata_write",
+      "status": "success",
+      "count": 68720
+    },
+    {
+      "op": "DELETE",
+      "lineage": "recovered_startup_staging",
+      "status": "failure",
+      "count": 41
+    },
+    {
+      "op": "DELETE",
+      "lineage": "recovered_startup_staging",
+      "status": "success",
+      "count": 59647
+    },
+    {
+      "op": "DELETE",
+      "lineage": "unclassified",
+      "status": "failure",
+      "count": 23
+    },
+    {
+      "op": "DELETE",
+      "lineage": "unclassified",
+      "status": "success",
+      "count": 31332
+    },
+    {
+      "op": "GET",
+      "lineage": "compaction_output",
+      "status": "success",
+      "count": 84
+    },
+    {
+      "op": "GET",
+      "lineage": "normal_metadata_write",
+      "status": "success",
+      "count": 35
+    },
+    {
+      "op": "GET",
+      "lineage": "unclassified",
+      "status": "success",
+      "count": 1624
+    },
+    {
+      "op": "PUT",
+      "lineage": "compaction_output",
+      "status": "failure",
+      "count": 8
+    },
+    {
+      "op": "PUT",
+      "lineage": "compaction_output",
+      "status": "success",
+      "count": 15290
+    },
+    {
+      "op": "PUT",
+      "lineage": "normal_metadata_write",
+      "status": "failure",
+      "count": 28
+    },
+    {
+      "op": "PUT",
+      "lineage": "normal_metadata_write",
+      "status": "success",
+      "count": 60521
+    },
+    {
+      "op": "PUT",
+      "lineage": "recovered_startup_staging",
+      "status": "failure",
+      "count": 6
+    },
+    {
+      "op": "PUT",
+      "lineage": "recovered_startup_staging",
+      "status": "success",
+      "count": 33249
+    }
+  ],
+  "request_failure_kinds": [
+    {
+      "op": "PUT",
+      "kind": "HTTP500",
+      "count": 7
+    },
+    {
+      "op": "PUT",
+      "kind": "timeout",
+      "count": 35
+    },
+    {
+      "op": "DELETE",
+      "kind": "timeout",
+      "count": 24
+    },
+    {
+      "op": "DELETE",
+      "kind": "HTTP500",
+      "count": 40
+    }
+  ],
+  "unneeded_staging_events": {
+    "drop": 1240,
+    "abandoned": 6
+  },
+  "cleanup_clue_count": 1259,
+  "normal_written_slice_ids_with_later_successful_delete": 50295,
+  "normal_write_later_delete_events": 68720,
+  "delete_costs": {
+    "count": 171988,
+    "sum": 180996.684552738,
+    "mean": 1.0523797273806197,
+    "median": 1.1096278465,
+    "p95": 3.231342374,
+    "max": 30.001892735
+  },
+  "max_delete_minute": {
+    "minute": "2026/10/02 07:04",
+    "op": "DELETE",
+    "count": 29199,
+    "success": 29199,
+    "failure": 0,
+    "payload_sum": 0,
+    "cost_sum": 352.686457543,
+    "cost_mean": 0.012078716995205315,
+    "cost_median": 0.0005855309999999999,
+    "cost_p95": 0.001235633,
+    "cost_max": 6.319286748
+  },
+  "recent1540": {}
+}

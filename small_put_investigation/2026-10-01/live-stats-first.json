@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-10-01T21:38:02.002532+09:00",
+  "metrics": {
+    "juicefs_fuse_written_size_bytes_total": 146695.0,
+    "juicefs_fuse_written_size_bytes_sum": 8937713760.0,
+    "juicefs_object_request_data_bytes_PUT": 10939875877.0,
+    "juicefs_object_request_durations_histogram_seconds_PUT_total": 19812.0,
+    "juicefs_object_request_durations_histogram_seconds_PUT_sum": 123040.9970200515,
+    "juicefs_staging_write_bytes": 8937623648.0
+  }
+}

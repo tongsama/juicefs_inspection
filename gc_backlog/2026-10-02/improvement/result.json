@@ -1,0 +1,53 @@
+{
+  "implemented": true,
+  "production_applied_by_agent": false,
+  "branch": "fix/vm-io-wait-policy",
+  "head": "3bed0d82eecaaacc7f635f6e033f1433e2196bca",
+  "verification": {
+    "meta": "MemKV/SQLite/isolatedRedis16380: callback/fullqueue/error/sharedrefs/legacy/recovery/copyguard races passed; sharedrefs sensitivity overlay failed as intended then removed",
+    "chunk": "9 retirement tests race count3 16.280s; actual production GoFiles + cached_store_test and retire_test normal passed13.131s",
+    "cmd": "retirement callback+combined options+FUSE settings race count3 passed2.023s",
+    "vfs_fs_fuse": {
+      "command": [
+        "go",
+        "test",
+        "./pkg/vfs",
+        "./pkg/fs",
+        "./pkg/fuse",
+        "-count=1",
+        "-timeout=3m"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 15.515283068001736
+    },
+    "chunk_full_suite": "not executed successfully: existing mockey with Go1.26 unresolved runtime.duffcopy/runtime.duffzero",
+    "postgresql_runtime": "not run per user instruction",
+    "diff_check": "passed"
+  },
+  "limitations": [
+    "Hint overflow/local busy still recovered periodically; no pending-only persistent index or GC budget admission added",
+    "Upload guard is process-local, not a distributed upload lease",
+    "No claim all 53k production staging files are obsolete or that guest reboot cause is fixed"
+  ],
+  "binary": {
+    "path": "/tmp/juicefs-vm-io-gc-retire-20261002",
+    "version": "juicefs version 1.4.1+2026-10-02.3bed0d82-vm-io-gc-retire-local",
+    "sha256": "1a022a7e186eda8b88593842d16dc90316b2698b15c1aee254346f48fa70073f",
+    "production_applied_by_agent": false
+  },
+  "cleanup": [
+    {
+      "port": 16380,
+      "pid": 485375,
+      "stopped": true
+    },
+    {
+      "port": 6379,
+      "pid": 501474,
+      "stopped": true
+    },
+    {
+      "generated_sqlite_test_artifact_removed": true
+    }
+  ]
+}

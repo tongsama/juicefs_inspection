@@ -1,0 +1,107 @@
+{
+  "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-014922.log",
+  "prefix_bytes": 179156595,
+  "sha256": "2f70019e76d958259462fff848083b8726fb7bcb3dd5701dfd9d1fbea2604788",
+  "first": "2026/10/02 01:49:30.457741",
+  "last": "2026/10/02 02:24:09.308508",
+  "levels": {
+    "DEBUG": 1110446,
+    "INFO": 22,
+    "WARNING": 1044
+  },
+  "counts": {
+    "other_warning": 3,
+    "startup_stage_block": 38809,
+    "slow request": 519,
+    "slow compaction": 226,
+    "read_context_canceled": 263,
+    "slow metadata transaction": 10,
+    "transaction_retry_succeeded": 19,
+    "slow_operation": 3,
+    "slow metadata write": 2,
+    "slow slice commit": 2
+  },
+  "samples": {
+    "other_warning": [
+      "2026/10/02 01:49:30.637007 juicefs[3140] <WARNING>: CAP_SYS_RESOURCE is needed for PR_SET_IO_FLUSHER [SetIOFlusher@utils_linux.go:76]",
+      "2026/10/02 01:49:30.897861 juicefs[3153] <WARNING>: setpriority: permission denied [Serve@fuse.go:458]",
+      "2026/10/02 01:55:30.996350 juicefs[3153] <WARNING>: Secret key is removed for the sake of safety [DumpMeta@redis.go:5018]"
+    ],
+    "startup_stage_block": [
+      "2026/10/02 01:49:30.820537 juicefs[3153] <DEBUG>: Found staging block: /home/kwatanabe/.juicefs/cache/73e74f7b-6f95-4155-adea-d9ef1e669c20/rawstaging/chunks/4/4015/4015548_0_65536 [scanStaging@disk_cache.go:1056]",
+      "2026/10/02 01:49:30.820564 juicefs[3153] <DEBUG>: Found staging block: /home/kwatanabe/.juicefs/cache/73e74f7b-6f95-4155-adea-d9ef1e669c20/rawstaging/chunks/4/4015/4015362_0_4096 [scanStaging@disk_cache.go:1056]",
+      "2026/10/02 01:49:30.820587 juicefs[3153] <DEBUG>: Found staging block: /home/kwatanabe/.juicefs/cache/73e74f7b-6f95-4155-adea-d9ef1e669c20/rawstaging/chunks/4/4015/4015052_0_4096 [scanStaging@disk_cache.go:1056]",
+      "2026/10/02 01:49:30.820645 juicefs[3153] <DEBUG>: Found staging block: /home/kwatanabe/.juicefs/cache/73e74f7b-6f95-4155-adea-d9ef1e669c20/rawstaging/chunks/4/4015/4015177_0_65536 [scanStaging@disk_cache.go:1056]",
+      "2026/10/02 01:49:30.820661 juicefs[3153] <DEBUG>: Found staging block: /home/kwatanabe/.juicefs/cache/73e74f7b-6f95-4155-adea-d9ef1e669c20/rawstaging/chunks/4/4015/4015799_0_16384 [scanStaging@disk_cache.go:1056]",
+      "2026/10/02 01:49:30.820672 juicefs[3153] <DEBUG>: Found staging block: /home/kwatanabe/.juicefs/cache/73e74f7b-6f95-4155-adea-d9ef1e669c20/rawstaging/chunks/4/4015/4015687_0_65536 [scanStaging@disk_cache.go:1056]",
+      "2026/10/02 01:49:30.820686 juicefs[3153] <DEBUG>: Found staging block: /home/kwatanabe/.juicefs/cache/73e74f7b-6f95-4155-adea-d9ef1e669c20/rawstaging/chunks/4/4015/4015059_0_8192 [scanStaging@disk_cache.go:1056]",
+      "2026/10/02 01:49:30.820695 juicefs[3153] <DEBUG>: Found staging block: /home/kwatanabe/.juicefs/cache/73e74f7b-6f95-4155-adea-d9ef1e669c20/rawstaging/chunks/4/4015/4015379_0_4096 [scanStaging@disk_cache.go:1056]"
+    ],
+    "slow request": [
+      "2026/10/02 01:50:48.416100 juicefs[3153] <WARNING>: slow request: PUT chunks/4/4019/4019336_0_12288 payload_bytes=1611 (req_id: \"34D024F9D49D8267\", err: <nil>, cost: 10.84765847s) [logRequest@cached_store.go:699]",
+      "2026/10/02 01:51:36.606161 juicefs[3153] <WARNING>: slow request: PUT chunks/4/4002/4002944_0_524288 payload_bytes=311313 (req_id: \"34D024F9D49D8419\", err: <nil>, cost: 10.141283568s) [logRequest@cached_store.go:699]",
+      "2026/10/02 01:51:54.999201 juicefs[3153] <WARNING>: slow request: PUT chunks/4/4003/4003698_0_4096 payload_bytes=49 (req_id: \"34D024F9D49D84A5\", err: <nil>, cost: 10.105048356s) [logRequest@cached_store.go:699]",
+      "2026/10/02 01:52:06.843450 juicefs[3153] <WARNING>: slow request: PUT chunks/4/4003/4003041_0_77824 payload_bytes=9287 (req_id: \"34D024F9D49D84BC\", err: <nil>, cost: 18.397017287s) [logRequest@cached_store.go:699]",
+      "2026/10/02 01:52:10.057761 juicefs[3153] <WARNING>: slow request: PUT chunks/4/4003/4003524_0_8192 payload_bytes=2193 (req_id: \"34D024F9D49D8507\", err: <nil>, cost: 10.425717232s) [logRequest@cached_store.go:699]",
+      "2026/10/02 01:52:17.233795 juicefs[3153] <WARNING>: slow request: PUT chunks/4/4003/4003536_0_65536 payload_bytes=4182 (req_id: \"34D024F9D49D851E\", err: <nil>, cost: 15.636068198s) [logRequest@cached_store.go:699]",
+      "2026/10/02 01:52:20.457546 juicefs[3153] <WARNING>: slow request: PUT chunks/4/4003/4003032_0_2584576 payload_bytes=1097615 (req_id: \"34D024F9D49D8528\", err: <nil>, cost: 18.444286301s) [logRequest@cached_store.go:699]",
+      "2026/10/02 01:52:20.458906 juicefs[3153] <WARNING>: slow request: PUT chunks/4/4003/4003246_0_131072 payload_bytes=41290 (req_id: \"34D024F9D49D8525\", err: <nil>, cost: 18.602167961s) [logRequest@cached_store.go:699]"
+    ],
+    "slow compaction": [
+      "2026/10/02 01:51:37.772473 juicefs[3153] <WARNING>: slow compaction inode=596153 chunk=0 once=false force=false slices=18 bytes=67108864 total=9.805222814s queue_wait=4.491µs object=9.688261378s metadata=96.446339ms [compactChunk@base.go:2855]",
+      "2026/10/02 01:52:01.283308 juicefs[3153] <WARNING>: slow compaction inode=596152 chunk=0 once=false force=false slices=86 bytes=67108864 total=9.708995207s queue_wait=1.795µs object=9.60665261s metadata=92.31369ms [compactChunk@base.go:2855]",
+      "2026/10/02 01:52:02.088466 juicefs[3153] <WARNING>: slow compaction inode=596155 chunk=0 once=false force=false slices=164 bytes=67108864 total=10.455249705s queue_wait=2.273µs object=10.355321363s metadata=88.452217ms [compactChunk@base.go:2855]",
+      "2026/10/02 01:52:03.413763 juicefs[3153] <WARNING>: slow compaction inode=596154 chunk=0 once=false force=false slices=25 bytes=67108864 total=11.700528963s queue_wait=1.726µs object=11.602992451s metadata=87.353949ms [compactChunk@base.go:2855]",
+      "2026/10/02 01:54:15.822313 juicefs[3153] <WARNING>: slow compaction inode=596152 chunk=21 once=false force=false slices=98 bytes=67108864 total=8.740632012s queue_wait=2.439µs object=8.652440448s metadata=78.155896ms [compactChunk@base.go:2855]",
+      "2026/10/02 01:54:56.855440 juicefs[3153] <WARNING>: slow compaction inode=596155 chunk=3 once=false force=false slices=276 bytes=67108864 total=15.710088426s queue_wait=2.002µs object=15.603868403s metadata=95.682722ms [compactChunk@base.go:2855]",
+      "2026/10/02 01:54:57.201541 juicefs[3153] <WARNING>: slow compaction inode=596152 chunk=15 once=false force=false slices=88 bytes=67108864 total=12.581673759s queue_wait=1.832µs object=12.483373657s metadata=88.421754ms [compactChunk@base.go:2855]",
+      "2026/10/02 01:55:06.285153 juicefs[3153] <WARNING>: slow compaction inode=596152 chunk=22 once=false force=false slices=29 bytes=67108864 total=19.981363291s queue_wait=1.93µs object=19.886620952s metadata=83.896022ms [compactChunk@base.go:2855]"
+    ],
+    "read_context_canceled": [
+      "2026/10/02 01:51:44.305474 juicefs[3153] <WARNING>: fail to read sliceId 3680915 (off:4194304, size:4194304, clen: 67108864, inode: 1027): context canceled [readSlice@reader.go:830]",
+      "2026/10/02 01:51:47.969861 juicefs[3153] <WARNING>: fail to read sliceId 3679959 (off:4194304, size:4194304, clen: 67051520, inode: 580898): context canceled [readSlice@reader.go:830]",
+      "2026/10/02 01:53:57.916242 juicefs[3153] <WARNING>: fail to read sliceId 3681007 (off:4194304, size:4194304, clen: 67108864, inode: 593081): context canceled [readSlice@reader.go:830]",
+      "2026/10/02 01:54:00.354012 juicefs[3153] <WARNING>: fail to read sliceId 3899123 (off:46137344, size:4194304, clen: 67108864, inode: 596152): context canceled [readSlice@reader.go:830]",
+      "2026/10/02 01:54:06.069036 juicefs[3153] <WARNING>: fail to read sliceId 3681035 (off:4194304, size:4194304, clen: 67108864, inode: 593081): context canceled [readSlice@reader.go:830]",
+      "2026/10/02 01:54:07.063501 juicefs[3153] <WARNING>: fail to read sliceId 3681082 (off:50331648, size:4194304, clen: 67108864, inode: 593081): context canceled [readSlice@reader.go:830]",
+      "2026/10/02 01:54:07.087531 juicefs[3153] <WARNING>: fail to read sliceId 3681096 (off:41943040, size:4194304, clen: 67108864, inode: 593081): context canceled [readSlice@reader.go:830]",
+      "2026/10/02 01:54:08.069247 juicefs[3153] <WARNING>: fail to read sliceId 3681097 (off:0, size:4194304, clen: 13828096, inode: 593081): context canceled [readSlice@reader.go:830]"
+    ],
+    "slow metadata transaction": [
+      "2026/10/02 01:57:23.797091 juicefs[3153] <WARNING>: slow metadata transaction key=i307650 total=1.084318328s lock_wait=1.72µs active=37.760763ms attempts=1 err=<nil> [txn@redis.go:1168]",
+      "2026/10/02 01:57:23.797092 juicefs[3153] <WARNING>: slow metadata transaction key=i307550 total=1.084294564s lock_wait=707ns active=38.473986ms attempts=1 err=<nil> [txn@redis.go:1168]",
+      "2026/10/02 02:03:16.782105 juicefs[3153] <WARNING>: slow metadata transaction key=i596155 total=1.330699474s lock_wait=82ns active=1.330690978s attempts=1 err=<nil> [txn@redis.go:1168]",
+      "2026/10/02 02:05:23.104183 juicefs[3153] <WARNING>: slow metadata transaction key=sliceRef total=3.975422038s lock_wait=154ns active=3.97539901s attempts=27 err=<nil> [txn@redis.go:1168]",
+      "2026/10/02 02:05:23.142772 juicefs[3153] <WARNING>: slow metadata transaction key=sliceRef total=1.036209668s lock_wait=997.685169ms active=38.488655ms attempts=1 err=<nil> [txn@redis.go:1168]",
+      "2026/10/02 02:05:59.565903 juicefs[3153] <WARNING>: slow metadata transaction key=sliceRef total=3.646951828s lock_wait=182ns active=3.646906775s attempts=24 err=<nil> [txn@redis.go:1168]",
+      "2026/10/02 02:05:59.605398 juicefs[3153] <WARNING>: slow metadata transaction key=sliceRef total=2.467011326s lock_wait=2.427627742s active=39.353899ms attempts=1 err=<nil> [txn@redis.go:1168]",
+      "2026/10/02 02:07:05.197592 juicefs[3153] <WARNING>: slow metadata transaction key=sliceRef total=2.199965066s lock_wait=141ns active=2.199941266s attempts=21 err=<nil> [txn@redis.go:1168]"
+    ],
+    "transaction_retry_succeeded": [
+      "2026/10/02 01:58:17.665820 juicefs[3153] <WARNING>: Transaction succeeded after 5 tries (226.341391ms), keys: [c596152_23], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1205]",
+      "2026/10/02 01:58:50.657681 juicefs[3153] <WARNING>: Transaction succeeded after 6 tries (265.64512ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1205]",
+      "2026/10/02 01:59:20.475731 juicefs[3153] <WARNING>: Transaction succeeded after 4 tries (158.368225ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1205]",
+      "2026/10/02 02:01:56.881596 juicefs[3153] <WARNING>: Transaction succeeded after 4 tries (168.609959ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1205]",
+      "2026/10/02 02:04:14.831226 juicefs[3153] <WARNING>: Transaction succeeded after 3 tries (117.55237ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1205]",
+      "2026/10/02 02:05:00.608033 juicefs[3153] <WARNING>: Transaction succeeded after 3 tries (138.506255ms), keys: [c596155_40], method: doCompactChunk, last error: redis: transaction failed [txn@redis.go:1205]",
+      "2026/10/02 02:05:17.540469 juicefs[3153] <WARNING>: Transaction succeeded after 13 tries (854.868777ms), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1205]",
+      "2026/10/02 02:05:23.104083 juicefs[3153] <WARNING>: Transaction succeeded after 27 tries (3.975302249s), keys: [sliceRef], method: cleanupZeroRef, last error: redis: transaction failed [txn@redis.go:1205]"
+    ],
+    "slow_operation": [
+      "2026/10/02 01:58:19.682042 juicefs[3153] <INFO>: slow operation: read (593081,131072,2667462656,1381): (131072) - OK <20.662447> [logit@accesslog.go:92]",
+      "2026/10/02 01:58:19.682047 juicefs[3153] <INFO>: slow operation: read (593081,16384,2670657536,1381): (16384) - OK <20.660719> [logit@accesslog.go:92]",
+      "2026/10/02 02:01:59.704339 juicefs[3153] <INFO>: slow operation: read (596156,65536,2594897920,5662): (65536) - OK <12.081232> [logit@accesslog.go:92]"
+    ],
+    "slow metadata write": [
+      "2026/10/02 02:03:16.782169 juicefs[3153] <WARNING>: slow metadata write inode=596155 chunk=32 slice=4027291 slices=39 total=1.330788298s lock_wait=489ns doWrite=1.330736922s stat=598ns compact=0s errno=errno 0 [Write@base.go:2169]",
+      "2026/10/02 02:03:16.821011 juicefs[3153] <WARNING>: slow metadata write inode=596155 chunk=48 slice=4027292 slices=37 total=1.36892638s lock_wait=1.330101393s doWrite=38.768181ms stat=991ns compact=0s errno=errno 0 [Write@base.go:2169]"
+    ],
+    "slow slice commit": [
+      "2026/10/02 02:03:16.782178 juicefs[3153] <WARNING>: slow slice commit inode=596155 chunk=32 slice=4027291 metadata=1.330818012s errno=errno 0 [commitThread@writer.go:227]",
+      "2026/10/02 02:03:16.821036 juicefs[3153] <WARNING>: slow slice commit inode=596155 chunk=48 slice=4027292 metadata=1.368977572s errno=errno 0 [commitThread@writer.go:227]"
+    ]
+  },
+  "versions": [
+    "2026/10/02 01:49:30.815988 juicefs[3153] <INFO>: JuiceFS version 1.4.1+2026-10-01.3bed0d82-smallput-diag-local [mount@mount.go:685]"
+  ]
+}

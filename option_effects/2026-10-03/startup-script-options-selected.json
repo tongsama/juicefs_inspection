@@ -1,0 +1,37 @@
+{
+  "path": "/home/kwatanabe/utilities/cloudfs/juicefs_mount.sh",
+  "sha256": "2654c8e8531a00e09e8c67939353c89cd8c7bf874a88d9b3a654cfce0804f4be",
+  "literal_options": {
+    "slice-flush-wait": [
+      "15s"
+    ],
+    "slice-flush-idle": [
+      "10s"
+    ],
+    "writer-flush-timeout": [
+      "0s"
+    ],
+    "writer-reuse-window": [
+      "16"
+    ],
+    "compaction-gc-mode": [
+      "deferred"
+    ],
+    "compaction-scheduler": [
+      "priority"
+    ],
+    "max-deletes": [
+      "10"
+    ],
+    "max-uploads": [
+      "18"
+    ],
+    "upload-delay": [
+      "0"
+    ],
+    "writeback-threshold-size": [
+      "0"
+    ]
+  },
+  "script_modified": false
+}

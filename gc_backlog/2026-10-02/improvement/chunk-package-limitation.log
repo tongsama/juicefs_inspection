@@ -1,0 +1,5 @@
+# github.com/juicedata/juicefs/pkg/chunk.test
+github.com/bytedance/mockey/internal/monkey/inst.duffcopy·f: relocation target runtime.duffcopy not defined
+github.com/bytedance/mockey/internal/monkey/inst.duffzero·f: relocation target runtime.duffzero not defined
+FAIL	github.com/juicedata/juicefs/pkg/chunk [build failed]
+FAIL

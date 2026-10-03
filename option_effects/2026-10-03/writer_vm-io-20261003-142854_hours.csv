@@ -1,0 +1,3 @@
+pid,hour_JST,creation_cohort_observed_freezes,finish,freeze_total,explicit_flush,writable_window,idle,age,slice_pressure,commit_age,full_slice,barrier_begin,barrier_end,explicit_flush_pct,writable_window_pct,timer_pct
+1156153,2026/10/03 14,12906,12888,12888,9994,2880,14,0,0,0,0,77582,77582,77.54500310366232,22.3463687150838,0.10862818125387957
+1156153,2026/10/03 15,9807,9825,9825,9546,279,0,0,0,0,0,4652,4652,97.16030534351145,2.8396946564885495,0.0

@@ -1,0 +1,44 @@
+[
+  {
+    "pid": 683232,
+    "ppid": 1309,
+    "started": "Fri Oct 2 20:17:23 2026",
+    "diagnostic_fds": [
+      "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-201718.log",
+      "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-201718.log"
+    ]
+  },
+  {
+    "pid": 683253,
+    "ppid": 683232,
+    "started": "Fri Oct 2 20:17:24 2026",
+    "diagnostic_fds": [
+      "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-201718.log",
+      "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-201718.log"
+    ]
+  },
+  {
+    "pid": 1155723,
+    "ppid": 1309,
+    "started": "Sat Oct 3 14:29:02 2026",
+    "diagnostic_fds": [
+      "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261003-142854.log",
+      "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261003-142854.log"
+    ]
+  },
+  {
+    "pid": 1156153,
+    "ppid": 1155723,
+    "started": "Sat Oct 3 14:29:03 2026",
+    "diagnostic_fds": [
+      "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261003-142854.log",
+      "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261003-142854.log"
+    ]
+  },
+  {
+    "pid": 1195078,
+    "ppid": 683358,
+    "started": "Sat Oct 3 15:34:39 2026",
+    "diagnostic_fds": []
+  }
+]

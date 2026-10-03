@@ -1,0 +1,71 @@
+JuiceFS オプション導入効果・ログ整理用の解析報告
+解析日: 2026-10-03（JST）
+
+結論
+通常の小さいsliceをcloudへ送る割合は、local retirement補正後の耐久期間で大きく低下した。fsync完了とmetadata保存は安定している。一方、タイマー30s→15sの直接効果は、このログには現れていない。Read側EIO記録と旧プロセスのEIO累積カウンタは残るので、全I/O無エラーや全面的な耐障害性保証とは評価しない。
+
+1. 時系列と根拠
+ユーザーの訂正により、10/02の耐久試験まで30s/10s、10/03直前の再起動で15s/10sへ変更した。旧『15→30』発言は撤回済み。現在の起動スクリプト /home/kwatanabe/utilities/cloudfs/juicefs_mount.sh と mount .config(PID1156153)は15s/10s/timeout0/reuse16/GCdeferred/priorityで一致。現在max-uploads18、block4MiB、zstd、writebackが有効。max-uploadsを含む他設定の変更時点は未特定。
+
+固定した改行末尾prefix:
+・補正前145808: 794,809,736 bytes / 4,907,086行 / 10/02 14:58:15–20:14:08、PID413172。
+・補正後耐久201718: 5,976,434,018 bytes / 36,536,314行 / 10/02 20:17:23–10/03 15:33:19、PID683253。
+・最近の再起動142854: 267,671,574 bytes / 1,603,566行 / 10/03 14:29:02–15:33:19、PID1156153。
+SHA・サイズ・行数を保存し、health/payload二系統の行数一致、完全行、sourceサイズ>=prefixを検証した。耐久ログのfreeze最終は10/03 12:51:24で、実際のfreezeがある区間は約16時間半。19時間すべてをVM高負荷時間としない。元ログは変更・圧縮・削除・移動していない。
+
+2. PUTとGC分離の効果
+以下は各prefixの観測値。期間と負荷が違うため、全件数を同じ負荷の前後差とは解釈しない。
+                            補正前30/10    補正後耐久30/10   再起動後15/10
+通常slice finish             101,766       843,306          22,713
+通常PUT成功                   73,463        81,227           8,516
+通常PUT試行(失敗含む)         73,575        82,695           8,670
+通常PUT試行/finish              0.7230        0.0981           0.3817
+compaction PUT成功            15,241       150,626           4,286
+全PUT試行/finish                0.8729        0.2768           0.5707
+通常成功PUT payload<1KiB        68.99%        58.37%           66.42%
+local retirement成功          ログなし      880,895          20,650
+retired通常IDでPUT未観測        計測なし      762,146          13,941
+
+補正前→耐久の通常PUT試行/finishは86.4%低い。compaction込み全PUT試行/finishも68.3%低い。ただし、統制された単独機能の改善率ではなく、異なる負荷の観測比率である。
+同じ30s/10s・reuse16で、補正後には大量の通常sliceがlocal retirement成功を記録し、同prefixのPUTに現れなかった。これは不要stagingを先に回収して小PUTを避ける設計と整合する。762,146を反事実の『必ず回避したPUT件数』や欠落データ件数とは呼ばない。
+耐久のlocal error2,156件は全てin-flight uploadのbusyで、実unlink失敗ではなかった。hint_overflow/remote_deferredは旧耐久と現在のmetricsで0。現在のstageはsnapshotで904件・約45.7MB、旧耐久processはstage0/uploading0。
+
+PUT payloadは圧縮済みbuffer長、object key末尾はraw block長、finish raw_lengthはslice長であり、footer/checksum込みの物理stageファイル長やapplication write bytesとは異なる。耐久raw slice<1KiBは44/843,306件に対し、通常成功PUT payload<1KiBは47,414件。『小さいpayload多数=元sliceも1KiB未満』ではない。
+成功payload総量のうちcompactionの割合は98.89%/99.24%/99.15%。通常小PUTの抑制が大きくても、cloud転送量が同率で下がったとは言えず、残るcloud負荷はcompactionが主体。
+
+3. 4オプションの評価
+slice-flush-wait30s→15s: age由来freezeは全3run0。explicit/windowは全件age10s未満。従って今回の短縮が観測されたfreezeを直接起こした証拠はなく、このログからPUT増減を割り当てられない。15秒版の長期耐久合格とも扱わない。
+slice-flush-idle10s: idle由来freezeは8/16/14件で、約10.05–10.10sの経過と設定に整合。発火割合はごく小さく、PUT削減の主要因には見えない。
+writer-flush-timeout0s: 耐久期間の335,774fsyncは全errno0、中央値約41ms/P95約230ms/P99約792ms/最大14.756s。全writer barrier560,104件もerrno0。FUSE timeout0もruntime確認。保存待機の安定は確認できるが、今回は全fsyncが15秒未満で、期限なし設定そのものの単独効果は統制比較していない。writebackのcloudasyncuploadとは別。
+writer-reuse-window16: freeze理由windowは21.120%/5.067%/13.908%。全3run同16なので割合変化を4→16の効果としない。旧partial候補の再利用を広げる意味はsource/局所回帰(commits10→9)で確認済み。実機のreuse成功回数を専用に記録していないため、今回のPUT減少率をwindow単独へ配分できない。
+explicit freezeが全体78.872%/94.931%/86.030%、その85–89%はfsync由来。耐久期間682,152sliceがfsyncでfreezeした。fsync/read/fallocateを守って小sliceを作り、後段で不要stageを回収しcompactionへ集約する挙動が中心。
+
+4. 健全性と残る例外
+通常metadata Writeの非0完了は全3run0、checksum数値不一致も0。fsync最大は14.211/14.756/14.192秒。raw2500同期compactは補正前1件、補正後耐久・最新0。
+通常background compaction(once=false/force=false)は耐久6,234slow完了記録、metadata中央値81.59ms/P95168.66ms/最大5.217s。object側最大201.125s。以前の数十分のmetadata停滞と同じ状態は見えない。
+force=trueログ3,649は再帰callframe完了数で、独立した手動request3,649件ではない。forceはdefer slowlog前に同chunkを再帰処理するため、親totalには子孫の処理が含まれる。最大total3時間52分をmetadata待ちやfsync停止と解釈しない。
+
+重要な例外:
+・10/02 20:42:48、PID683253: read file596155 input/output error。直前のreadSlice4238443失敗12件はcontext canceled。旧processの15時台metrics snapshotではVFS/FUSE EIO累積カウンタ1207。このcounterはlogitがVFSの返却errorを加算するもので、内部GET再試行だけの数ではない。一方、個別guest障害1207件でもprefix期間限定の数でもない。errnoカウンタにoperation/caller/timeラベルがないため、同EIO行との一対一対応やQEMU/guestへの影響は個別確定できない。Readfileのdoneはf.errへEIOを保持し、Read/waitForIO→VFS→FUSEへ返せる。Read側の取消→EIO伝播は残調査事項で、単なる無害prefetchとして除外しない。
+・10/02 23:38–23:39、GET header timeout3件。同期間に約96.82秒のread成功があり、短いfsyncとは別にreadの長い遅延がある。
+・10/03 02:33:13、CompactのwalkrootがEINTR。fsync watchdog中断の記録ではない。呼出元と取消原因は不明。
+・10/03 14:36:19、GET4913906_3_4194304が404。約3.63秒後に同exact key GET成功。旧runでPUT成功とmetadatacommit成功があり、両ログに同IDのDELETE/retirementはない。永久消失とは評価しないが一時404の原因は未確定。
+ユーザー報告のVM耐久合格と保存待機の成功は尊重しつつ、『全I/O無エラー』とはまとめない。
+
+5. DEBUGログ整理
+DEBUGの容量比は99.744%/99.909%/99.790%。成功checksum DEBUG行だけで60.079%/63.364%/71.961%を占める。耐久logでは22,786,514行・3,786,908,356bytesがchecksumログだった。検証処理の有効/無効と成功ログの出力抑制は別に考える。今後の肥大対策はchecksum検証を維持し、正常DEBUG出力の抑制または通常INFO運用が最も直接的。ただし実際の起動/verbosity変更は行っていない。
+旧耐久PID683253/親683232と新PID1156153/親1155723がともにlogfdを持っていた。201718と142854は開かれているログなので、『古い名前だから閉じた』とは扱わない。inventoryにopen/未観測を記録し、圧縮/削除前には再照合が必要。今回、元ログはすべて保持した。
+
+成果物
+manifest.json:固定prefix・時系列訂正
+current-config-selected.json / startup-script-options-selected.json:設定確認（secretを出力しない）
+writer_report.md / writer_summary.csv / writer_*json:freeze/fsync
+payload_summary.json / payload_findings.txt / payload_minute_bins.csv:PUT/GC
+health_findings.json / health_overview.csv / health_compaction_modes.json:例外/compaction/ログ容量/SHA
+comparison-calculated.json / verification.json:集計比率と独立検算
+log-inventory.json:ログ整理準備
+*_metrics-snapshot.txt:runtime補助観測
+payload_read_window_* / health_*_exception_context.txt:Read例外の証跡
+
+Read EIOの追加source所見
+reader.goのfileReader.triedは同fileReaderの複数sliceReaderが共有し、短いread失敗ごとに増え、成功でresetされる。警告12行を12回のretryincrementとは同一視できない。ownslice.dropはBREAKへ移って正常に取消を処理するが、chunk singleflightは先頭callerのload(ctx)結果を他callerにも配布する。この先頭ctx取消が生きている別sliceReaderへ伝播し、共有retrycounterを進めてstickyEIOに至る仮説はsource上成立する。今回変更していない3bedの既存reader/singleflight処理であり、再現/原因帰属は未実施。ログにはsliceReader identity/取消元/actorPIDが不足しQEMUへの帰属は確定できない。実保存失敗を隠す修正は行わず、再現テストを先に作る課題として残した。

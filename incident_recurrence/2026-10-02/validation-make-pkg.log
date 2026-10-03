@@ -1,0 +1,16 @@
+go test -tags gluster -v -cover -count=1  -failfast -timeout=12m $(go list ./pkg/... | grep -v /meta) -args -test.gocoverdir="/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/cover"
+# github.com/juicedata/gogfapi/gfapi
+# [pkg-config --cflags  -- glusterfs-api glusterfs-api glusterfs-api]
+Package glusterfs-api was not found in the pkg-config search path.
+Perhaps you should add the directory containing `glusterfs-api.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'glusterfs-api' not found
+Package 'glusterfs-api' not found
+Package 'glusterfs-api' not found
+=== RUN   TestCache
+--- PASS: TestCache (0.00s)
+PASS
+error generating coverage report: output directory "/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/cover" inaccessible (err: stat /home/kwatanabe/tmp_local/juicefs_inspection/juicefs/cover: no such file or directory); no coverage data written
+FAIL	github.com/juicedata/juicefs/pkg/acl	0.004s
+FAIL	github.com/juicedata/juicefs/pkg/chunk [build failed]
+make: *** [Makefile:118: test.pkg] Error 1

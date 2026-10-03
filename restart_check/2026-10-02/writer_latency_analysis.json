@@ -1,0 +1,94 @@
+{
+  "all": {
+    "vfs.Flush": {
+      "count": 6,
+      "median_s": 6.216499999999999e-05,
+      "p95_s": 0.000204831,
+      "max_s": 0.000204831,
+      "max_line": "2026/10/02 14:59:32.616900 juicefs[413172] <DEBUG>: writer flush inode=596152 origin=vfs.Flush barrier=1 phase=end errno=0 elapsed=204.831µs [end@writer_trace.go:78]"
+    },
+    "vfs.Release": {
+      "count": 6,
+      "median_s": 7.7315e-05,
+      "p95_s": 0.00010491299999999999,
+      "max_s": 0.00010491299999999999,
+      "max_line": "2026/10/02 14:59:32.648930 juicefs[413172] <DEBUG>: writer flush inode=596152 origin=vfs.Release barrier=2 phase=end errno=0 elapsed=104.913µs [end@writer_trace.go:78]"
+    },
+    "internal.close": {
+      "count": 6,
+      "median_s": 4.0676e-05,
+      "p95_s": 9.0417e-05,
+      "max_s": 9.0417e-05,
+      "max_line": "2026/10/02 14:59:32.649237 juicefs[413172] <DEBUG>: writer flush inode=596152 origin=internal.close barrier=3 phase=end errno=0 elapsed=90.417µs [end@writer_trace.go:78]"
+    },
+    "vfs.Read": {
+      "count": 16769,
+      "median_s": 6.321e-05,
+      "p95_s": 0.04055961,
+      "max_s": 20.561718877,
+      "max_line": "2026/10/02 15:00:50.066646 juicefs[413172] <DEBUG>: writer flush inode=596152 origin=vfs.Read barrier=792 phase=end errno=0 elapsed=20.561718877s [end@writer_trace.go:78]"
+    },
+    "vfs.Fsync": {
+      "count": 10907,
+      "median_s": 0.041287077,
+      "p95_s": 0.46923594500000004,
+      "max_s": 14.210586302,
+      "max_line": "2026/10/02 16:05:06.170938 juicefs[413172] <DEBUG>: writer flush inode=596152 origin=vfs.Fsync barrier=27331 phase=end errno=0 elapsed=14.210586302s [end@writer_trace.go:78]"
+    },
+    "vfs.Fallocate": {
+      "count": 593,
+      "median_s": 0.030279317,
+      "p95_s": 2.787690185,
+      "max_s": 10.873768942,
+      "max_line": "2026/10/02 16:07:24.674170 juicefs[413172] <DEBUG>: writer flush inode=596153 origin=vfs.Fallocate barrier=27720 phase=end errno=0 elapsed=10.873768942s [end@writer_trace.go:78]"
+    }
+  },
+  "after1540": {
+    "vfs.Fallocate": {
+      "count": 306,
+      "median_s": 0.000498585,
+      "p95_s": 4.010326194,
+      "max_s": 10.873768942,
+      "max_line": "2026/10/02 16:07:24.674170 juicefs[413172] <DEBUG>: writer flush inode=596153 origin=vfs.Fallocate barrier=27720 phase=end errno=0 elapsed=10.873768942s [end@writer_trace.go:78]"
+    },
+    "vfs.Fsync": {
+      "count": 5289,
+      "median_s": 0.040833920999999995,
+      "p95_s": 0.511357187,
+      "max_s": 14.210586302,
+      "max_line": "2026/10/02 16:05:06.170938 juicefs[413172] <DEBUG>: writer flush inode=596152 origin=vfs.Fsync barrier=27331 phase=end errno=0 elapsed=14.210586302s [end@writer_trace.go:78]"
+    },
+    "vfs.Read": {
+      "count": 10826,
+      "median_s": 7.915250000000001e-05,
+      "p95_s": 0.042537487,
+      "max_s": 4.835908987,
+      "max_line": "2026/10/02 15:54:38.120575 juicefs[413172] <DEBUG>: writer flush inode=596152 origin=vfs.Read barrier=17526 phase=end errno=0 elapsed=4.835908987s [end@writer_trace.go:78]"
+    }
+  },
+  "slow_vfs_lines": [
+    "2026/10/02 15:00:50.066704 juicefs[413172] <INFO>: slow operation: read (596152,131072,245760000,274): (131072) - OK <20.561775> [logit@accesslog.go:92]",
+    "2026/10/02 15:00:50.066856 juicefs[413172] <INFO>: slow operation: write (596152,28672,1447096320,274) - OK <19.435968> [logit@accesslog.go:92]",
+    "2026/10/02 15:02:50.097431 juicefs[413172] <INFO>: slow operation: fallocate (596153,16,648806400,65536) - OK <10.122603> [logit@accesslog.go:92]",
+    "2026/10/02 15:08:13.831389 juicefs[413172] <INFO>: slow operation: read (596155,4096,1126322176,276): (4096) - OK <11.188277> [logit@accesslog.go:92]",
+    "2026/10/02 15:51:09.281402 juicefs[413172] <INFO>: slow operation: read (596155,16384,626061312,276): (16384) - OK <13.282546> [logit@accesslog.go:92]",
+    "2026/10/02 15:51:09.281487 juicefs[413172] <INFO>: slow operation: write (596155,4096,575815680,276) - OK <12.375731> [logit@accesslog.go:92]",
+    "2026/10/02 15:55:37.572192 juicefs[413172] <INFO>: slow operation: read (596155,4096,220987392,276): (4096) - OK <10.716823> [logit@accesslog.go:92]",
+    "2026/10/02 15:55:37.572393 juicefs[413172] <INFO>: slow operation: write (596155,4096,2640035840,276) - OK <10.471821> [logit@accesslog.go:92]",
+    "2026/10/02 16:00:07.296169 juicefs[413172] <INFO>: slow operation: read (596155,4096,141737984,276): (4096) - OK <14.182769> [logit@accesslog.go:92]",
+    "2026/10/02 16:02:13.272665 juicefs[413172] <INFO>: slow operation: fsync (596152,1) - OK <11.038539> [logit@accesslog.go:92]",
+    "2026/10/02 16:02:13.272826 juicefs[413172] <INFO>: slow operation: read (596152,131072,245760000,274): (131072) - OK <10.953064> [logit@accesslog.go:92]",
+    "2026/10/02 16:04:49.385550 juicefs[413172] <INFO>: slow operation: read (596152,131072,1606418432,274): (131072) - OK <46.786693> [logit@accesslog.go:92]",
+    "2026/10/02 16:04:49.385719 juicefs[413172] <INFO>: slow operation: write (596152,8192,23199744,274) - OK <46.666022> [logit@accesslog.go:92]",
+    "2026/10/02 16:04:49.418557 juicefs[413172] <INFO>: slow operation: read (596152,131072,1622016000,274): (131072) - OK <42.212098> [logit@accesslog.go:92]",
+    "2026/10/02 16:04:49.418625 juicefs[413172] <INFO>: slow operation: read (596152,131072,1619001344,274): (131072) - OK <42.736933> [logit@accesslog.go:92]",
+    "2026/10/02 16:04:49.418944 juicefs[413172] <INFO>: slow operation: read (596152,131072,1618870272,274): (131072) - OK <42.737312> [logit@accesslog.go:92]",
+    "2026/10/02 16:04:49.419716 juicefs[413172] <INFO>: slow operation: read (596152,131072,1622343680,274): (131072) - OK <42.213413> [logit@accesslog.go:92]",
+    "2026/10/02 16:04:49.420410 juicefs[413172] <INFO>: slow operation: read (596152,131072,1621884928,274): (131072) - OK <42.213960> [logit@accesslog.go:92]",
+    "2026/10/02 16:04:49.421428 juicefs[413172] <INFO>: slow operation: read (596152,131072,1622474752,274): (131072) - OK <42.215060> [logit@accesslog.go:92]",
+    "2026/10/02 16:04:49.440121 juicefs[413172] <INFO>: slow operation: read (596152,65536,20971520,274): (65536) - OK <46.681902> [logit@accesslog.go:92]",
+    "2026/10/02 16:05:06.170995 juicefs[413172] <INFO>: slow operation: fsync (596152,1) - OK <14.210638> [logit@accesslog.go:92]",
+    "2026/10/02 16:07:24.714122 juicefs[413172] <INFO>: slow operation: fallocate (596153,16,687603712,131072) - OK <10.913705> [logit@accesslog.go:92]",
+    "2026/10/02 16:08:26.236856 juicefs[413172] <INFO>: slow operation: fallocate (596152,16,2652635136,131072) - OK <10.023669> [logit@accesslog.go:92]"
+  ]
+}

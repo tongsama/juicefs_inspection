@@ -1,0 +1,12 @@
+goos: linux
+goarch: amd64
+pkg: github.com/juicedata/juicefs/pkg/meta
+cpu: 13th Gen Intel(R) Core(TM) i5-13500T
+BenchmarkPriorityHintUpdate/1-10  	 4017422	        28.40 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPriorityHintUpdate/1-10  	 4204304	        28.65 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPriorityHintUpdate/1-10  	 4328157	        27.87 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPriorityHintUpdate/1024-10         	 3779282	        31.55 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPriorityHintUpdate/1024-10         	 3766870	        31.87 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPriorityHintUpdate/1024-10         	 3720656	        34.36 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/juicedata/juicefs/pkg/meta	0.991s

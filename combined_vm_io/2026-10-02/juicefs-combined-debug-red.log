@@ -1,0 +1,9 @@
+--- FAIL: TestWriterSliceDiagnosticsNoAllocation (0.00s)
+    writer_trace_test.go:326: 
+        	Error Trace:	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/vfs/writer_trace_test.go:326
+        	Error:      	Should be zero, but was 12
+        	Test:       	TestWriterSliceDiagnosticsNoAllocation
+        	Messages:   	INFO must not allocate DEBUG diagnostic arguments
+FAIL
+FAIL	github.com/juicedata/juicefs/pkg/vfs	0.027s
+FAIL

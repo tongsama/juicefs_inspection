@@ -1,0 +1,54 @@
+2026-10-02 GC・rawstaging 調査補足（実機変更なし）
+
+対象資料: goroutines-1647.txt、metrics-1647.txt、config-selected.json、normal_slices_no_successful_put_or_delete.csv。URL・認証情報は本メモに含めない。
+
+1. 実機スタックと現在の仮説の限界
+
+GC dispatcher は goroutine 246、compaction_gc.go:39 の外側 select で通知受信待ち。component は生存している。内側の deletion transport 送信待ちではない。従って、この瞬間の hint 飽和・dispatcher 停止は支持されない。過去の overflow を数える metric がないため、過去の overflow が一度もなかったとも証明できない。外側 select だけから既存 physical queue の空き件数までは分からない。
+
+physical deletion worker は10本。9本は cached_store.go:345 の WithTimeout 内のremote DELETE待ち、1本は354付近のログ処理中。対応する HTTP child goroutine には net/http.persistConn.roundTrip の待ちがある。worker が削除 queue の受信待ちで遊休している状態ではない。
+
+cleanupSlices は goroutine 259、base.go:1052 の次回周期待ち（53分）。metrics では cleanupSlices 成功1回、処理件数25669、実行時間0.407013891秒。処理件数は physical object deletion 完了件数ではなく、deleteSliceへenqueueしたslice件数である。MaxDeletes10のphysical queue容量102400なので、25669件をenqueueして回収関数が短時間で戻ることはソースと整合する。
+
+16:47保存metricsは remote DELETE完了26136件、総時間64568.761秒（算術平均約2.47秒）、stage54139件／1,257,283,592 bytes。全object request errors131であり、DELETEだけのerror数ではない。rootの16:52:35観測はstage54040件、DELETE27519件。直近はstage99件減少しており、全期間で増え続けるとは断定しない。
+
+2. GC lifecycle のソース監査
+
+newBaseMetaはsessCtxを初期化しない。NewSession冒頭でBackground contextを作り、その後startDeleteSliceTasksからstartCompactionGCを呼ぶ。通常mountではsession作成は1回である。NewSessionで初期contextをCancelする処理はなく、sessCtx.CancelはCloseSessionにある。CloseSessionはdispatcher停止とqueue閉鎖も行う。
+
+startDeleteSliceTasksはdslicesが既に存在する場合にearly returnするため、特殊な再初期化には注意が必要だが、今回live dispatcherが外側selectで生存していることから、通常mountの初期context終了が今回の原因とは整合しない。複数NewSessionの一般的な安全性をこの監査から主張するものではない。
+
+設定はCompactionGCMode=deferred、CompactionScheduler=priority、MaxDeletes=10、NoBGJob=false、ReadOnly=false、Writeback=true、MaxUpload=30、UploadDelay=0。Format.TrashDays=0はrootが別途確認済みなので、trashによるdelayed pathだけで今回old-slice回収を説明することはできない。
+
+3. local stage取消とremote DELETEの順序
+
+既存rSlice.Removeは、各blockについてremovePendingとbcache.remove(key,true)を先に実行し、その後remote DELETEする。この経路とphysical worker semanticsは新GCで変更していない。del_cはremote DELETE完了時histogram countであり、local stage除去件数ではない。remote DELETE成功・失敗の両方を数える。
+
+local取消はsliceがphysical workerに取り出されるまで実行されない。既存channelはFIFOなので、多数の古い回収sliceが先にqueueへ入ると、新しくobsoleteになったsliceのlocal stage取消も先行remote DELETE群の処理を待つ。この構造はcurrent hint overflowがなくてもlocal stage除去を遅らせ得る。今回のstage sampleがnegative refでqueue待ちかはmetadata照合未了であり、原因として確定していない。
+
+4. no-success集合からの少数stage照合
+
+CSV53823IDから最古10、全期間層化10、最新10を選び、重複を除いた28IDをexact IDprefixのstage directoryだけでstatした。全stage treeのscanはしていない。最古10ID（15:16〜15:18、4176869を含む）はstageなし。後半18IDのうち17IDはstage存在。例: 4192531_0_4096は4100 bytes、4228761_0_12288は12292 bytes、4240943_0_290816は290852 bytes。末尾4 bytes等はstage checksum/footerを含むため、file sizeをそのままmetadata Slice.Sizeに使わない。
+
+CSVは固定log prefix時点の「成功PUTも成功DELETEも未観測」の集合である。現在まで未upload／未deleteとは限らず、最古IDが消えた事実と矛盾しない。4176869はrootの追加logで16:42:48 PUT成功（初回metadata15:16:35から約86分）と確認されている。
+
+/proc/413172/cmdlineは非空argument1個だけでmetadata Redis URLなし。environも関連変数はnumeric JFS_SUPERVISORのみ。Redis DB・standalone/cluster prefix・認証経路を確定できないので、本workerはmetadata接続を行っていない。source上standaloneはsliceRef、clusterは{DB}sliceRefだが、推測してどちらかへ接続しない。rootが起動script/config所在をユーザーへ問い合わせ中。
+
+5. overflow機構は存在するが、実機原因とは未確定
+
+hint capacity1024+dispatcher保持1、physical queueはMaxDeletes*10240。hint飽和時notifyはdefaultで通知を捨て、durable dead refが既存回収sourceとして残る。cleanupSlicesの初回周期は57〜63分、nextCleanupSlices分散gate54分、回収context50分。ただしdeleteSliceのqueue待ちはsession contextを見ており、cleanup timeoutでその待ちを直接解除しない。
+
+実装時のoverflow testはmanual doCleanupSlicesによるintent保持・復旧を確認したもので、hourly policyの実負荷応答性やstage steady-stateを検証したものではない。この制約は認める。一方、今回のlive外側selectを無視して現在overflowを原因と断定したり、観測前にhint容量だけ増やしたりすべきではない。
+
+6. bounded local retirementを検討する際の必須条件（まだ未実装）
+
+・対象はdurably committed reference retirementによりobsoleteと分かったsliceのみ。live／未確定sliceのstageはevictしない。copy/clone guardsがない旧writable clientの同居は、terminal dead-reference保証を崩す。
+・foregroundはfilesystem I/O、remote I/O、queue待ちをしない。有界worker／有界queueでlocal pending取消とstage除去を行い、remote DELETE待ちと切り離す。
+・durable markerはremote object deletion成功まで保持する。local stageを消しただけではmetadata markerを消さない。remote retry、shutdown／overflowからの回収を維持する。
+・inflight uploadへのpending invalidationと、upload後に不要となったremote objectを削除する現行協調を保持する。rawstagingのみ削除してpendingKeysを残すなどの不整合を作らない。
+・queueを増設して満杯時に通知を捨てるだけでは、local退避遅延を別queueへ移すだけになる。背景compaction開始前の非待機budget reservation／pressure-aware admission等と組み合わせる。2500 thresholdとmanual safety経路は維持する。
+・hint容量増加は一時的な猶予、頻回full HSCANは負荷と制約を悪化させ得る。観測したbottleneckに合わない補正を先行させない。
+
+7. 次のread-only照合条件
+
+起動URL所在が判明しRedis DB・cluster扱いを確定できた場合のみ、30前後のsliceをHGETで照合する。hash fieldはkID_SliceSizeであり、stage filenameのraw block sizeをSliceSizeと同一と決めつけない。block0しかない小sliceでもmetadataからSlice.Sizeを確認する必要がある。既知inode/chunkをLRANGE等で少数読む権限が追加されれば、slice recordから正しいID/sizeを取得できる。HGET負値はdead、正値は共有ref、0/nilはRedisのimplicit single-referenceとcleanupZeroRefによるkey省略があるため、それだけでdead／liveを確定しない。接続URL・認証情報を出力・保存せず、全volume scanは行わない。

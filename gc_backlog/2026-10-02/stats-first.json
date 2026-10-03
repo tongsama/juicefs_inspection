@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-10-02T16:42:15.813251+09:00",
+  "metrics": {
+    "juicefs_juicefs_bgjob_deletions_total": 25669.0,
+    "juicefs_juicefs_bgjob_duration_seconds_total": 1.0,
+    "juicefs_juicefs_bgjob_duration_seconds_sum": 0.407013891,
+    "juicefs_object_request_data_bytes_PUT": 7523971749.0,
+    "juicefs_object_request_durations_histogram_seconds_DELETE_total": 25321.0,
+    "juicefs_object_request_durations_histogram_seconds_DELETE_sum": 61331.0612576735,
+    "juicefs_object_request_uploading": 30.0,
+    "juicefs_staging_block_bytes": 1203396608.0,
+    "juicefs_staging_block_delay_seconds": 40406747.34236224,
+    "juicefs_staging_block_errors": 0.0,
+    "juicefs_staging_blocks": 53823.0,
+    "juicefs_staging_write_bytes": 2167742648.0,
+    "juicefs_staging_writing_blocks": 0.0
+  }
+}

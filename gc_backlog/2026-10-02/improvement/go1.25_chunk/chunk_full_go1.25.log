@@ -1,0 +1,746 @@
+# github.com/mattn/go-sqlite3
+sqlite3-binding.c: In function ‘sqlite3ShadowTableName’:
+sqlite3-binding.c:123934:9: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+123934 |   zTail = strrchr(zName, '_');
+       |         ^
+
+Mockey check failed, please add -gcflags="all=-N -l".
+(Set env MOCKEY_CHECK_GCFLAGS=false to disable gcflags check) 
+		
+=== RUN   TestStoreDefault
+2026/10/02 18:39:03.548714 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:03.548851 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:03.548873 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestStoreDefault (0.11s)
+=== RUN   TestStoreMemCache
+--- PASS: TestStoreMemCache (0.11s)
+=== RUN   TestStoreCompressed
+2026/10/02 18:39:03.764832 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:03.764872 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:03.764879 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestStoreCompressed (0.10s)
+=== RUN   TestStoreLimited
+2026/10/02 18:39:03.868215 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:03.868343 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:03.868355 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestStoreLimited (4.07s)
+=== RUN   TestStoreFull
+2026/10/02 18:39:07.937285 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:07.937355 juicefs[607722] <WARNING>: not enough space (92%) or inodes (99%) for caching in /tmp/diskCache-607722/: free ratio should be >= 99% [newCacheStore@disk_cache.go:152]
+2026/10/02 18:39:07.937365 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:07.937372 juicefs[607722] <INFO>: Adjusted cache capacity based on freeratio: from 10485760 to 1048955 bytes [setLimitByFreeRatio@disk_cache.go:177]
+2026/10/02 18:39:07.937379 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 104 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestStoreFull (0.11s)
+=== RUN   TestStoreSmallBuffer
+2026/10/02 18:39:08.043620 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:08.043680 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:08.043700 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestStoreSmallBuffer (0.11s)
+=== RUN   TestStoreAsync
+2026/10/02 18:39:08.148863 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:08.148905 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:08.148914 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:08.149311 juicefs[607722] <INFO>: Found 1 staging blocks (4 B) in /tmp/diskCache-607722/ with 186.765µs [scanStaging@disk_cache.go:1074]
+--- PASS: TestStoreAsync (0.16s)
+=== RUN   TestForceUpload
+2026/10/02 18:39:08.305006 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:08.305155 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:08.305181 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:08.305221 juicefs[607722] <INFO>: delay uploading by 1h0m0s [NewCachedStore@cached_store.go:939]
+--- PASS: TestForceUpload (0.00s)
+=== RUN   TestStoreDelayed
+2026/10/02 18:39:08.305782 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:08.305806 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:08.305817 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:08.305847 juicefs[607722] <WARNING>: delay uploading by 200ms (this value is too small, and is not recommended) [NewCachedStore@cached_store.go:937]
+--- PASS: TestStoreDelayed (2.10s)
+=== RUN   TestStoreMultiBuckets
+2026/10/02 18:39:10.410740 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:10.410805 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:10.410825 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestStoreMultiBuckets (0.11s)
+=== RUN   TestFillCache
+2026/10/02 18:39:10.517540 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:10.517623 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:10.517644 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 1038090 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestFillCache (1.11s)
+=== RUN   TestStoreRetry
+2026/10/02 18:39:11.622707 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:11.622779 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:11.622801 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestStoreRetry (0.00s)
+=== RUN   TestDiskCacheState
+2026/10/02 18:39:11.622936 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:11.622978 juicefs[607722] <INFO>: Disk cache (/tmp/TestDiskCacheState2146447367/001/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:11.622986 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:12.623580 juicefs[607722] <INFO>: disk cache /tmp/TestDiskCacheState2146447367/001/ state change from normal to unstable [event@disk_cache_state.go:283]
+2026/10/02 18:39:14.625308 juicefs[607722] <INFO>: disk cache /tmp/TestDiskCacheState2146447367/001/ state change from unstable to normal [event@disk_cache_state.go:283]
+2026/10/02 18:39:16.625892 juicefs[607722] <INFO>: disk cache /tmp/TestDiskCacheState2146447367/001/ state change from unstable to down [event@disk_cache_state.go:283]
+2026/10/02 18:39:16.625899 juicefs[607722] <INFO>: stop checkFreeSpace at /tmp/TestDiskCacheState2146447367/001/ [checkFreeSpace@disk_cache.go:371]
+2026/10/02 18:39:16.625939 juicefs[607722] <ERROR>: cache dir `/tmp/TestDiskCacheState2146447367/001/`(c8864840-520b-4453-97a5-05b8cb551177) is unavailable, removed [removeStore@disk_cache.go:1236]
+2026/10/02 18:39:17.626080 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:17.626187 juicefs[607722] <INFO>: Disk cache (/tmp/TestDiskCacheState2146447367/002/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:17.626214 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:17.626281 juicefs[607722] <INFO>: Disk cache (/tmp/TestDiskCacheState2146447367/003/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:17.626308 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:17.626343 juicefs[607722] <INFO>: Disk cache (/tmp/TestDiskCacheState2146447367/004/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:17.626366 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:17.626394 juicefs[607722] <INFO>: Disk cache (/tmp/TestDiskCacheState2146447367/005/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:17.626417 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:17.626447 juicefs[607722] <INFO>: Disk cache (/tmp/TestDiskCacheState2146447367/006/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:17.626456 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:17.626481 juicefs[607722] <INFO>: Disk cache (/tmp/TestDiskCacheState2146447367/007/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:17.626494 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:17.626527 juicefs[607722] <INFO>: Disk cache (/tmp/TestDiskCacheState2146447367/008/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:17.626549 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:17.626576 juicefs[607722] <INFO>: Disk cache (/tmp/TestDiskCacheState2146447367/009/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:17.626584 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:17.626608 juicefs[607722] <INFO>: Disk cache (/tmp/TestDiskCacheState2146447367/010/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:17.626630 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:17.626656 juicefs[607722] <INFO>: Disk cache (/tmp/TestDiskCacheState2146447367/011/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:17.626663 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:18.628207 juicefs[607722] <INFO>: disk cache /tmp/TestDiskCacheState2146447367/008/ state change from normal to unstable [event@disk_cache_state.go:283]
+2026/10/02 18:39:20.629504 juicefs[607722] <INFO>: disk cache /tmp/TestDiskCacheState2146447367/008/ state change from unstable to normal [event@disk_cache_state.go:283]
+2026/10/02 18:39:22.630338 juicefs[607722] <INFO>: stop checkFreeSpace at /tmp/TestDiskCacheState2146447367/008/ [checkFreeSpace@disk_cache.go:371]
+2026/10/02 18:39:22.630341 juicefs[607722] <INFO>: disk cache /tmp/TestDiskCacheState2146447367/008/ state change from unstable to down [event@disk_cache_state.go:283]
+2026/10/02 18:39:23.630488 juicefs[607722] <ERROR>: cache dir `/tmp/TestDiskCacheState2146447367/008/`(d6f7c902-bbed-4aee-a49b-c4c4a0d3650e) is unavailable, removed [removeStore@disk_cache.go:1236]
+--- PASS: TestDiskCacheState (12.01s)
+=== RUN   TestNewCacheStore
+2026/10/02 18:39:23.631069 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:23.631150 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/1790933963631061077): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:23.631165 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestNewCacheStore (0.00s)
+=== RUN   TestMetrics
+2026/10/02 18:39:23.631344 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:23.631593 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/1790933963631296851/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:23.631622 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:23.631415 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:23.632049 juicefs[607722] <WARNING>: Ignore file with unknown size: /tmp/diskCache-607722/1790933963631296851/raw/test [scanCached@disk_cache.go:1004]
+--- PASS: TestMetrics (0.10s)
+=== RUN   TestScanCached
+--- PASS: TestScanCached (0.00s)
+=== RUN   TestChecksum
+2026/10/02 18:39:23.733380 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/1790933963733307755): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:23.733411 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 1038090 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:24.631366 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:24.631358 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:24.631393 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:24.631399 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:24.631428 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:24.631403 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:24.631429 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:24.631408 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:24.631450 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:24.632567 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:24.632623 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:25.632140 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:25.632154 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:25.632180 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:25.632185 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:25.632197 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:25.632172 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:25.632168 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:25.632281 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:25.632300 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:25.633305 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:25.633327 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:26.632719 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:26.632764 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:26.632775 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:26.632786 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:26.632793 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:26.632783 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:26.632738 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:26.632771 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:26.632800 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:26.634347 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:26.634363 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:27.627508 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/009/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:27.627585 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/009/`: stat /tmp/TestDiskCacheState2146447367/009/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:27.627579 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/007/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:27.627618 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/006/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:27.627627 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/007/`: stat /tmp/TestDiskCacheState2146447367/007/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:27.627626 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/011/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:27.627670 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/011/`: stat /tmp/TestDiskCacheState2146447367/011/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:27.627638 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/006/`: stat /tmp/TestDiskCacheState2146447367/006/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:27.627663 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/010/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:27.627749 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/010/`: stat /tmp/TestDiskCacheState2146447367/010/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:27.627568 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/002/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:27.627764 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/002/`: stat /tmp/TestDiskCacheState2146447367/002/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:27.627575 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/005/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:27.627927 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/005/`: stat /tmp/TestDiskCacheState2146447367/005/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:27.627604 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/004/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:27.627983 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/004/`: stat /tmp/TestDiskCacheState2146447367/004/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:27.627644 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/003/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:27.628021 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/003/`: stat /tmp/TestDiskCacheState2146447367/003/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:27.632914 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:27.632966 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:27.632964 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:27.632961 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:27.632940 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:27.632914 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:27.632950 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:27.632954 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:27.632929 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:27.635024 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:27.635028 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:28.633538 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:28.633558 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:28.633594 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:28.633605 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:28.633603 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:28.633603 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:28.633613 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:28.633615 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:28.633653 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:28.635956 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:28.635985 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+--- PASS: TestChecksum (5.01s)
+=== RUN   TestExpand
+--- PASS: TestExpand (0.00s)
+=== RUN   TestCheckPath
+--- PASS: TestCheckPath (0.00s)
+=== RUN   TestCacheManager
+2026/10/02 18:39:28.740725 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:28.740801 juicefs[607722] <INFO>: Disk cache (/tmp/TestCacheManager2112390696/001/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:28.740809 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:28.740855 juicefs[607722] <INFO>: Disk cache (/tmp/TestCacheManager2112390696/002/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:28.740861 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:28.740890 juicefs[607722] <INFO>: Disk cache (/tmp/TestCacheManager2112390696/003/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:28.740899 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+
+  test getDiskUsage [32m✔[0m
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+2026/10/02 18:39:29.634619 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:29.634670 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:29.634683 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:29.634714 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:29.634718 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:29.634727 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:29.634732 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:29.634735 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:29.634730 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:29.636088 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:29.636099 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:29.737933 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:29.742144 juicefs[607722] <INFO>: stop checkFreeSpace at /tmp/TestCacheManager2112390696/001/ [checkFreeSpace@disk_cache.go:371]
+2026/10/02 18:39:29.742153 juicefs[607722] <ERROR>: cache dir `/tmp/TestCacheManager2112390696/001/`(62532e6f-c090-443c-8334-013d104ce66f) is unavailable, removed [removeStore@disk_cache.go:1236]
+2026/10/02 18:39:30.635233 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:30.635292 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:30.635306 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:30.635300 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:30.635321 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:30.635316 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:30.635328 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:30.635331 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:30.635339 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:30.636566 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:30.636640 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:30.738468 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:31.635699 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:31.635749 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:31.635759 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:31.635765 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:31.635772 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:31.635779 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:31.635984 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:31.636009 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:31.636016 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:31.637249 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:31.637299 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:31.738842 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:31.743327 juicefs[607722] <INFO>: stop checkFreeSpace at /tmp/TestCacheManager2112390696/002/ [checkFreeSpace@disk_cache.go:371]
+2026/10/02 18:39:31.743364 juicefs[607722] <INFO>: stop checkFreeSpace at /tmp/TestCacheManager2112390696/003/ [checkFreeSpace@disk_cache.go:371]
+2026/10/02 18:39:31.743376 juicefs[607722] <ERROR>: cache dir `/tmp/TestCacheManager2112390696/002/`(db6931f6-f411-4c44-ad0f-0b5ad6cebefe) is unavailable, removed [removeStore@disk_cache.go:1236]
+2026/10/02 18:39:31.743388 juicefs[607722] <ERROR>: cache dir `/tmp/TestCacheManager2112390696/003/`(393d2f2b-1701-4ecf-b9fd-a2b84a7fc22d) is unavailable, removed [removeStore@disk_cache.go:1236]
+2026/10/02 18:39:32.636434 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:32.636476 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:32.636493 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:32.636482 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:32.636491 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:32.636502 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:32.636499 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:32.636499 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:32.636513 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:32.637664 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:32.637718 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:32.739309 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:33.631556 juicefs[607722] <INFO>: lockfile /tmp/diskCache-607722/1790933963631061077/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:33.631608 juicefs[607722] <WARNING>: stat `/tmp/diskCache-607722/1790933963631061077`: stat /tmp/diskCache-607722/1790933963631061077: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:33.632695 juicefs[607722] <INFO>: lockfile /tmp/diskCache-607722/1790933963631296851/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:33.632744 juicefs[607722] <WARNING>: stat `/tmp/diskCache-607722/1790933963631296851/`: stat /tmp/diskCache-607722/1790933963631296851/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:33.636934 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:33.636977 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:33.636988 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:33.637003 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:33.637007 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:33.636994 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:33.637000 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:33.636996 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:33.637014 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:33.638149 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:33.638175 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:33.733825 juicefs[607722] <INFO>: lockfile /tmp/diskCache-607722/1790933963733307755/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:33.733925 juicefs[607722] <WARNING>: stat `/tmp/diskCache-607722/1790933963733307755`: stat /tmp/diskCache-607722/1790933963733307755: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:33.740089 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:34.637969 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:34.638014 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:34.638023 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:34.638031 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:34.638043 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:34.638050 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:34.638059 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:34.638041 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:34.638054 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:34.638248 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:34.638265 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:34.740880 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+--- PASS: TestCacheManager (6.00s)
+=== RUN   TestAtimeNotLost
+2026/10/02 18:39:34.743382 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:34.743416 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 1017118 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:35.639016 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:35.639037 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:35.639062 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:35.639064 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:35.639052 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:35.639080 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:35.639040 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:35.639084 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:35.639060 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:35.639092 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:35.639089 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:35.741851 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:36.640038 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:36.640100 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:36.640109 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:36.640107 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:36.640122 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:36.640138 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:36.640127 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:36.640146 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:36.640143 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:36.640154 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:36.640149 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:36.742861 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:37.627914 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/009/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:37.627966 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/009/`: stat /tmp/TestDiskCacheState2146447367/009/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:37.627972 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/002/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:37.627984 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/002/`: stat /tmp/TestDiskCacheState2146447367/002/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:37.627983 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/006/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:37.628003 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/004/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:37.627980 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/011/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:37.628014 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/011/`: stat /tmp/TestDiskCacheState2146447367/011/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:37.628004 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/006/`: stat /tmp/TestDiskCacheState2146447367/006/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:37.628014 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/005/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:37.628055 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/005/`: stat /tmp/TestDiskCacheState2146447367/005/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:37.628010 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/004/`: stat /tmp/TestDiskCacheState2146447367/004/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:37.628027 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/010/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:37.628071 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/010/`: stat /tmp/TestDiskCacheState2146447367/010/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:37.628031 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/007/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:37.628081 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/007/`: stat /tmp/TestDiskCacheState2146447367/007/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:37.628038 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/003/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:37.628097 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/003/`: stat /tmp/TestDiskCacheState2146447367/003/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:37.640338 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:37.640427 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:37.640422 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:37.640417 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:37.640412 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:37.640413 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:37.640417 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:37.640417 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:37.640472 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:37.640421 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:37.640409 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:37.743850 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:37.744031 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:37.744070 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 1017118 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:38.641377 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:38.641396 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:38.641416 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:38.641434 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:38.641429 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:38.641434 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:38.641441 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:38.641446 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:38.641442 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:38.641453 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:38.641448 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:38.744365 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:39.641809 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:39.641848 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:39.641870 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:39.641875 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:39.641840 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:39.641880 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:39.641891 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:39.641826 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:39.641895 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:39.641837 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:39.641881 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:39.745517 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:40.642812 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:40.642830 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:40.642886 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:40.642900 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:40.642882 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:40.642897 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:40.642867 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:40.642873 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:40.642893 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:40.642968 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:40.642973 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:40.744515 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:40.744551 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 0 to 1017118 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/02 18:39:40.745615 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:41.643767 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:41.643809 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:41.643817 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:41.643831 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:41.643842 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:41.643847 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:41.643834 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:41.643848 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:41.643814 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:41.643819 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:41.643852 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:41.745730 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:42.644564 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:42.644635 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:42.644660 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:42.644667 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:42.644659 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:42.644676 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:42.644692 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:42.644693 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:42.644698 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:42.644700 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:42.644713 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:42.746433 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:43.632477 juicefs[607722] <INFO>: lockfile /tmp/diskCache-607722/1790933963631061077/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:43.632552 juicefs[607722] <WARNING>: stat `/tmp/diskCache-607722/1790933963631061077`: stat /tmp/diskCache-607722/1790933963631061077: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:43.633622 juicefs[607722] <INFO>: lockfile /tmp/diskCache-607722/1790933963631296851/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:43.633668 juicefs[607722] <WARNING>: stat `/tmp/diskCache-607722/1790933963631296851/`: stat /tmp/diskCache-607722/1790933963631296851/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:43.644895 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:43.644952 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:43.644941 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:43.644963 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:43.644989 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:43.644980 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:43.645001 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:43.645006 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:43.645010 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:43.644991 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:43.645019 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:43.734775 juicefs[607722] <INFO>: lockfile /tmp/diskCache-607722/1790933963733307755/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:43.734829 juicefs[607722] <WARNING>: stat `/tmp/diskCache-607722/1790933963733307755`: stat /tmp/diskCache-607722/1790933963733307755: no such file or directory [inRootVolume@utils_unix.go:54]
+--- PASS: TestAtimeNotLost (9.00s)
+=== RUN   TestSetlimitByFreeRatio
+2026/10/02 18:39:43.745289 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:43.745347 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/1790933983745283110): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:43.745403 juicefs[607722] <INFO>: Adjusted cache capacity based on freeratio: from 1073741824 to 858993472 bytes [setLimitByFreeRatio@disk_cache.go:177]
+2026/10/02 18:39:43.745421 juicefs[607722] <INFO>: Adjusted max items based on freeratio: from 1000 to 800 items [setLimitByFreeRatio@disk_cache.go:191]
+--- PASS: TestSetlimitByFreeRatio (0.00s)
+=== RUN   TestSetLimitByFreeRatioUnknownInodesKeepExplicitMaxItems
+2026/10/02 18:39:43.745504 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:43.745538 juicefs[607722] <INFO>: Disk cache (/tmp/diskCache-607722/1790933983745501891): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:43.745569 juicefs[607722] <INFO>: Adjusted cache capacity based on freeratio: from 1073741824 to 858993472 bytes [setLimitByFreeRatio@disk_cache.go:177]
+--- PASS: TestSetLimitByFreeRatioUnknownInodesKeepExplicitMaxItems (0.00s)
+=== RUN   TestUnknownInodeStatsShouldNotMarkCacheAsRawFull
+2026/10/02 18:39:43.745643 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933983745501891: no such file or directory [getDiskUsage@utils_unix.go:39]
+
+  unknown inode stats should not trigger rawFull 2026/10/02 18:39:43.745785 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:43.745838 juicefs[607722] <WARNING>: not enough space (100%) or inodes (0%) for caching in /tmp/TestUnknownInodeStatsShouldNotMarkCacheAsRawFull1998211274/001: free ratio should be >= 10% [newCacheStore@disk_cache.go:152]
+2026/10/02 18:39:43.745859 juicefs[607722] <INFO>: Disk cache (/tmp/TestUnknownInodeStatsShouldNotMarkCacheAsRawFull1998211274/001): used ratio - [space 0%, inode 100%] [newCacheStore@disk_cache.go:154]
+2026/10/02 18:39:43.745877 juicefs[607722] <INFO>: Adjusted cache capacity based on freeratio: from 1073741824 to 966367616 bytes [setLimitByFreeRatio@disk_cache.go:177]
+
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+--- PASS: TestUnknownInodeStatsShouldNotMarkCacheAsRawFull (1.50s)
+=== RUN   Test2RandomEviction
+
+  Test2RandomEviction-CacheFull 2026/10/02 18:39:45.246554 juicefs[607722] <WARNING>: unknown cache eviction policy: "", fallback to 2-random [newCacheStore@disk_cache.go:119]
+2026/10/02 18:39:45.246629 juicefs[607722] <INFO>: Disk cache (/tmp/Test2RandomEviction4287927588/001/diskCache): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+--- PASS: Test2RandomEviction (0.00s)
+=== RUN   TestLruEviction
+
+  TestLruEviction-CacheFull 2026/10/02 18:39:45.247031 juicefs[607722] <INFO>: Disk cache (/tmp/TestLruEviction1350177486/001/diskCache): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+
+  TestLruEviction-WriteBack 2026/10/02 18:39:45.247434 juicefs[607722] <INFO>: Disk cache (/tmp/TestLruEviction1350177486/002/diskCache): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+--- PASS: TestLruEviction (0.00s)
+=== RUN   TestCooldownAtimeOnWriteFixedOnLoad
+2026/10/02 18:39:45.248874 juicefs[607722] <INFO>: Disk cache (/tmp/TestCooldownAtimeOnWriteFixedOnLoad3299279255/001): used ratio - [space 7%, inode 0.3%] [newCacheStore@disk_cache.go:154]
+
+  mock time.Now to avoid drift 
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+--- PASS: TestCooldownAtimeOnWriteFixedOnLoad (0.00s)
+=== RUN   TestUploadStagingToFreeCalculation
+
+  uploadStaging should only upload enough blocks to satisfy freeRatio 
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+--- PASS: TestUploadStagingToFreeCalculation (0.00s)
+=== RUN   TestUploadStagingInodeToFree
+
+  uploadStaging respects inode pressure 
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+--- PASS: TestUploadStagingInodeToFree (0.00s)
+=== RUN   TestSpaceToFreeNoAction
+
+  uploadStaging does nothing when disk has enough space 
+
+[31m[0m[33m[0m[32m
+1 total assertion[0m
+
+--- PASS: TestSpaceToFreeNoAction (0.00s)
+=== RUN   TestOpenCacheFileReads
+=== RUN   TestOpenCacheFileReads/data_only
+=== RUN   TestOpenCacheFileReads/checksum_only
+=== RUN   TestOpenCacheFileReads/checksum_and_tier
+=== RUN   TestOpenCacheFileReads/tier_only
+=== RUN   TestOpenCacheFileReads/tier_without_checksum_no_collision
+--- PASS: TestOpenCacheFileReads (0.00s)
+    --- PASS: TestOpenCacheFileReads/data_only (0.00s)
+    --- PASS: TestOpenCacheFileReads/checksum_only (0.00s)
+    --- PASS: TestOpenCacheFileReads/checksum_and_tier (0.00s)
+    --- PASS: TestOpenCacheFileReads/tier_only (0.00s)
+    --- PASS: TestOpenCacheFileReads/tier_without_checksum_no_collision (0.00s)
+=== RUN   TestEncodeStageFooterLengthParity
+--- PASS: TestEncodeStageFooterLengthParity (0.00s)
+=== RUN   TestOpenCacheFileRejectsInvalidSize
+=== RUN   TestOpenCacheFileRejectsInvalidSize/extra_smaller_than_checksum
+=== RUN   TestOpenCacheFileRejectsInvalidSize/truncated_data
+--- PASS: TestOpenCacheFileRejectsInvalidSize (0.00s)
+    --- PASS: TestOpenCacheFileRejectsInvalidSize/extra_smaller_than_checksum (0.00s)
+    --- PASS: TestOpenCacheFileRejectsInvalidSize/truncated_data (0.00s)
+=== RUN   TestOpenCacheFileParsesStageFooter
+=== RUN   TestOpenCacheFileParsesStageFooter/truncated_header
+=== RUN   TestOpenCacheFileParsesStageFooter/bad_magic
+=== RUN   TestOpenCacheFileParsesStageFooter/trailing_data
+=== RUN   TestOpenCacheFileParsesStageFooter/invalid_tier_clamped_to_zero
+--- PASS: TestOpenCacheFileParsesStageFooter (0.00s)
+    --- PASS: TestOpenCacheFileParsesStageFooter/truncated_header (0.00s)
+    --- PASS: TestOpenCacheFileParsesStageFooter/bad_magic (0.00s)
+    --- PASS: TestOpenCacheFileParsesStageFooter/trailing_data (0.00s)
+    --- PASS: TestOpenCacheFileParsesStageFooter/invalid_tier_clamped_to_zero (0.00s)
+=== RUN   TestStageFooterRoundTrip
+=== RUN   TestStageFooterRoundTrip/tier0_cstrue
+=== RUN   TestStageFooterRoundTrip/tier0_csfalse
+=== RUN   TestStageFooterRoundTrip/tier1_cstrue
+=== RUN   TestStageFooterRoundTrip/tier1_csfalse
+=== RUN   TestStageFooterRoundTrip/tier2_cstrue
+=== RUN   TestStageFooterRoundTrip/tier2_csfalse
+=== RUN   TestStageFooterRoundTrip/tier3_cstrue
+=== RUN   TestStageFooterRoundTrip/tier3_csfalse
+--- PASS: TestStageFooterRoundTrip (0.00s)
+    --- PASS: TestStageFooterRoundTrip/tier0_cstrue (0.00s)
+    --- PASS: TestStageFooterRoundTrip/tier0_csfalse (0.00s)
+    --- PASS: TestStageFooterRoundTrip/tier1_cstrue (0.00s)
+    --- PASS: TestStageFooterRoundTrip/tier1_csfalse (0.00s)
+    --- PASS: TestStageFooterRoundTrip/tier2_cstrue (0.00s)
+    --- PASS: TestStageFooterRoundTrip/tier2_csfalse (0.00s)
+    --- PASS: TestStageFooterRoundTrip/tier3_cstrue (0.00s)
+    --- PASS: TestStageFooterRoundTrip/tier3_csfalse (0.00s)
+=== RUN   TestPage
+--- PASS: TestPage (0.00s)
+=== RUN   TestPageReader
+--- PASS: TestPageReader (0.00s)
+=== RUN   TestPrefetcher
+=== RUN   TestPrefetcher/should_fetch_given_keys
+=== RUN   TestPrefetcher/should_ignore_duplicate_keys
+=== RUN   TestPrefetcher/should_drop_keys_when_pending_queue_is_full
+--- PASS: TestPrefetcher (0.05s)
+    --- PASS: TestPrefetcher/should_fetch_given_keys (0.00s)
+    --- PASS: TestPrefetcher/should_ignore_duplicate_keys (0.00s)
+    --- PASS: TestPrefetcher/should_drop_keys_when_pending_queue_is_full (0.05s)
+=== RUN   TestRetireIndependentOfRemoteDelete
+--- PASS: TestRetireIndependentOfRemoteDelete (0.00s)
+=== RUN   TestRetireUploadInFlight
+=== RUN   TestRetireUploadInFlight/queued
+2026/10/02 18:39:45.304448 juicefs[607722] <INFO>: Key chunks/0/0/7_0_8 is not needed, abandoned, err: injected DELETE failure [finishStagingUpload@cached_store.go:1185]
+=== RUN   TestRetireUploadInFlight/immediate
+2026/10/02 18:39:45.305126 juicefs[607722] <INFO>: Key chunks/0/0/7_0_8 is not needed, abandoned, err: injected DELETE failure [finishStagingUpload@cached_store.go:1185]
+--- PASS: TestRetireUploadInFlight (0.00s)
+    --- PASS: TestRetireUploadInFlight/queued (0.00s)
+    --- PASS: TestRetireUploadInFlight/immediate (0.00s)
+=== RUN   TestRetireStageRemovalError
+--- PASS: TestRetireStageRemovalError (0.00s)
+=== RUN   TestRetireIdempotentMemory
+--- PASS: TestRetireIdempotentMemory (0.00s)
+=== RUN   TestRetireQueuedUploadCanceled
+--- PASS: TestRetireQueuedUploadCanceled (0.00s)
+=== RUN   TestRetireLateStageCallback
+2026/10/02 18:39:45.328139 juicefs[607722] <WARNING>: write chunks/0/0/23_0_10 to disk: timeout after 20ms: function timeout, upload it directly [upload@cached_store.go:456]
+--- PASS: TestRetireLateStageCallback (0.02s)
+=== RUN   TestRetireScannerDuringUnlink
+2026/10/02 18:39:45.330934 juicefs[607722] <INFO>: Key chunks/0/0/31_0_7 is not needed, abandoned, err: <nil> [finishStagingUpload@cached_store.go:1185]
+--- PASS: TestRetireScannerDuringUnlink (0.00s)
+=== RUN   TestRetireFailedImmediateUploadDoesNotRequeue
+2026/10/02 18:39:45.646345 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:45.646387 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:45.646403 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:45.646394 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:45.646432 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:45.646435 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:45.646440 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:45.646443 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:45.646447 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:45.646466 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:45.646472 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:45.746724 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933983745501891: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:45.746759 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933983745283110: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:45.747897 juicefs[607722] <WARNING>: statfs /tmp/TestUnknownInodeStatsShouldNotMarkCacheAsRawFull1998211274/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:45.749239 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.247553 juicefs[607722] <WARNING>: statfs /tmp/Test2RandomEviction4287927588/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.247612 juicefs[607722] <WARNING>: statfs /tmp/TestLruEviction1350177486/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.248727 juicefs[607722] <WARNING>: statfs /tmp/TestLruEviction1350177486/002/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.249830 juicefs[607722] <WARNING>: statfs /tmp/TestCooldownAtimeOnWriteFixedOnLoad3299279255/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.646742 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.646756 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.646778 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.646780 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.646770 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.646775 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.646761 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.646804 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.646763 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.646793 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.646789 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.747803 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933983745283110: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.747835 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933983745501891: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.748960 juicefs[607722] <WARNING>: statfs /tmp/TestUnknownInodeStatsShouldNotMarkCacheAsRawFull1998211274/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:46.750154 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.248045 juicefs[607722] <WARNING>: statfs /tmp/Test2RandomEviction4287927588/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.248073 juicefs[607722] <WARNING>: statfs /tmp/TestLruEviction1350177486/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.249259 juicefs[607722] <WARNING>: statfs /tmp/TestLruEviction1350177486/002/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.250612 juicefs[607722] <WARNING>: statfs /tmp/TestCooldownAtimeOnWriteFixedOnLoad3299279255/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.628560 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/002/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:47.628635 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/002/`: stat /tmp/TestDiskCacheState2146447367/002/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:47.628591 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/009/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:47.628655 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/005/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:47.628664 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/007/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:47.628677 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/007/`: stat /tmp/TestDiskCacheState2146447367/007/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:47.628657 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/010/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:47.628691 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/010/`: stat /tmp/TestDiskCacheState2146447367/010/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:47.628648 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/004/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:47.628703 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/004/`: stat /tmp/TestDiskCacheState2146447367/004/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:47.628663 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/009/`: stat /tmp/TestDiskCacheState2146447367/009/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:47.628652 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/006/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:47.628717 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/006/`: stat /tmp/TestDiskCacheState2146447367/006/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:47.628645 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/011/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:47.628725 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/011/`: stat /tmp/TestDiskCacheState2146447367/011/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:47.628640 juicefs[607722] <INFO>: lockfile /tmp/TestDiskCacheState2146447367/003/.lock is lost, cache device maybe broken [checkLockFile@disk_cache.go:232]
+2026/10/02 18:39:47.628735 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/003/`: stat /tmp/TestDiskCacheState2146447367/003/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:47.628665 juicefs[607722] <WARNING>: stat `/tmp/TestDiskCacheState2146447367/005/`: stat /tmp/TestDiskCacheState2146447367/005/: no such file or directory [inRootVolume@utils_unix.go:54]
+2026/10/02 18:39:47.647288 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.647296 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.647321 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.647333 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.647321 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.647331 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.647341 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.647319 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.647308 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.647311 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.647351 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.748277 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933983745501891: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.748295 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933983745283110: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.749554 juicefs[607722] <WARNING>: statfs /tmp/TestUnknownInodeStatsShouldNotMarkCacheAsRawFull1998211274/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:47.750732 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.248971 juicefs[607722] <WARNING>: statfs /tmp/TestLruEviction1350177486/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.249022 juicefs[607722] <WARNING>: statfs /tmp/Test2RandomEviction4287927588/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.250220 juicefs[607722] <WARNING>: statfs /tmp/TestLruEviction1350177486/002/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.251528 juicefs[607722] <WARNING>: statfs /tmp/TestCooldownAtimeOnWriteFixedOnLoad3299279255/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.647883 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.647950 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.647964 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.647970 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.647977 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.647990 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.648012 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.648034 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.648045 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.648058 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.648093 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.749060 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933983745283110: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.749120 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933983745501891: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.750308 juicefs[607722] <WARNING>: statfs /tmp/TestUnknownInodeStatsShouldNotMarkCacheAsRawFull1998211274/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:48.751633 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.249539 juicefs[607722] <WARNING>: statfs /tmp/Test2RandomEviction4287927588/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.249550 juicefs[607722] <WARNING>: statfs /tmp/TestLruEviction1350177486/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.250685 juicefs[607722] <WARNING>: statfs /tmp/TestLruEviction1350177486/002/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.251910 juicefs[607722] <WARNING>: statfs /tmp/TestCooldownAtimeOnWriteFixedOnLoad3299279255/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.649261 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.649324 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.649377 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.649417 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.649333 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.649384 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.649411 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.649454 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.649339 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.649456 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.649435 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.749682 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933983745501891: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.749753 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933983745283110: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.751056 juicefs[607722] <WARNING>: statfs /tmp/TestUnknownInodeStatsShouldNotMarkCacheAsRawFull1998211274/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:49.752483 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.249668 juicefs[607722] <WARNING>: statfs /tmp/TestLruEviction1350177486/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.249720 juicefs[607722] <WARNING>: statfs /tmp/Test2RandomEviction4287927588/001/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.250819 juicefs[607722] <WARNING>: statfs /tmp/TestLruEviction1350177486/002/diskCache: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.252038 juicefs[607722] <WARNING>: statfs /tmp/TestCooldownAtimeOnWriteFixedOnLoad3299279255/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+--- PASS: TestRetireFailedImmediateUploadDoesNotRequeue (5.01s)
+=== RUN   TestRetireStagingStatErrorRetainsIntent
+2026/10/02 18:39:50.342654 juicefs[607722] <WARNING>: staging admission could not stat chunks/0/0/53_0_5: stat /tmp/TestRetireStagingStatErrorRetainsIntent839216981/002/regular/child: not a directory; pending intent retained [addDelayedStaging@cached_store.go:1214]
+--- PASS: TestRetireStagingStatErrorRetainsIntent (0.00s)
+=== RUN   TestSingleFlight
+2026/10/02 18:39:50.649464 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/002/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.649523 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/011/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.649534 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631061077: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.649539 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/004/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.649538 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/010/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.649562 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/009/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.649653 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/005/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.649668 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/003/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.649671 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/007/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.649677 juicefs[607722] <WARNING>: statfs /tmp/TestDiskCacheState2146447367/006/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.649678 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963631296851/: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.749994 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933983745501891: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.750027 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933983745283110: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.751233 juicefs[607722] <WARNING>: statfs /tmp/TestUnknownInodeStatsShouldNotMarkCacheAsRawFull1998211274/001: no such file or directory [getDiskUsage@utils_unix.go:39]
+2026/10/02 18:39:50.753659 juicefs[607722] <WARNING>: statfs /tmp/diskCache-607722/1790933963733307755: no such file or directory [getDiskUsage@utils_unix.go:39]
+--- PASS: TestSingleFlight (0.81s)
+=== RUN   TestInRootVolume
+    utils_unix_test.go:44: "/tmp/TestInRootVolume1738690745/001/__test__" is in root volume
+--- FAIL: TestInRootVolume (0.00s)
+FAIL
+FAIL	github.com/juicedata/juicefs/pkg/chunk	47.653s
+FAIL

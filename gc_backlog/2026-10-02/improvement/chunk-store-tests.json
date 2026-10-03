@@ -1,0 +1,24 @@
+{
+  "command": [
+    "go",
+    "test",
+    "pkg/chunk/cache_eviction.go",
+    "pkg/chunk/cached_store.go",
+    "pkg/chunk/chunk.go",
+    "pkg/chunk/disk_cache.go",
+    "pkg/chunk/disk_cache_state.go",
+    "pkg/chunk/mem_cache.go",
+    "pkg/chunk/metrics.go",
+    "pkg/chunk/page.go",
+    "pkg/chunk/prefetch.go",
+    "pkg/chunk/singleflight.go",
+    "pkg/chunk/utils_linux.go",
+    "pkg/chunk/utils_unix.go",
+    "pkg/chunk/cached_store_test.go",
+    "pkg/chunk/retire_test.go",
+    "-count=1",
+    "-timeout=3m"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 16.6998342040024
+}

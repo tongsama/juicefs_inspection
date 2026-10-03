@@ -1,0 +1,25 @@
+{
+  "Version": "1.4.1+2026-10-01.3bed0d82-smallput-diag-local",
+  "SliceFlushWait": 30000000000,
+  "SliceFlushIdle": 10000000000,
+  "WriterFlushTimeout": 0,
+  "Chunk": {
+    "PutTimeout": 60000000000,
+    "GetTimeout": 60000000000,
+    "MaxRetries": 5,
+    "Writeback": true,
+    "MaxUpload": 30,
+    "MaxDownload": 60,
+    "BufferSize": 1073741824,
+    "MaxStageWrite": 0,
+    "WritebackThresholdSize": 4194305,
+    "CacheChecksum": "extend"
+  },
+  "Meta": {
+    "MaxDeletes": 10,
+    "Retries": 5
+  },
+  "FuseOpts": {
+    "Timeout": 900000000000
+  }
+}

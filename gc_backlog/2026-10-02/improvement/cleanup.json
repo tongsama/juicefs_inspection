@@ -1,0 +1,15 @@
+[
+  {
+    "port": 16380,
+    "pid": 485375,
+    "stopped": true
+  },
+  {
+    "port": 6379,
+    "pid": 501474,
+    "stopped": true
+  },
+  {
+    "generated_sqlite_test_artifact_removed": true
+  }
+]

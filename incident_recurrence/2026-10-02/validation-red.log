@@ -1,0 +1,10 @@
+--- FAIL: TestGenFuseOptHasNoRequestDeadline (0.00s)
+    --- FAIL: TestGenFuseOptHasNoRequestDeadline/0s (0.00s)
+        request_wait_test.go:35: FUSE request watchdog=15m0s with writer deadline=0s; watchdog can reply EINTR before storage/metadata commit completes
+    --- FAIL: TestGenFuseOptHasNoRequestDeadline/-1ns (0.00s)
+        request_wait_test.go:35: FUSE request watchdog=15m0s with writer deadline=-1ns; watchdog can reply EINTR before storage/metadata commit completes
+    --- FAIL: TestGenFuseOptHasNoRequestDeadline/1h0m0s (0.00s)
+        request_wait_test.go:35: FUSE request watchdog=15m0s with writer deadline=1h0m0s; watchdog can reply EINTR before storage/metadata commit completes
+FAIL
+FAIL	github.com/juicedata/juicefs/pkg/fuse	0.032s
+FAIL

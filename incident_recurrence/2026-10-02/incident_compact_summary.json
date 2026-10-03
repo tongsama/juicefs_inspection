@@ -1,0 +1,889 @@
+{
+  "common_prefix_bytes": 813182468,
+  "sha256": "bbc9556b9adbd20e06c63d3e85419ae52cd4f48c0498f41c8afd23033ccfa5b4",
+  "vfs_slow_operation_count": 42,
+  "vfs_slow_ok": 37,
+  "vfs_slow_non_ok": [
+    {
+      "category": "vfs_slow_operation",
+      "line_number": 3554354,
+      "line": "2026/10/02 05:57:58.182179 juicefs[3153] <INFO>: slow operation: fsync (596153,1) - interrupted system call <903.183971> [logit@accesslog.go:92]"
+    },
+    {
+      "category": "vfs_slow_operation",
+      "line_number": 3649195,
+      "line": "2026/10/02 06:12:58.382089 juicefs[3153] <INFO>: slow operation: fallocate (596153,16,639369216,65536) - interrupted system call <900.184646> [logit@accesslog.go:92]"
+    },
+    {
+      "category": "vfs_slow_operation",
+      "line_number": 3775901,
+      "line": "2026/10/02 06:28:01.553282 juicefs[3153] <INFO>: slow operation: fallocate (596153,16,639369216,65536) - interrupted system call <903.170585> [logit@accesslog.go:92]"
+    },
+    {
+      "category": "vfs_slow_operation",
+      "line_number": 3841214,
+      "line": "2026/10/02 06:34:42.593855 juicefs[3153] <INFO>: slow operation: fsync (596154,1) - interrupted system call <903.174922> [logit@accesslog.go:92]"
+    },
+    {
+      "category": "vfs_slow_operation",
+      "line_number": 3941315,
+      "line": "2026/10/02 06:49:56.243852 juicefs[3153] <INFO>: slow operation: read (596154,65536,13762560,7018): (0) - interrupted system call <903.184957> [logit@accesslog.go:92]"
+    }
+  ],
+  "request_failure_recovery": {
+    "PUT": [
+      {
+        "key": "chunks/4/4001/4001688_0_20480",
+        "failure_timestamp": "2026/10/02 03:08:46.655758",
+        "failure_cost": "30.001342287s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 03:08:51.050309",
+        "later_success_cost": "3.393545424s"
+      },
+      {
+        "key": "chunks/4/4001/4001780_0_4096",
+        "failure_timestamp": "2026/10/02 03:08:46.838158",
+        "failure_cost": "30.001028496s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 03:08:51.068226",
+        "later_success_cost": "3.229242164s"
+      },
+      {
+        "key": "chunks/4/4007/4007476_0_4096",
+        "failure_timestamp": "2026/10/02 03:09:05.879873",
+        "failure_cost": "30.000669393s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 03:09:15.836213",
+        "later_success_cost": "8.956166367s"
+      },
+      {
+        "key": "chunks/4/4007/4007900_0_8192",
+        "failure_timestamp": "2026/10/02 03:09:00.193178",
+        "failure_cost": "30.002196132s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 03:09:08.347493",
+        "later_success_cost": "7.153865868s"
+      },
+      {
+        "key": "chunks/4/4009/4009758_0_8192",
+        "failure_timestamp": "2026/10/02 02:59:41.568454",
+        "failure_cost": "30.001281657s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 02:59:47.347945",
+        "later_success_cost": "4.778896641s"
+      },
+      {
+        "key": "chunks/4/4012/4012382_0_4096",
+        "failure_timestamp": "2026/10/02 02:59:31.507596",
+        "failure_cost": "30.000980021s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 02:59:41.464215",
+        "later_success_cost": "8.956229694s"
+      },
+      {
+        "key": "chunks/4/4022/4022994_3_4194304",
+        "failure_timestamp": "2026/10/02 01:54:51.701505",
+        "failure_cost": "6.326302421s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 01:54:56.759331",
+        "later_success_cost": "4.056736619s"
+      },
+      {
+        "key": "chunks/4/4023/4023449_15_4194304",
+        "failure_timestamp": "2026/10/02 01:58:33.614058",
+        "failure_cost": "30.00136813s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 01:58:38.637672",
+        "later_success_cost": "4.022998818s"
+      },
+      {
+        "key": "chunks/4/4037/4037230_6_4194304",
+        "failure_timestamp": "2026/10/02 02:13:13.934541",
+        "failure_cost": "5.321241521s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 02:13:19.919557",
+        "later_success_cost": "4.984320755s"
+      },
+      {
+        "key": "chunks/4/4047/4047456_0_4096",
+        "failure_timestamp": "2026/10/02 04:40:07.882187",
+        "failure_cost": "30.001494617s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 04:40:13.463851",
+        "later_success_cost": "4.581251426s"
+      },
+      {
+        "key": "chunks/4/4049/4049693_0_16384",
+        "failure_timestamp": "2026/10/02 04:41:55.908995",
+        "failure_cost": "30.00159832s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 04:42:02.961580",
+        "later_success_cost": "6.052295401s"
+      },
+      {
+        "key": "chunks/4/4054/4054562_0_4096",
+        "failure_timestamp": "2026/10/02 04:41:53.468684",
+        "failure_cost": "30.001889548s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 04:41:57.476938",
+        "later_success_cost": "3.007505572s"
+      },
+      {
+        "key": "chunks/4/4054/4054612_0_8192",
+        "failure_timestamp": "2026/10/02 04:41:57.705957",
+        "failure_cost": "30.000546059s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 04:42:05.184692",
+        "later_success_cost": "6.477819959s"
+      },
+      {
+        "key": "chunks/4/4056/4056725_0_618496",
+        "failure_timestamp": "2026/10/02 04:40:12.011097",
+        "failure_cost": "30.000651532s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 04:40:20.579860",
+        "later_success_cost": "7.568010149s"
+      },
+      {
+        "key": "chunks/4/4056/4056974_0_8192",
+        "failure_timestamp": "2026/10/02 04:40:04.722719",
+        "failure_cost": "30.001607731s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 04:40:11.971117",
+        "later_success_cost": "6.247398829s"
+      },
+      {
+        "key": "chunks/4/4057/4057226_0_4096",
+        "failure_timestamp": "2026/10/02 04:41:41.125648",
+        "failure_cost": "30.001256778s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 04:41:44.438965",
+        "later_success_cost": "2.312504658s"
+      },
+      {
+        "key": "chunks/4/4057/4057311_0_12288",
+        "failure_timestamp": "2026/10/02 04:41:41.498143",
+        "failure_cost": "30.000963029s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 04:41:45.917217",
+        "later_success_cost": "3.418112266s"
+      },
+      {
+        "key": "chunks/4/4063/4063629_0_4096",
+        "failure_timestamp": "2026/10/02 04:41:41.272582",
+        "failure_cost": "30.001858975s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 04:41:47.450813",
+        "later_success_cost": "5.17792502s"
+      },
+      {
+        "key": "chunks/4/4064/4064099_0_4096",
+        "failure_timestamp": "2026/10/02 04:42:18.903693",
+        "failure_cost": "30.000691776s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 04:42:25.514773",
+        "later_success_cost": "5.610522724s"
+      },
+      {
+        "key": "chunks/4/4065/4065421_0_4096",
+        "failure_timestamp": "2026/10/02 04:41:51.775919",
+        "failure_cost": "30.002130275s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 04:41:55.476205",
+        "later_success_cost": "2.699685276s"
+      },
+      {
+        "key": "chunks/4/4067/4067887_0_4096",
+        "failure_timestamp": "2026/10/02 04:42:24.705242",
+        "failure_cost": "30.001578795s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 04:42:31.665744",
+        "later_success_cost": "5.95964602s"
+      },
+      {
+        "key": "chunks/4/4070/4070861_0_8192",
+        "failure_timestamp": "2026/10/02 05:20:47.432749",
+        "failure_cost": "30.000813851s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 05:20:52.559513",
+        "later_success_cost": "4.125794442s"
+      },
+      {
+        "key": "chunks/4/4070/4070963_0_4194304",
+        "failure_timestamp": "2026/10/02 03:53:10.646302",
+        "failure_cost": "13.177226956s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 03:53:17.811960",
+        "later_success_cost": "6.165023678s"
+      },
+      {
+        "key": "chunks/4/4070/4070963_11_4194304",
+        "failure_timestamp": "2026/10/02 03:53:12.895859",
+        "failure_cost": "13.20811193s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 03:53:20.759353",
+        "later_success_cost": "6.862490208s"
+      },
+      {
+        "key": "chunks/4/4070/4070963_13_4194304",
+        "failure_timestamp": "2026/10/02 03:53:13.422603",
+        "failure_cost": "13.456808115s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 03:53:23.186648",
+        "later_success_cost": "8.763245588s"
+      },
+      {
+        "key": "chunks/4/4070/4070963_6_4194304",
+        "failure_timestamp": "2026/10/02 03:53:12.596530",
+        "failure_cost": "13.736152157s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 03:53:21.516234",
+        "later_success_cost": "7.919276628s"
+      },
+      {
+        "key": "chunks/4/4071/4071226_0_8192",
+        "failure_timestamp": "2026/10/02 05:20:44.114482",
+        "failure_cost": "30.001066631s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 05:20:49.035007",
+        "later_success_cost": "3.919542026s"
+      },
+      {
+        "key": "chunks/4/4071/4071577_0_4096",
+        "failure_timestamp": "2026/10/02 05:20:53.090958",
+        "failure_cost": "30.001568787s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 05:20:57.763359",
+        "later_success_cost": "3.671419278s"
+      },
+      {
+        "key": "chunks/4/4071/4071801_0_4096",
+        "failure_timestamp": "2026/10/02 05:51:47.640387",
+        "failure_cost": "30.00135362s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 05:51:54.612928",
+        "later_success_cost": "5.972364004s"
+      },
+      {
+        "key": "chunks/4/4071/4071858_0_8192",
+        "failure_timestamp": "2026/10/02 05:45:18.619408",
+        "failure_cost": "30.001176471s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 05:45:27.133011",
+        "later_success_cost": "7.512330875s"
+      },
+      {
+        "key": "chunks/4/4072/4072069_0_524288",
+        "failure_timestamp": "2026/10/02 05:51:50.939213",
+        "failure_cost": "30.000848028s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 05:51:55.982305",
+        "later_success_cost": "4.042332033s"
+      },
+      {
+        "key": "chunks/4/4074/4074061_0_4096",
+        "failure_timestamp": "2026/10/02 05:20:55.223122",
+        "failure_cost": "30.000599051s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 05:21:00.073067",
+        "later_success_cost": "3.849390871s"
+      },
+      {
+        "key": "chunks/4/4074/4074477_0_8192",
+        "failure_timestamp": "2026/10/02 05:20:44.730958",
+        "failure_cost": "30.000935082s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 05:20:49.222759",
+        "later_success_cost": "3.49131862s"
+      },
+      {
+        "key": "chunks/4/4078/4078986_0_73728",
+        "failure_timestamp": "2026/10/02 05:16:43.163837",
+        "failure_cost": "7.004319988s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 05:16:48.826712",
+        "later_success_cost": "4.661945097s"
+      },
+      {
+        "key": "chunks/4/4081/4081881_0_4096",
+        "failure_timestamp": "2026/10/02 05:51:46.022200",
+        "failure_cost": "30.00152862s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 05:51:53.030315",
+        "later_success_cost": "6.00720506s"
+      },
+      {
+        "key": "chunks/4/4082/4082467_0_4096",
+        "failure_timestamp": "2026/10/02 06:03:33.641146",
+        "failure_cost": "30.000711207s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 06:03:39.332714",
+        "later_success_cost": "4.691451882s"
+      },
+      {
+        "key": "chunks/4/4082/4082608_0_4096",
+        "failure_timestamp": "2026/10/02 05:59:03.844102",
+        "failure_cost": "30.002223496s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 05:59:11.197439",
+        "later_success_cost": "6.352783005s"
+      },
+      {
+        "key": "chunks/4/4084/4084248_0_4096",
+        "failure_timestamp": "2026/10/02 06:19:23.973318",
+        "failure_cost": "30.0010163s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 06:19:29.489292",
+        "later_success_cost": "4.515683484s"
+      },
+      {
+        "key": "chunks/4/4085/4085439_0_4096",
+        "failure_timestamp": "2026/10/02 05:59:05.006781",
+        "failure_cost": "30.001736113s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 05:59:19.478659",
+        "later_success_cost": "13.471457338s"
+      },
+      {
+        "key": "chunks/4/4090/4090135_0_4096",
+        "failure_timestamp": "2026/10/02 05:20:45.770049",
+        "failure_cost": "30.00111678s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 05:20:50.629079",
+        "later_success_cost": "3.858047507s"
+      },
+      {
+        "key": "chunks/4/4092/4092779_0_4096",
+        "failure_timestamp": "2026/10/02 05:51:48.483210",
+        "failure_cost": "30.00163589s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 05:51:54.642823",
+        "later_success_cost": "5.158361819s"
+      },
+      {
+        "key": "chunks/4/4112/4112934_10_4194304",
+        "failure_timestamp": "2026/10/02 05:51:59.534803",
+        "failure_cost": "30.001898299s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 05:52:07.146326",
+        "later_success_cost": "6.610920664s"
+      }
+    ],
+    "DELETE": [
+      {
+        "key": "chunks/3/3750/3750935_0_61440",
+        "failure_timestamp": "2026/10/02 04:42:21.302530",
+        "failure_cost": "29.650544703s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:08.460013",
+        "later_success_cost": "5.826903242s"
+      },
+      {
+        "key": "chunks/3/3755/3755311_0_28672",
+        "failure_timestamp": "2026/10/02 03:08:52.854289",
+        "failure_cost": "29.835822896s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:03:27.667916",
+        "later_success_cost": "6.915898959s"
+      },
+      {
+        "key": "chunks/3/3763/3763688_0_36864",
+        "failure_timestamp": "2026/10/02 05:20:52.140310",
+        "failure_cost": "29.404479588s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:37.282880",
+        "later_success_cost": "6.232352766s"
+      },
+      {
+        "key": "chunks/3/3780/3780875_6_4194304",
+        "failure_timestamp": "2026/10/02 04:40:03.667281",
+        "failure_cost": "29.623414558s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:02.464941",
+        "later_success_cost": "5.116353698s"
+      },
+      {
+        "key": "chunks/3/3784/3784139_0_12288",
+        "failure_timestamp": "2026/10/02 05:20:44.768129",
+        "failure_cost": "30.000965439s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:04:32.623492",
+        "later_success_cost": "1.652337237s"
+      },
+      {
+        "key": "chunks/3/3789/3789901_4_4194304",
+        "failure_timestamp": "2026/10/02 04:40:14.983857",
+        "failure_cost": "29.356440136s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:03:59.316016",
+        "later_success_cost": "1.574829777s"
+      },
+      {
+        "key": "chunks/3/3824/3824592_6_4194304",
+        "failure_timestamp": "2026/10/02 03:08:54.119017",
+        "failure_cost": "29.798426598s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:03:27.299561",
+        "later_success_cost": "4.977924331s"
+      },
+      {
+        "key": "chunks/3/3846/3846212_0_8192",
+        "failure_timestamp": "2026/10/02 03:08:49.522264",
+        "failure_cost": "30.001288246s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:03:24.362668",
+        "later_success_cost": "3.638493253s"
+      },
+      {
+        "key": "chunks/3/3921/3921579_15_4194304",
+        "failure_timestamp": "2026/10/02 02:59:32.518416",
+        "failure_cost": "29.94503922s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:03:19.969860",
+        "later_success_cost": "1.649449421s"
+      },
+      {
+        "key": "chunks/3/3923/3923525_9_4194304",
+        "failure_timestamp": "2026/10/02 04:41:41.811994",
+        "failure_cost": "29.974182387s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:00.977685",
+        "later_success_cost": "1.906485766s"
+      },
+      {
+        "key": "chunks/3/3966/3966030_0_4096",
+        "failure_timestamp": "2026/10/02 05:51:48.714660",
+        "failure_cost": "30.001892735s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": null,
+        "later_success_cost": null
+      },
+      {
+        "key": "chunks/3/3973/3973346_0_4096",
+        "failure_timestamp": "2026/10/02 04:40:09.769743",
+        "failure_cost": "29.696674998s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:01.093024",
+        "later_success_cost": "4.574082677s"
+      },
+      {
+        "key": "chunks/3/3976/3976111_0_4096",
+        "failure_timestamp": "2026/10/02 04:40:08.685379",
+        "failure_cost": "29.968898253s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:03:57.967114",
+        "later_success_cost": "1.480700652s"
+      },
+      {
+        "key": "chunks/3/3976/3976844_0_65536",
+        "failure_timestamp": "2026/10/02 04:41:43.978673",
+        "failure_cost": "30.001074879s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:04:03.139068",
+        "later_success_cost": "1.716282251s"
+      },
+      {
+        "key": "chunks/3/3977/3977004_0_4096",
+        "failure_timestamp": "2026/10/02 04:41:58.441018",
+        "failure_cost": "29.297181044s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:04.321749",
+        "later_success_cost": "2.391682s"
+      },
+      {
+        "key": "chunks/3/3979/3979450_0_65536",
+        "failure_timestamp": "2026/10/02 05:20:41.688117",
+        "failure_cost": "30.000982048s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:04:32.449225",
+        "later_success_cost": "1.505140279s"
+      },
+      {
+        "key": "chunks/3/3979/3979714_0_4096",
+        "failure_timestamp": "2026/10/02 04:41:41.016156",
+        "failure_cost": "29.935761591s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:02.672958",
+        "later_success_cost": "1.670108821s"
+      },
+      {
+        "key": "chunks/3/3980/3980407_0_4096",
+        "failure_timestamp": "2026/10/02 04:56:12.254622",
+        "failure_cost": "29.516135351s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:18.175262",
+        "later_success_cost": "1.34001125s"
+      },
+      {
+        "key": "chunks/3/3980/3980822_9_4194304",
+        "failure_timestamp": "2026/10/02 04:40:07.625226",
+        "failure_cost": "29.827418652s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:03:57.745119",
+        "later_success_cost": "1.441374022s"
+      },
+      {
+        "key": "chunks/3/3982/3982324_0_65536",
+        "failure_timestamp": "2026/10/02 04:41:54.061113",
+        "failure_cost": "30.001678276s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:04:03.689097",
+        "later_success_cost": "2.025102132s"
+      },
+      {
+        "key": "chunks/3/3982/3982522_0_4096",
+        "failure_timestamp": "2026/10/02 04:58:25.668189",
+        "failure_cost": "29.61325723s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:19.336182",
+        "later_success_cost": "1.251584479s"
+      },
+      {
+        "key": "chunks/3/3984/3984532_0_4096",
+        "failure_timestamp": "2026/10/02 05:52:04.530293",
+        "failure_cost": "29.587174167s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": null,
+        "later_success_cost": null
+      },
+      {
+        "key": "chunks/3/3984/3984592_0_4096",
+        "failure_timestamp": "2026/10/02 04:42:26.364837",
+        "failure_cost": "29.683710187s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:05.522690",
+        "later_success_cost": "2.479348475s"
+      },
+      {
+        "key": "chunks/3/3984/3984878_0_4096",
+        "failure_timestamp": "2026/10/02 02:59:41.874137",
+        "failure_cost": "29.819128602s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:03:20.305372",
+        "later_success_cost": "3.109823825s"
+      },
+      {
+        "key": "chunks/3/3985/3985277_0_4096",
+        "failure_timestamp": "2026/10/02 04:40:10.113946",
+        "failure_cost": "29.7542126s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:03:58.089486",
+        "later_success_cost": "1.563830642s"
+      },
+      {
+        "key": "chunks/3/3985/3985892_0_65536",
+        "failure_timestamp": "2026/10/02 04:41:53.763920",
+        "failure_cost": "29.262111324s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:07.458544",
+        "later_success_cost": "5.785875706s"
+      },
+      {
+        "key": "chunks/3/3986/3986463_0_8192",
+        "failure_timestamp": "2026/10/02 05:20:38.002492",
+        "failure_cost": "29.94213066s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:32.202131",
+        "later_success_cost": "1.284630222s"
+      },
+      {
+        "key": "chunks/3/3986/3986941_0_4096",
+        "failure_timestamp": "2026/10/02 05:20:44.090842",
+        "failure_cost": "29.834922119s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:36.732852",
+        "later_success_cost": "5.773475956s"
+      },
+      {
+        "key": "chunks/3/3987/3987220_0_4096",
+        "failure_timestamp": "2026/10/02 02:59:37.019422",
+        "failure_cost": "29.988078653s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:03:23.513112",
+        "later_success_cost": "6.322679667s"
+      },
+      {
+        "key": "chunks/3/3989/3989957_0_4096",
+        "failure_timestamp": "2026/10/02 03:08:59.840009",
+        "failure_cost": "29.613884444s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:03:25.554231",
+        "later_success_cost": "3.046237253s"
+      },
+      {
+        "key": "chunks/3/3990/3990305_0_4096",
+        "failure_timestamp": "2026/10/02 02:59:39.022454",
+        "failure_cost": "30.001460128s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:03:20.505996",
+        "later_success_cost": "3.314855949s"
+      },
+      {
+        "key": "chunks/3/3991/3991016_0_4096",
+        "failure_timestamp": "2026/10/02 04:42:31.665861",
+        "failure_cost": "30.001216143s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:04:06.086564",
+        "later_success_cost": "2.308002509s"
+      },
+      {
+        "key": "chunks/3/3992/3992055_0_53248",
+        "failure_timestamp": "2026/10/02 05:20:39.655002",
+        "failure_cost": "29.764120091s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:32.366211",
+        "later_success_cost": "1.43177914s"
+      },
+      {
+        "key": "chunks/3/3992/3992059_0_4096",
+        "failure_timestamp": "2026/10/02 05:20:43.975115",
+        "failure_cost": "29.79840197s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:32.510527",
+        "later_success_cost": "1.553818582s"
+      },
+      {
+        "key": "chunks/3/3993/3993145_0_4096",
+        "failure_timestamp": "2026/10/02 04:40:12.534433",
+        "failure_cost": "29.630817212s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:03:58.398280",
+        "later_success_cost": "1.579250155s"
+      },
+      {
+        "key": "chunks/3/3993/3993456_0_12288",
+        "failure_timestamp": "2026/10/02 04:41:51.354377",
+        "failure_cost": "30.001759023s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:04:03.709922",
+        "later_success_cost": "2.079484682s"
+      },
+      {
+        "key": "chunks/3/3995/3995204_0_4096",
+        "failure_timestamp": "2026/10/02 04:42:38.967798",
+        "failure_cost": "29.465172174s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:06.489337",
+        "later_success_cost": "2.125984754s"
+      },
+      {
+        "key": "chunks/3/3996/3996366_0_16384",
+        "failure_timestamp": "2026/10/02 04:41:42.157439",
+        "failure_cost": "30.001258488s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:04:02.887656",
+        "later_success_cost": "1.563255584s"
+      },
+      {
+        "key": "chunks/3/3996/3996612_0_4096",
+        "failure_timestamp": "2026/10/02 03:09:05.138659",
+        "failure_cost": "29.18952046s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:03:25.891900",
+        "later_success_cost": "3.280201946s"
+      },
+      {
+        "key": "chunks/3/3997/3997926_0_4096",
+        "failure_timestamp": "2026/10/02 05:20:41.849647",
+        "failure_cost": "30.001064497s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:04:32.450679",
+        "later_success_cost": "1.506089131s"
+      },
+      {
+        "key": "chunks/4/4000/4000714_0_4194304",
+        "failure_timestamp": "2026/10/02 05:20:38.475015",
+        "failure_cost": "30.001804023s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:04:32.296589",
+        "later_success_cost": "1.37217562s"
+      },
+      {
+        "key": "chunks/4/4000/4000877_0_4096",
+        "failure_timestamp": "2026/10/02 04:41:40.885978",
+        "failure_cost": "30.001575758s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:04:01.547944",
+        "later_success_cost": "1.853745349s"
+      },
+      {
+        "key": "chunks/4/4001/4001051_0_4096",
+        "failure_timestamp": "2026/10/02 02:59:41.666818",
+        "failure_cost": "30.001692376s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:03:20.518959",
+        "later_success_cost": "3.32355877s"
+      },
+      {
+        "key": "chunks/4/4001/4001223_0_917504",
+        "failure_timestamp": "2026/10/02 04:42:21.649797",
+        "failure_cost": "29.689563139s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:05.099005",
+        "later_success_cost": "2.444314345s"
+      },
+      {
+        "key": "chunks/4/4001/4001257_0_4096",
+        "failure_timestamp": "2026/10/02 03:08:43.045193",
+        "failure_cost": "30.001275675s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:03:22.601914",
+        "later_success_cost": "1.904065503s"
+      },
+      {
+        "key": "chunks/4/4002/4002797_10_4194304",
+        "failure_timestamp": "2026/10/02 04:42:22.062789",
+        "failure_cost": "29.556236538s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:05.457788",
+        "later_success_cost": "2.582159538s"
+      },
+      {
+        "key": "chunks/4/4002/4002797_3_4194304",
+        "failure_timestamp": "2026/10/02 04:41:45.576346",
+        "failure_cost": "29.426090355s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:02.871990",
+        "later_success_cost": "1.76748512s"
+      },
+      {
+        "key": "chunks/4/4003/4003557_0_65536",
+        "failure_timestamp": "2026/10/02 04:40:07.977150",
+        "failure_cost": "29.874234483s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:03:57.920996",
+        "later_success_cost": "1.441311447s"
+      },
+      {
+        "key": "chunks/4/4004/4004785_0_2707456",
+        "failure_timestamp": "2026/10/02 05:51:51.887946",
+        "failure_cost": "29.904623697s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": null,
+        "later_success_cost": null
+      },
+      {
+        "key": "chunks/4/4005/4005298_0_65536",
+        "failure_timestamp": "2026/10/02 05:52:03.040039",
+        "failure_cost": "29.698618544s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": null,
+        "later_success_cost": null
+      },
+      {
+        "key": "chunks/4/4005/4005496_0_4096",
+        "failure_timestamp": "2026/10/02 05:51:49.790555",
+        "failure_cost": "30.001429643s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": null,
+        "later_success_cost": null
+      },
+      {
+        "key": "chunks/4/4007/4007489_0_8192",
+        "failure_timestamp": "2026/10/02 03:08:52.167605",
+        "failure_cost": "30.001157865s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:03:22.461067",
+        "later_success_cost": "1.722895158s"
+      },
+      {
+        "key": "chunks/4/4007/4007850_0_4096",
+        "failure_timestamp": "2026/10/02 03:08:50.006500",
+        "failure_cost": "30.001573025s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:03:24.095428",
+        "later_success_cost": "3.371134786s"
+      },
+      {
+        "key": "chunks/4/4007/4007970_0_4096",
+        "failure_timestamp": "2026/10/02 04:40:11.630334",
+        "failure_cost": "29.761267534s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:01.285021",
+        "later_success_cost": "4.695295112s"
+      },
+      {
+        "key": "chunks/4/4009/4009964_0_4096",
+        "failure_timestamp": "2026/10/02 03:08:47.203719",
+        "failure_cost": "30.001097988s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:03:24.313885",
+        "later_success_cost": "3.594760212s"
+      },
+      {
+        "key": "chunks/4/4010/4010670_0_4096",
+        "failure_timestamp": "2026/10/02 05:20:37.544156",
+        "failure_cost": "30.000728328s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:04:37.234009",
+        "later_success_cost": "6.319286748s"
+      },
+      {
+        "key": "chunks/4/4011/4011744_0_4096",
+        "failure_timestamp": "2026/10/02 02:59:30.063157",
+        "failure_cost": "30.001728394s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:03:23.383199",
+        "later_success_cost": "6.212971834s"
+      },
+      {
+        "key": "chunks/4/4012/4012031_0_4096",
+        "failure_timestamp": "2026/10/02 02:59:33.570378",
+        "failure_cost": "30.00110423s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:03:23.393633",
+        "later_success_cost": "6.218774664s"
+      },
+      {
+        "key": "chunks/4/4013/4013469_0_8192",
+        "failure_timestamp": "2026/10/02 04:42:24.013355",
+        "failure_cost": "29.436699892s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:05.389435",
+        "later_success_cost": "2.56165799s"
+      },
+      {
+        "key": "chunks/4/4013/4013697_0_4096",
+        "failure_timestamp": "2026/10/02 04:42:26.981383",
+        "failure_cost": "29.67269202s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:04:09.362674",
+        "later_success_cost": "5.643760157s"
+      },
+      {
+        "key": "chunks/4/4014/4014050_0_4194304",
+        "failure_timestamp": "2026/10/02 05:51:54.330149",
+        "failure_cost": "29.853888467s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": null,
+        "later_success_cost": null
+      },
+      {
+        "key": "chunks/4/4016/4016293_0_4096",
+        "failure_timestamp": "2026/10/02 04:40:14.026064",
+        "failure_cost": "29.159074619s",
+        "failure_kind": "HTTP500",
+        "later_success_timestamp": "2026/10/02 07:03:58.903094",
+        "later_success_cost": "1.808213739s"
+      },
+      {
+        "key": "chunks/4/4016/4016410_0_548864",
+        "failure_timestamp": "2026/10/02 05:51:51.516903",
+        "failure_cost": "30.001455201s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": null,
+        "later_success_cost": null
+      },
+      {
+        "key": "chunks/4/4019/4019162_0_12288",
+        "failure_timestamp": "2026/10/02 04:42:27.217416",
+        "failure_cost": "30.00129765s",
+        "failure_kind": "timeout",
+        "later_success_timestamp": "2026/10/02 07:04:08.622960",
+        "later_success_cost": "5.464060619s"
+      }
+    ]
+  },
+  "read_slice_warning_total": 342,
+  "read_slice_warning_all_context_canceled": true
+}

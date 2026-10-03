@@ -1,0 +1,142 @@
+2026/10/01 21:35:00.512231 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.512331 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.514050 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTWritebackStaging1702886374/002/35aae548-b60e-49cc-b058-d4d0a40344c5/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.514155 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+==================
+WARNING: DATA RACE
+Read at 0x00c0002dcae9 by goroutine 86:
+  github.com/juicedata/juicefs/pkg/chunk.(*cacheStore).stage()
+      /home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/disk_cache.go:785 +0x1b7
+  github.com/juicedata/juicefs/pkg/chunk.(*cacheManager).stage()
+      /home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/disk_cache.go:1334 +0x104
+  github.com/juicedata/juicefs/pkg/chunk.(*wSlice).upload.func1.1()
+      /home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:431 +0x1a3
+  github.com/juicedata/juicefs/pkg/utils.WithTimeout.func1()
+      /home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/utils/utils.go:116 +0x5c
+
+Previous write at 0x00c0002dcae9 by goroutine 52:
+  github.com/juicedata/juicefs/pkg/chunk.(*cacheStore).checkFreeSpace()
+      /home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/disk_cache.go:356 +0x133
+  github.com/juicedata/juicefs/pkg/chunk.newCacheStore.gowrap3()
+      /home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/disk_cache.go:162 +0x2e
+
+Goroutine 86 (running) created at:
+  github.com/juicedata/juicefs/pkg/utils.WithTimeout()
+      /home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/utils/utils.go:115 +0x24a
+  github.com/juicedata/juicefs/pkg/chunk.(*wSlice).upload.func1()
+      /home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:429 +0x430
+
+Goroutine 52 (running) created at:
+  github.com/juicedata/juicefs/pkg/chunk.newCacheStore()
+      /home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/disk_cache.go:162 +0x108a
+  github.com/juicedata/juicefs/pkg/chunk.newCacheManager()
+      /home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/disk_cache.go:1174 +0xa15
+  github.com/juicedata/juicefs/pkg/chunk.NewCachedStore()
+      /home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/chunk/cached_store.go:866 +0xc64
+  github.com/juicedata/juicefs/pkg/vfs.newSmallPutVFS()
+      /home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/vfs/small_put_test.go:176 +0x1053
+  github.com/juicedata/juicefs/pkg/vfs.TestSmallPUTWritebackStaging()
+      /home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/vfs/small_put_test.go:77 +0x4f
+  testing.tRunner()
+      /home/kwatanabe/.goenv/versions/1.26.4/src/testing/testing.go:2036 +0x21c
+  testing.(*T).Run.gowrap1()
+      /home/kwatanabe/.goenv/versions/1.26.4/src/testing/testing.go:2101 +0x38
+==================
+--- FAIL: TestSmallPUTWritebackStaging (0.01s)
+    small_put_test.go:127: raw=[512] stage_file_bytes=516 payload=[19]
+    testing.go:1712: race detected during execution of test
+2026/10/01 21:35:00.524789 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.524879 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.526460 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truesequential166771598/002/2a062195-e86f-40a6-a7d7-13c866522f60/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.526560 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.531555 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.531628 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.532686 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueoverwrite2745103648/002/7ac9d81a-517b-439d-9aff-9cd94b669ee8/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.532764 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.536889 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.537137 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.540124 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueblock_overwrite2129585587/002/c7efe802-3ae5-4426-a64f-d87caf75631d/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.540201 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.726486 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.726552 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.727445 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truegap200869143/002/1f901e69-ed64-4cbd-8938-e7141d912d92/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.727509 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.730871 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.730934 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.731791 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truechunks2779784369/002/db1bc3fe-7e33-4def-a997-69e6861f4c8e/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.731905 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.736549 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.736617 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.737383 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truefsync3481640874/002/5f3eaefe-3940-4a66-9878-1982daae04ee/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.737452 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.741727 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.741806 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.742629 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueread517554063/002/dafe7994-320f-443a-b741-711d2fa85e50/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.742716 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.750993 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.751064 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.752015 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTWritebackStaging1246007464/002/12961de5-dab0-4aad-8543-7db8d9c8a4d8/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.752092 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.758251 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.758305 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.759082 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truesequential560622578/002/974726f3-8b69-477c-b647-dabba0d4c59f/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.759152 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.763002 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.763069 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.764167 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueoverwrite4098125297/002/d3d3059e-75f0-4b1f-b233-d3e5346b088c/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.764300 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.769004 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.769083 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.770197 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueblock_overwrite3098050161/002/bcc83456-c9f4-4fec-a4ba-238b9efdd660/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.770363 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.950257 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.950381 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.951340 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truegap538013080/002/4a3c0870-7c8b-44b6-9ac3-ab235b77fa51/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.951426 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.957354 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.957426 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.958283 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truechunks19862231/002/a69735ae-f6c8-42e2-b70d-21068bf0c2e7/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.958364 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.964052 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.964128 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.965140 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truefsync2487318253/002/6d686560-7ee5-439f-aba1-751ce2e6c767/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.965220 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.972033 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.972317 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.973998 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueread3835446529/002/63709284-76fe-40ed-b69f-4644b329bc83/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.974290 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.982991 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.983119 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.984086 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTWritebackStaging3020171045/002/21a9b25e-d247-4ff3-a95e-ab87368de37d/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.984136 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.990839 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.990956 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.992233 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truesequential3157077096/002/c37a5cb3-719e-4a9a-ac77-2fd79ea7a4d2/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.992331 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:00.997642 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:00.997728 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:00.998620 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueoverwrite3310524049/002/e8789ec8-2f6e-4563-b454-445844786c06/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:00.998715 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:01.003080 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:01.003154 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:01.004027 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueblock_overwrite1250610026/002/e0b13e76-304a-47c9-80a4-6be86bbb7f8f/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:01.004090 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:01.226030 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:01.226116 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:01.227084 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truegap125527740/002/840b4bb3-64cc-4a8b-8c83-cec92600e7a4/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:01.227158 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:01.230920 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:01.231009 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:01.232308 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truechunks1623913236/002/e60e7f9f-0df0-4111-8553-d03c28af1796/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:01.232458 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:01.237666 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:01.237746 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:01.238597 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truefsync2423196158/002/5f7d0cd4-64e6-4516-abf0-de412add1121/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:01.238673 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:35:01.243641 juicefs[1109470] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:35:01.243726 juicefs[1109470] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:35:01.244592 juicefs[1109470] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueread3391421106/002/04f2fcf8-9c19-4081-a6e4-8a90058f9ed3/): used ratio - [space 9.8%, inode 0.6%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:35:01.244669 juicefs[1109470] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+FAIL
+FAIL	github.com/juicedata/juicefs/pkg/vfs	0.885s
+FAIL

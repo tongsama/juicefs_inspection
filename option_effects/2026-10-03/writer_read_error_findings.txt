@@ -1,0 +1,41 @@
+2026-10-03 reader EIO追加調査（read-only、保存済みcontextを使用、巨大原ログ再走査なし）
+
+訂正対象:
+writer barrier endが全errno0であるのはpreflush/datawriter側の事実。VFS Readはその後reader.Readを実行するので、全operation EIOなしや耐久全成功を意味しない。耐久旧PID683253 metrics snapshotにはfuse_ops_io_errors errnoEIO=1207がある。prefix期間に限定した件数ではなくsnapshot取得時点のprocess累積。
+
+確定source経路:
+1. pkg/vfs/reader.go:113-128 sliceReader.done(err)がfileReader.f.errへ保存。125のread file ERRORはこの確定sticky-error保存点。doneは152 runtime.Goexitでgoroutine終了。
+2. reader.go:588-590 shouldStop=f.err!=0||closing。592-605 waitForIOはpendingのままf.shouldStopなら0,f.errを返す。626-640 Readも冒頭shouldStopなら同errnoを返す。fileReader f.errを0に戻す代入はない。
+3. pkg/vfs/vfs.go:799 writer preflush、802 h.reader.Read、その後再試行は803-805 EAGAINのみ。EIOは維持される（ENOENTだけEBADF変換）。
+4. pkg/fuse/fuse.go:263-270 FUSE.ReadはVFS.Read非zero errnoをnil result/fuse.Status(err)でkernelへ返す。
+5. pkg/vfs/accesslog.go:66-73 logitはVFS request返却errnoをopsIOErrorsへ加算し、76-77の『accesslog未購読かつ10秒未満なら出力を省略』より前。したがって速い繰り返しEIOはDEBUG logに個別returnがなくてもmetricsへ蓄積する。内部GET retry単独ではこのcounterは増えない。
+6. fileReaderはOpen毎に新規生成(reader.go751-764)され、1inodeでも複数handle/fileReaderが存在する。1sticky readerだけの連続ReadがEIO反復の説明になり得るが、metricsの1207全部をこの1errorへ帰属できない。
+
+保存済みcontext確定事実:
+耐久20:42:48.624261 inode596155 read file input/output error。直前同slice4238443へ12個のreadSlice context canceled警告がある。同時刻以降にも同inode writer Read barrier成功がある。barrier成功と後半sticky reader errorは両立する。
+latest14:36:19.571627 key chunks/4/4913/4913906_3_4194304 GET404、同.571703 readSlice inode596156失敗。payload担当が同exact key GET約3.6秒後成功を確認済み。この404はretry可能な内部失敗の候補だが、最初のrequest/他parallel waiterの返却まで全成功とは保証しない。current metrics snapshotにはEIO seriesがなくEINTR1で、旧EIO1207とは別process/window。
+
+retryとcancel経路:
+reader.go184/224のf.triedは個別sliceReaderではなくfileReader共有counter。metadata failureまたはdata Readの不足結果ごとに増える。data成功218で0へreset。maxRetriesは724でMeta.Retries由来。閾値超過226-227でdone(EIO)になる。データ層r.Read840-878/readManySlices881-934はerror内容をerrnoとして上げず、『どのerrorでも戻りbyte数0』へ縮約し、run223がEIOとする。
+
+注意: 12個のreadSlice warning=12回f.tried増加ではない。1sliceReader.run内でも複数meta.Sliceがparallelに失敗し、r.Readはまとめて0を返し1回だけ増加する。実際のslices/run identityと当時tried/maxRetriesはログにない。
+
+data ctxはreader.go312 context.WithCancel(context.Background())。kernel/FUSE caller contextを直接継承していない。refs0 sliceをdrop251-256でBREAKにしてs.cancel()し、cleanupRequests463-480、releaseIdleBuffer484-497、Close685-692から実行される。自分がdropされたsliceReaderはrun212-213でdone(0)し、Goexitにより224のretry増加へ進まない。
+
+fanout仮説:
+chunk/cached_store.go163-175はblock key単位singleflightのfirstcaller ctxでloadを行う。pkg/chunk/singleflight.go39-45はduplicateへfirstcallのval/errorをそのまま渡す。先頭requestが不要readaheadとしてdrop/cancelされた場合、ctxがまだ生きた別duplicate sliceReaderへcontext canceledが配布され得る。そのduplicateがBUSYのままならrun224共有triedが増加し、複数duplicate/runが近接して上限超過→fileReader stickyEIOになり得る。source上成立する仮説で、保存済み12警告から先頭producer/duplicate/reader身份を決定できない。
+
+通常GetTimeoutはutils.WithTimeout utils.go125-126のtimeout errorとして返り、親cancelは120-121 ctx.Errを返す。cached_store.go819-820はcontext.Canceledを早期returnして通常GET request logを省く。context canceled警告だけでは物理GETの有無・requestID・cancel発生源を特定しにくい。
+
+actor/正しさ判断:
+保存されたwarningのPID683253はclient process PIDで、QEMU caller PIDではない。inode596155はわかるが、fh/userPID、sliceReader/run識別子、cancel reason、singleflight leader/context identityはない。QEMU起因、manual cancel、未使用readahead cleanup起因のいずれかをprefixから確定不可。
+EIO1207 counterはoperation/inode/pid/time labelsを持たず、すべてRead/596155/QEMUへ割り当てられない。また直接VFS呼出しもlogitを通り得るので、全1207をkernel返信1207と同一視しない。実FUSE.Read経路に入ったEIOがkernelへ返ることはsourceで確定。
+
+今回optionsとの関係:
+reader.go/singleflight.goには今回writer/scheduler/GC/FUSE変更の差分なし。3bed0d82にも同じretry/shortread→EIOコードが存在する。ただし新optionsによる速度・concurrency・retirementが発生条件へ影響した可能性は排除しない。
+latest404がearly retirement後のmetadata stale-referenceか、object store一時404かは仮説。ログsingle failure→samekey successだけでGCが誤削除したと断定しない。
+
+次の最小診断/再現（提案、未実施）:
+同key singleflight first ctxをcancelし、live duplicateと複数sliceReader共有triedの変化を制御したlocal回帰試験。cancel origin/run identity/triedを診断し、需要Readと不要prefetchを区別する。実caller PID/fh/inodeを付けたVFS Read end/error捕捉がmetrics1207の帰属に必要。修正は別認可範囲で、今回は提案だけ。
+
+元ログ、本番VM/metadata/cache/sourceは変更していない。

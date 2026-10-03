@@ -1,0 +1,52 @@
+{
+  "prefix_bytes": 813182468,
+  "findings": {
+    "inode596153": {
+      "write_slice": 4110001,
+      "compact_start": "05:42:55.306840",
+      "background_output_slice": 4100511,
+      "background_metadata_start": "05:16:25.738195",
+      "background_metadata_done": "05:54:05.711198",
+      "background_metadata_duration": "37m39.972965196s",
+      "once_queue_wait": "11m10.410626878s",
+      "once_output_slice": 4113831,
+      "once_metadata_start": "05:54:16.513316",
+      "once_metadata_done": "06:28:41.058879",
+      "once_metadata_duration": "34m24.545514727s",
+      "write_done": "06:28:41.058980",
+      "write_total": "45m45.79201425s",
+      "errno": "0"
+    },
+    "inode596154": {
+      "write_slice": 4123567,
+      "compact_start": "06:19:39.456960",
+      "background_output_slice": 4115684,
+      "background_metadata_start": "05:59:00.193842",
+      "background_metadata_done": "06:32:19.870947",
+      "background_metadata_duration": "33m19.677007317s",
+      "once_queue_wait": "12m40.422215988s",
+      "once_output_slice": 4126132,
+      "once_metadata_start": "06:32:31.573677",
+      "once_metadata_done": "07:03:16.177020",
+      "once_metadata_duration": "30m44.603308367s",
+      "write_done": "07:03:16.177091",
+      "write_total": "43m36.757915692s",
+      "errno": "0"
+    }
+  },
+  "certainty": {
+    "confirmed": [
+      "Both writes hold inode lock through synchronous once compaction in baseMeta.Write.",
+      "Both wait for same inode/chunk background compaction, then spend >30 minutes within doCompactChunk metadata phase.",
+      "doCompactChunk metadata includes txn, cleanupZeroRef, and old slice deletion enqueue.",
+      "deleteSlice holds shared dSliceMu during potentially blocking dslices send.",
+      "No positive queue length/capacity/enqueue-wait log instrumentation found in this fixed prefix.",
+      "Redis slow txn logs exist, 17 total, but none with the observed 30 minute durations."
+    ],
+    "unconfirmed": [
+      "Queue capacity occupancy and whether dSliceMu acquisition versus channel send is the immediate bottleneck.",
+      "Which cleanup producer filled a queue, and whether MaxDeletes=10 was actual runtime setting independent of parent launch evidence.",
+      "DELETE throughput spike causal relationship versus temporal correlation."
+    ]
+  }
+}

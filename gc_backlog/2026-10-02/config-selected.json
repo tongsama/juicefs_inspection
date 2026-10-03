@@ -1,0 +1,20 @@
+{
+  "Version": "1.4.1+2026-10-02.3bed0d82-vm-io-combined-local",
+  "Meta": {
+    "CompactionGCMode": "deferred",
+    "CompactionScheduler": "priority",
+    "MaxDeletes": 10,
+    "NoBGJob": false,
+    "ReadOnly": false,
+    "Sid": 101
+  },
+  "Chunk": {
+    "CacheDir": "/home/kwatanabe/.juicefs/cache/73e74f7b-6f95-4155-adea-d9ef1e669c20",
+    "CacheSize": 16106127360,
+    "MaxUpload": 30,
+    "UploadDelay": 0,
+    "Writeback": true,
+    "WritebackThresholdSize": 4194305,
+    "CacheChecksum": "extend"
+  }
+}

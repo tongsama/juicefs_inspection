@@ -1,0 +1,10 @@
+2026/10/01 21:22:02.201701 juicefs[1095995] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:22:02.201803 juicefs[1095995] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+--- FAIL: TestSmallPUTDiagnostics (0.00s)
+    small_put_test.go:157: 
+        	Error Trace:	/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/pkg/vfs/small_put_test.go:157
+        	Error:      	"2026/10/01 21:22:02.202832 juicefs[1095995] <DEBUG>: PUT chunks/0/0/1_0_4096 (req_id: \"\", err: <nil>, cost: 19.508µs) [logRequest@cached_store.go:700]\n2026/10/01 21:22:02.202892 juicefs[1095995] <DEBUG>: slice commit inode=2 chunk=0 slice=1 phase=metadata [commitThread@writer.go:213]\n2026/10/01 21:22:02.202903 juicefs[1095995] <DEBUG>: metadata write inode=2 chunk=0 slice=1 phase=lock_wait [Write@base.go:2173]\n2026/10/01 21:22:02.202923 juicefs[1095995] <DEBUG>: metadata write inode=2 chunk=0 slice=1 phase=doWrite lock_wait=154ns [Write@base.go:2184]\n2026/10/01 21:22:02.202969 juicefs[1095995] <DEBUG>: metadata write inode=2 chunk=0 slice=1 phase=stat slices=1 doWrite=30.306µs [Write@base.go:2189]\n2026/10/01 21:22:02.202990 juicefs[1095995] <DEBUG>: metadata write inode=2 chunk=0 slice=1 phase=done errno=errno 0 [Write@base.go:2205]\n" does not contain "reason=explicit_flush"
+        	Test:       	TestSmallPUTDiagnostics
+FAIL
+FAIL	github.com/juicedata/juicefs/pkg/vfs	0.040s
+FAIL

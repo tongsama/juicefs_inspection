@@ -1,0 +1,6 @@
+{
+  "cmd_red": {"command": "go test ./cmd -run ^TestRegisterMetaRetirement -count=1", "result": "FAIL", "failures": ["mount adapter does not register local retirement", "legacy store lacks a compatible retirement callback"]},
+  "cmd_green": {"command": "go test ./cmd -run ^TestRegisterMetaRetirement -count=3", "result": "PASS", "seconds": 0.031},
+  "meta_red": {"test": "TestCompactionGCLocalRetirePastFullRemoteQueue", "result": "FAIL", "failure": "second local callback did not progress while remote output was full"},
+  "meta_green": {"backends": ["MemKV", "SQLite", "isolated Redis 16380"], "race_repeats": 3, "result": "PASS", "seconds": 2.644}
+}

@@ -1,0 +1,379 @@
+=== RUN   TestSmallPUTWritebackStaging
+2026/10/01 21:30:35.673338 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.673416 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.674100 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTWritebackStaging533138897/002/d5590392-8331-4e3a-80e3-14b83c372ffe/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.674372 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:127: raw=[512] stage_file_bytes=516 payload=[19]
+--- PASS: TestSmallPUTWritebackStaging (0.01s)
+=== RUN   TestSmallPUTDiagnostics
+2026/10/01 21:30:35.678956 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.679001 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.679127 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+--- PASS: TestSmallPUTDiagnostics (0.00s)
+=== RUN   TestSmallPUTAggregation
+=== RUN   TestSmallPUTAggregation/writeback=false/sequential
+2026/10/01 21:30:35.679897 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.679931 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.680042 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[1024] payload=[1024]
+=== RUN   TestSmallPUTAggregation/writeback=false/overwrite
+2026/10/01 21:30:35.680763 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.680801 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.680919 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512] payload=[512]
+=== RUN   TestSmallPUTAggregation/writeback=false/block_overwrite
+2026/10/01 21:30:35.681401 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.681435 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.681524 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512 4194304] payload=[512 4194304]
+=== RUN   TestSmallPUTAggregation/writeback=false/gap
+2026/10/01 21:30:35.700555 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.700602 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.700740 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=false/chunks
+2026/10/01 21:30:35.701719 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.701760 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.701948 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=false/fsync
+2026/10/01 21:30:35.702621 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.702657 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.702773 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=false/read
+2026/10/01 21:30:35.703410 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.703447 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.703540 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=true/sequential
+2026/10/01 21:30:35.704091 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.704125 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.704327 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truesequential443030377/002/6cc15331-d1c3-4e7d-9967-7e828f42de7a/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.704370 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[1024] payload=[1024]
+=== RUN   TestSmallPUTAggregation/writeback=true/overwrite
+2026/10/01 21:30:35.705827 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.705883 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.706108 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueoverwrite16194002/002/d747cffd-7caa-4d16-8d76-9d0e7a8e5fe5/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.706158 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512] payload=[512]
+=== RUN   TestSmallPUTAggregation/writeback=true/block_overwrite
+2026/10/01 21:30:35.707530 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.707571 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.707827 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueblock_overwrite2727800068/002/018fb444-5e48-4635-be27-81bc1c1d6206/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.707862 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512 4194304] payload=[512 4194304]
+=== RUN   TestSmallPUTAggregation/writeback=true/gap
+2026/10/01 21:30:35.722963 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.723012 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.723241 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truegap3897779597/002/2982720b-ed95-4b82-b65f-d212f96c629e/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.723280 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=true/chunks
+2026/10/01 21:30:35.724989 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.725040 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.725296 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truechunks1806778948/002/f0005a3b-fa1a-471c-b6e8-8636f38ccbfa/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.725333 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=true/fsync
+2026/10/01 21:30:35.726571 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.726615 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.726875 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truefsync935945427/002/38acc577-4e1e-4330-8ee8-f24fe1808bbf/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.726923 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=true/read
+2026/10/01 21:30:35.728360 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.728400 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.728649 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueread1659420468/002/a0dfa1ab-b3c5-42b6-ade8-8bcb6f1f4306/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.728681 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+--- PASS: TestSmallPUTAggregation (0.05s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/sequential (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/overwrite (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/block_overwrite (0.02s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/gap (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/chunks (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/fsync (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/read (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/sequential (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/overwrite (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/block_overwrite (0.02s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/gap (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/chunks (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/fsync (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/read (0.00s)
+=== RUN   TestSmallPUTCompression
+=== RUN   TestSmallPUTCompression/none
+2026/10/01 21:30:35.730417 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.730459 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.730566 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:357: raw=[131072] payload=[131072]
+=== RUN   TestSmallPUTCompression/lz4
+2026/10/01 21:30:35.731654 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.731691 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.731867 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:357: raw=[131072] payload=[524]
+=== RUN   TestSmallPUTCompression/zstd
+2026/10/01 21:30:35.732694 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.732728 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.732821 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:357: raw=[131072] payload=[22]
+--- PASS: TestSmallPUTCompression (0.00s)
+    --- PASS: TestSmallPUTCompression/none (0.00s)
+    --- PASS: TestSmallPUTCompression/lz4 (0.00s)
+    --- PASS: TestSmallPUTCompression/zstd (0.00s)
+=== RUN   TestSmallPUTWritebackStaging
+2026/10/01 21:30:35.733664 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.733703 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.733870 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTWritebackStaging564508250/002/94f48878-8435-40db-b9ba-0d551d8cf3ed/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.733904 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:127: raw=[512] stage_file_bytes=516 payload=[19]
+--- PASS: TestSmallPUTWritebackStaging (0.00s)
+=== RUN   TestSmallPUTDiagnostics
+2026/10/01 21:30:35.736362 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.736410 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.736536 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+--- PASS: TestSmallPUTDiagnostics (0.00s)
+=== RUN   TestSmallPUTAggregation
+=== RUN   TestSmallPUTAggregation/writeback=false/sequential
+2026/10/01 21:30:35.737990 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.738024 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.738220 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[1024] payload=[1024]
+=== RUN   TestSmallPUTAggregation/writeback=false/overwrite
+2026/10/01 21:30:35.739601 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.739663 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.739806 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512] payload=[512]
+=== RUN   TestSmallPUTAggregation/writeback=false/block_overwrite
+2026/10/01 21:30:35.740409 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.740453 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.740566 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512 4194304] payload=[512 4194304]
+=== RUN   TestSmallPUTAggregation/writeback=false/gap
+2026/10/01 21:30:35.753314 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.753557 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.753989 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=false/chunks
+2026/10/01 21:30:35.755018 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.755047 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.755249 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=false/fsync
+2026/10/01 21:30:35.755984 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.756028 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.756156 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=false/read
+2026/10/01 21:30:35.756815 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.756838 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.756987 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=true/sequential
+2026/10/01 21:30:35.758152 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.758196 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.758392 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truesequential3783716588/002/63714206-84b9-4248-9d81-358bb0fce44f/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.758426 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[1024] payload=[1024]
+=== RUN   TestSmallPUTAggregation/writeback=true/overwrite
+2026/10/01 21:30:35.759639 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.759681 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.759878 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueoverwrite4207711015/002/ad5011c6-d981-42c0-8176-48dad0c7a2c8/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.759912 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512] payload=[512]
+=== RUN   TestSmallPUTAggregation/writeback=true/block_overwrite
+2026/10/01 21:30:35.760954 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.760994 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.761191 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueblock_overwrite4224624635/002/ad7ed5db-0b10-4844-a110-129165ae63dd/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.761223 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512 4194304] payload=[512 4194304]
+=== RUN   TestSmallPUTAggregation/writeback=true/gap
+2026/10/01 21:30:35.776592 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.776642 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.776914 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truegap228385475/002/ed2307f3-47c2-46b0-b82a-f3ad0690417e/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.776949 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=true/chunks
+2026/10/01 21:30:35.778238 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.778267 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.778454 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truechunks2625117801/002/dd3e2b05-1623-4ef4-b4ce-0fd1fddde75c/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.778490 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=true/fsync
+2026/10/01 21:30:35.779569 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.779597 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.779763 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truefsync886336193/002/91e7fcf4-6e68-4b54-ace8-112a685b87c5/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.779799 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=true/read
+2026/10/01 21:30:35.781739 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.781793 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.782136 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueread1680703033/002/44109f30-4974-4c1d-9e03-b5449b16c346/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.782176 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+--- PASS: TestSmallPUTAggregation (0.05s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/sequential (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/overwrite (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/block_overwrite (0.01s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/gap (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/chunks (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/fsync (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/read (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/sequential (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/overwrite (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/block_overwrite (0.02s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/gap (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/chunks (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/fsync (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/read (0.00s)
+=== RUN   TestSmallPUTCompression
+=== RUN   TestSmallPUTCompression/none
+2026/10/01 21:30:35.783620 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.783662 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.783776 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:357: raw=[131072] payload=[131072]
+=== RUN   TestSmallPUTCompression/lz4
+2026/10/01 21:30:35.784687 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.784725 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.784834 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:357: raw=[131072] payload=[524]
+=== RUN   TestSmallPUTCompression/zstd
+2026/10/01 21:30:35.785717 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.785767 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.785872 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:357: raw=[131072] payload=[22]
+--- PASS: TestSmallPUTCompression (0.00s)
+    --- PASS: TestSmallPUTCompression/none (0.00s)
+    --- PASS: TestSmallPUTCompression/lz4 (0.00s)
+    --- PASS: TestSmallPUTCompression/zstd (0.00s)
+=== RUN   TestSmallPUTWritebackStaging
+2026/10/01 21:30:35.786709 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.786748 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.786930 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTWritebackStaging4183958885/002/3fb43711-182c-4372-9267-44fac0a526e9/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.786967 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:127: raw=[512] stage_file_bytes=516 payload=[19]
+--- PASS: TestSmallPUTWritebackStaging (0.00s)
+=== RUN   TestSmallPUTDiagnostics
+2026/10/01 21:30:35.789406 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.789435 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.789560 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+--- PASS: TestSmallPUTDiagnostics (0.00s)
+=== RUN   TestSmallPUTAggregation
+=== RUN   TestSmallPUTAggregation/writeback=false/sequential
+2026/10/01 21:30:35.790267 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.790305 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.790410 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[1024] payload=[1024]
+=== RUN   TestSmallPUTAggregation/writeback=false/overwrite
+2026/10/01 21:30:35.791048 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.791082 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.791179 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512] payload=[512]
+=== RUN   TestSmallPUTAggregation/writeback=false/block_overwrite
+2026/10/01 21:30:35.791770 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.791804 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.791901 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512 4194304] payload=[512 4194304]
+=== RUN   TestSmallPUTAggregation/writeback=false/gap
+2026/10/01 21:30:35.800643 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.800697 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.800836 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=false/chunks
+2026/10/01 21:30:35.801679 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.801704 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.801811 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=false/fsync
+2026/10/01 21:30:35.802503 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.802536 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.802627 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=false/read
+2026/10/01 21:30:35.803163 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.803194 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.803292 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=true/sequential
+2026/10/01 21:30:35.803980 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.804019 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.804188 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truesequential2415349445/002/07a830e9-8e10-4e40-b80b-1db698eec099/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.804229 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+2026/10/01 21:30:35.804715 juicefs[1104893] <INFO>: Found 1 staging blocks (1.0 KiB) in /tmp/TestSmallPUTAggregationwriteback=truesequential2415349445/002/07a830e9-8e10-4e40-b80b-1db698eec099/ with 101.798µs [scanStaging@disk_cache.go:1066]
+2026/10/01 21:30:35.804744 juicefs[1104893] <ERROR>: Open staging file /tmp/TestSmallPUTAggregationwriteback=truesequential2415349445/002/07a830e9-8e10-4e40-b80b-1db698eec099/rawstaging/chunks/0/0/1_0_1024: open /tmp/TestSmallPUTAggregationwriteback=truesequential2415349445/002/07a830e9-8e10-4e40-b80b-1db698eec099/rawstaging/chunks/0/0/1_0_1024: no such file or directory [uploadStagingFile@cached_store.go:1054]
+    small_put_test.go:327: raw=[1024] payload=[1024]
+=== RUN   TestSmallPUTAggregation/writeback=true/overwrite
+2026/10/01 21:30:35.805289 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.805317 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.805555 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueoverwrite194558943/002/fed11129-e6b3-41ab-a451-90365516ed4a/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.805599 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512] payload=[512]
+=== RUN   TestSmallPUTAggregation/writeback=true/block_overwrite
+2026/10/01 21:30:35.806714 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.806752 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.806936 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueblock_overwrite1986628456/002/7b982725-9726-4761-b242-c43d4aae9baf/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.806973 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512 4194304] payload=[512 4194304]
+=== RUN   TestSmallPUTAggregation/writeback=true/gap
+2026/10/01 21:30:35.820402 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.820448 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.820733 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truegap4151991241/002/4ef1f651-04d0-4729-b743-be31d7cc9314/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.820766 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=true/chunks
+2026/10/01 21:30:35.822477 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.822519 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.822701 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truechunks3514110526/002/89bbf799-f6b8-4354-8514-2ab70c7ac987/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.822735 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=true/fsync
+2026/10/01 21:30:35.824212 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.824263 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.824505 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=truefsync2181215791/002/b37fedc3-f855-43fc-bb82-ab8fce58348d/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.824543 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+=== RUN   TestSmallPUTAggregation/writeback=true/read
+2026/10/01 21:30:35.825968 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.826015 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.826216 juicefs[1104893] <INFO>: Disk cache (/tmp/TestSmallPUTAggregationwriteback=trueread1912386561/002/a401922f-f6da-4ca1-9cfa-4eb08639780b/): used ratio - [space 7.2%, inode 0.5%] [newCacheStore@disk_cache.go:154]
+2026/10/01 21:30:35.826250 juicefs[1104893] <INFO>: Adjusted max items based on freeratio: from 0 to 943718 items [setLimitByFreeRatio@disk_cache.go:191]
+    small_put_test.go:327: raw=[512 512] payload=[512 512]
+--- PASS: TestSmallPUTAggregation (0.04s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/sequential (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/overwrite (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/block_overwrite (0.01s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/gap (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/chunks (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/fsync (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=false/read (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/sequential (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/overwrite (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/block_overwrite (0.01s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/gap (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/chunks (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/fsync (0.00s)
+    --- PASS: TestSmallPUTAggregation/writeback=true/read (0.00s)
+=== RUN   TestSmallPUTCompression
+=== RUN   TestSmallPUTCompression/none
+2026/10/01 21:30:35.827707 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.827754 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.827861 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:357: raw=[131072] payload=[131072]
+=== RUN   TestSmallPUTCompression/lz4
+2026/10/01 21:30:35.828625 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.828660 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.828786 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:357: raw=[131072] payload=[524]
+=== RUN   TestSmallPUTCompression/zstd
+2026/10/01 21:30:35.829673 juicefs[1104893] <INFO>: Meta address: memkv:// [NewClient@interface.go:643]
+2026/10/01 21:30:35.829713 juicefs[1104893] <WARNING>: Deleting object will be disabled since max-deletes is 0 [SelfCheck@config.go:69]
+2026/10/01 21:30:35.829831 juicefs[1104893] <WARNING>: LRU eviction is not supported in memory cache mode yet, setting it to 2-random [SelfCheck@cached_store.go:629]
+    small_put_test.go:357: raw=[131072] payload=[22]
+--- PASS: TestSmallPUTCompression (0.00s)
+    --- PASS: TestSmallPUTCompression/none (0.00s)
+    --- PASS: TestSmallPUTCompression/lz4 (0.00s)
+    --- PASS: TestSmallPUTCompression/zstd (0.00s)
+PASS
+ok  	github.com/juicedata/juicefs/pkg/vfs	0.205s

@@ -1,0 +1,737 @@
+{
+  "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261001-183557.log",
+  "prefix_bytes": 144316877,
+  "sha256_prefix": "9f92d051a6e36551eaeb4b90aaedaf848f667e2767d0ab55d163aee1f2a6264c",
+  "size_after": 144316877,
+  "line_count": 953415,
+  "first_timestamp": "2026/10/01 18:36:03.847499",
+  "last_timestamp": "2026/10/01 20:24:40.937939",
+  "op_events": {
+    "PUT": 16491,
+    "DELETE": 18607,
+    "GET": 18
+  },
+  "compaction_output_slices": 60,
+  "normal_metadata_slices": 18424,
+  "intersection": [],
+  "metadata_phases": {
+    "lock_wait": 18424,
+    "doWrite": 18424,
+    "stat": 18424,
+    "done": 18424,
+    "compact": 1
+  },
+  "compaction_phases": {
+    "object": 60,
+    "metadata": 60,
+    "done": 59
+  },
+  "put_by_class": {
+    "compaction": {
+      "events": 737,
+      "distinct_keys": 737,
+      "raw_suffix_sum_per_event": 3006255104,
+      "histogram": {
+        "4194304": 700,
+        "65536": 1,
+        "245760": 1,
+        "2162688": 1,
+        "3964928": 1,
+        "221184": 1,
+        "2621440": 2,
+        "659456": 5,
+        "2699264": 1,
+        "1638400": 1,
+        "1318912": 1,
+        "3653632": 1,
+        "253952": 1,
+        "524288": 1,
+        "3190784": 1,
+        "2752512": 1,
+        "2428928": 1,
+        "327680": 1,
+        "2424832": 1,
+        "815104": 1,
+        "3407872": 1,
+        "1114112": 1,
+        "3342336": 1,
+        "3145728": 1,
+        "917504": 1,
+        "1572864": 1,
+        "3473408": 1,
+        "1744896": 1,
+        "2105344": 1,
+        "3801088": 1,
+        "3997696": 1,
+        "2883584": 1,
+        "1507328": 1
+      },
+      "size_buckets": {
+        "4MiB": 700,
+        "<=64KiB": 1,
+        "<1MiB": 12,
+        "<4MiB": 24
+      },
+      "errors": {
+        "<nil>": 737
+      },
+      "cost_seconds": {
+        "count": 737,
+        "sum": 3477.392333767,
+        "min": 1.964644867,
+        "median": 3.852135843,
+        "p95": 8.940792049,
+        "p99": 19.060748491,
+        "max": 25.070593439
+      }
+    },
+    "normal_metadata_write": {
+      "events": 15754,
+      "distinct_keys": 15719,
+      "raw_suffix_sum_per_event": 811352152,
+      "histogram": {
+        "8192": 1575,
+        "4096": 9647,
+        "12288": 675,
+        "20480": 318,
+        "32768": 150,
+        "16384": 450,
+        "61440": 30,
+        "45056": 71,
+        "65536": 1175,
+        "49152": 50,
+        "131072": 105,
+        "524288": 7,
+        "53248": 34,
+        "2256896": 1,
+        "143360": 6,
+        "229376": 4,
+        "532480": 2,
+        "86016": 15,
+        "36864": 143,
+        "8": 11,
+        "24576": 238,
+        "40960": 86,
+        "106496": 7,
+        "94208": 12,
+        "28672": 157,
+        "159744": 3,
+        "69632": 28,
+        "126976": 10,
+        "57344": 50,
+        "73728": 32,
+        "114688": 8,
+        "90112": 15,
+        "188416": 1,
+        "430080": 1,
+        "438272": 2,
+        "77824": 23,
+        "4194304": 52,
+        "225280": 1,
+        "196608": 105,
+        "155648": 9,
+        "237568": 3,
+        "184320": 4,
+        "163840": 8,
+        "253952": 3,
+        "110592": 15,
+        "172032": 2,
+        "401408": 4,
+        "458752": 7,
+        "102400": 10,
+        "344064": 3,
+        "499712": 3,
+        "176128": 3,
+        "249856": 4,
+        "315392": 1,
+        "282624": 3,
+        "262144": 12,
+        "311296": 4,
+        "495616": 2,
+        "81920": 15,
+        "122880": 8,
+        "327680": 13,
+        "393216": 6,
+        "135168": 6,
+        "180224": 8,
+        "192512": 7,
+        "151552": 5,
+        "307200": 4,
+        "212992": 1,
+        "1040384": 28,
+        "1097728": 2,
+        "417792": 2,
+        "983040": 13,
+        "2080768": 3,
+        "3121152": 2,
+        "3178496": 1,
+        "1048576": 4,
+        "1105920": 1,
+        "442368": 2,
+        "622592": 1,
+        "2949120": 5,
+        "720896": 9,
+        "270336": 3,
+        "380928": 1,
+        "995328": 2,
+        "2293760": 2,
+        "1966080": 4,
+        "208896": 1,
+        "258048": 2,
+        "217088": 1,
+        "364544": 2,
+        "3997696": 1,
+        "1179648": 7,
+        "98304": 10,
+        "286720": 6,
+        "139264": 5,
+        "1703936": 3,
+        "1769472": 1,
+        "118784": 10,
+        "147456": 2,
+        "917504": 8,
+        "1024000": 1,
+        "319488": 1,
+        "1441792": 5,
+        "323584": 2,
+        "446464": 1,
+        "2686976": 1,
+        "520192": 2,
+        "3145728": 2,
+        "2490368": 2,
+        "655360": 5,
+        "2818048": 1,
+        "3538944": 2,
+        "716800": 1,
+        "233472": 1,
+        "2097152": 2,
+        "589824": 7,
+        "1310720": 2,
+        "1114112": 4,
+        "376832": 2,
+        "786432": 2,
+        "360448": 1,
+        "2228224": 2,
+        "2105344": 1,
+        "851968": 3,
+        "1421312": 1,
+        "1261568": 1,
+        "200704": 3,
+        "3276800": 3,
+        "1245184": 1,
+        "3407872": 1,
+        "2031616": 1,
+        "409600": 1,
+        "2793472": 1,
+        "167936": 6,
+        "397312": 2,
+        "950272": 1,
+        "598016": 1,
+        "335872": 1,
+        "290816": 1,
+        "4087808": 1,
+        "3014656": 2,
+        "1572864": 3,
+        "389120": 1,
+        "3932160": 1,
+        "221184": 2,
+        "204800": 2,
+        "561152": 1,
+        "2883584": 1,
+        "471040": 1,
+        "266240": 1,
+        "2752512": 1,
+        "372736": 2,
+        "331776": 1,
+        "688128": 1,
+        "2359296": 2,
+        "708608": 1,
+        "1331200": 2,
+        "3743744": 1,
+        "454656": 1,
+        "1847296": 1,
+        "1507328": 2,
+        "450560": 1,
+        "1835008": 1,
+        "421888": 2,
+        "2424832": 2,
+        "339968": 1,
+        "1900544": 2,
+        "368640": 2,
+        "2449408": 1,
+        "245760": 1,
+        "352256": 2,
+        "3170304": 1,
+        "356352": 2,
+        "274432": 1,
+        "2555904": 1,
+        "1638400": 1,
+        "385024": 1,
+        "294912": 1,
+        "348160": 1,
+        "303104": 1,
+        "3080192": 1,
+        "413696": 1,
+        "3670016": 1
+      },
+      "size_buckets": {
+        "<=8KiB": 1575,
+        "<=4KiB": 9658,
+        "<=16KiB": 1125,
+        "<=64KiB": 2502,
+        "<1MiB": 744,
+        "<4MiB": 98,
+        "4MiB": 52
+      },
+      "errors": {
+        "<nil>": 15719,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3716/3716916_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3716/3716962_0_8192?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3716/3716972_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3716/3716983_0_28672?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3716/3716980_0_12288?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3716/3716985_0_12288?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3716/3716988_0_8192?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3717/3717911_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3717/3717913_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3717/3717973_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3717/3717983_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 2,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3717/3717991_0_16384?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3717/3717992_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3717/3717998_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3722/3722586_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3722/3722062_0_8192?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3722/3722920_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3722/3722580_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3733/3733032_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3733/3733030_0_20480?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3733/3733014_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3733/3733764_0_8192?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3733/3733756_0_8192?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3733/3733648_0_16384?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3733/3733748_0_16384?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3733/3733248_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3733/3733180_0_65536?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3733/3733227_0_8192?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3733/3733360_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3733/3733214_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3733/3733783_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3733/3733209_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3733/3733183_0_20480?x-id=PutObject\": net/http: timeout awaiting response headers": 1,
+        "operation error S3: PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , HostID: , request send failed, Put \"http://localhost:9090/buckets/juicefs-data/chunks/3/3733/3733193_0_4096?x-id=PutObject\": net/http: timeout awaiting response headers": 1
+      },
+      "cost_seconds": {
+        "count": 15754,
+        "sum": 89922.860796316,
+        "min": 1.877588704,
+        "median": 3.663986232,
+        "p95": 17.704907825,
+        "p99": 24.862203623,
+        "max": 30.001676382
+      }
+    }
+  },
+  "other_puts": [],
+  "cache_read_size_histogram": {
+    "4096": 24957,
+    "8192": 4790,
+    "32768": 482311,
+    "12288": 2472,
+    "3200": 9,
+    "16384": 1878,
+    "20480": 1285,
+    "24576": 1493,
+    "28672": 778,
+    "14336": 1,
+    "8": 31
+  },
+  "cache_read_events": 520005,
+  "cache_read_observed_bytes": 16092334456,
+  "pending_distinct_slices": 294,
+  "pending_length_histogram": {
+    "4096": 207,
+    "69632": 1,
+    "8192": 62,
+    "196608": 4,
+    "61440": 1,
+    "12288": 11,
+    "16384": 5,
+    "73728": 1,
+    "110592": 1,
+    "20480": 1
+  },
+  "pending_slen_histogram": {
+    "4096": 207,
+    "69632": 1,
+    "8192": 62,
+    "196608": 4,
+    "61440": 1,
+    "12288": 11,
+    "16384": 5,
+    "73728": 1,
+    "110592": 1,
+    "20480": 1
+  },
+  "compaction_details": {
+    "3715787": {
+      "inode": 596154,
+      "chunk": 0,
+      "time": "2026/10/01 18:36:50.184167",
+      "line": "2026/10/01 18:36:50.184167 juicefs[989530] <DEBUG>: compaction inode=596154 chunk=0 slice=3715787 phase=object slices=538 bytes=46202880 [compactChunk@base.go:2909]"
+    },
+    "3715788": {
+      "inode": 596152,
+      "chunk": 0,
+      "time": "2026/10/01 18:36:50.300220",
+      "line": "2026/10/01 18:36:50.300220 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=0 slice=3715788 phase=object slices=682 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3715789": {
+      "inode": 596153,
+      "chunk": 0,
+      "time": "2026/10/01 18:36:50.704573",
+      "line": "2026/10/01 18:36:50.704573 juicefs[989530] <DEBUG>: compaction inode=596153 chunk=0 slice=3715789 phase=object slices=537 bytes=50577408 [compactChunk@base.go:2909]"
+    },
+    "3715790": {
+      "inode": 596152,
+      "chunk": 1,
+      "time": "2026/10/01 18:37:14.001852",
+      "line": "2026/10/01 18:37:14.001852 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=1 slice=3715790 phase=object slices=81 bytes=6356992 [compactChunk@base.go:2909]"
+    },
+    "3717159": {
+      "inode": 596152,
+      "chunk": 1,
+      "time": "2026/10/01 18:38:58.600460",
+      "line": "2026/10/01 18:38:58.600460 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=1 slice=3717159 phase=object slices=443 bytes=12353536 [compactChunk@base.go:2909]"
+    },
+    "3719947": {
+      "inode": 596155,
+      "chunk": 0,
+      "time": "2026/10/01 18:44:02.321627",
+      "line": "2026/10/01 18:44:02.321627 juicefs[989530] <DEBUG>: compaction inode=596155 chunk=0 slice=3719947 phase=object slices=99 bytes=63135744 [compactChunk@base.go:2909]"
+    },
+    "3720211": {
+      "inode": 596155,
+      "chunk": 2,
+      "time": "2026/10/01 18:44:14.273476",
+      "line": "2026/10/01 18:44:14.273476 juicefs[989530] <DEBUG>: compaction inode=596155 chunk=2 slice=3720211 phase=object slices=9 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3720214": {
+      "inode": 596155,
+      "chunk": 3,
+      "time": "2026/10/01 18:44:14.291609",
+      "line": "2026/10/01 18:44:14.291609 juicefs[989530] <DEBUG>: compaction inode=596155 chunk=3 slice=3720214 phase=object slices=6 bytes=6815744 [compactChunk@base.go:2909]"
+    },
+    "3720321": {
+      "inode": 596155,
+      "chunk": 0,
+      "time": "2026/10/01 18:44:17.031166",
+      "line": "2026/10/01 18:44:17.031166 juicefs[989530] <DEBUG>: compaction inode=596155 chunk=0 slice=3720321 phase=object slices=46 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3720503": {
+      "inode": 596155,
+      "chunk": 2,
+      "time": "2026/10/01 18:44:23.764069",
+      "line": "2026/10/01 18:44:23.764069 juicefs[989530] <DEBUG>: compaction inode=596155 chunk=2 slice=3720503 phase=object slices=14 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3720504": {
+      "inode": 596155,
+      "chunk": 3,
+      "time": "2026/10/01 18:44:23.765595",
+      "line": "2026/10/01 18:44:23.765595 juicefs[989530] <DEBUG>: compaction inode=596155 chunk=3 slice=3720504 phase=object slices=36 bytes=9048064 [compactChunk@base.go:2909]"
+    },
+    "3720644": {
+      "inode": 596155,
+      "chunk": 3,
+      "time": "2026/10/01 18:44:32.720042",
+      "line": "2026/10/01 18:44:32.720042 juicefs[989530] <DEBUG>: compaction inode=596155 chunk=3 slice=3720644 phase=object slices=24 bytes=9048064 [compactChunk@base.go:2909]"
+    },
+    "3721413": {
+      "inode": 596153,
+      "chunk": 0,
+      "time": "2026/10/01 18:46:01.929064",
+      "line": "2026/10/01 18:46:01.929064 juicefs[989530] <DEBUG>: compaction inode=596153 chunk=0 slice=3721413 phase=object slices=1000 bytes=57225216 [compactChunk@base.go:2909]"
+    },
+    "3721416": {
+      "inode": 596154,
+      "chunk": 0,
+      "time": "2026/10/01 18:46:02.420035",
+      "line": "2026/10/01 18:46:02.420035 juicefs[989530] <DEBUG>: compaction inode=596154 chunk=0 slice=3721416 phase=object slices=1000 bytes=47775744 [compactChunk@base.go:2909]"
+    },
+    "3721698": {
+      "inode": 596156,
+      "chunk": 0,
+      "time": "2026/10/01 18:46:30.941082",
+      "line": "2026/10/01 18:46:30.941082 juicefs[989530] <DEBUG>: compaction inode=596156 chunk=0 slice=3721698 phase=object slices=99 bytes=60039168 [compactChunk@base.go:2909]"
+    },
+    "3721895": {
+      "inode": 596156,
+      "chunk": 2,
+      "time": "2026/10/01 18:46:42.320097",
+      "line": "2026/10/01 18:46:42.320097 juicefs[989530] <DEBUG>: compaction inode=596156 chunk=2 slice=3721895 phase=object slices=7 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3721897": {
+      "inode": 596156,
+      "chunk": 3,
+      "time": "2026/10/01 18:46:42.615092",
+      "line": "2026/10/01 18:46:42.615092 juicefs[989530] <DEBUG>: compaction inode=596156 chunk=3 slice=3721897 phase=object slices=6 bytes=6815744 [compactChunk@base.go:2909]"
+    },
+    "3721961": {
+      "inode": 596156,
+      "chunk": 0,
+      "time": "2026/10/01 18:46:47.185096",
+      "line": "2026/10/01 18:46:47.185096 juicefs[989530] <DEBUG>: compaction inode=596156 chunk=0 slice=3721961 phase=object slices=51 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3722004": {
+      "inode": 596156,
+      "chunk": 1,
+      "time": "2026/10/01 18:46:49.378187",
+      "line": "2026/10/01 18:46:49.378187 juicefs[989530] <DEBUG>: compaction inode=596156 chunk=1 slice=3722004 phase=object slices=99 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3722358": {
+      "inode": 596156,
+      "chunk": 2,
+      "time": "2026/10/01 18:47:00.544774",
+      "line": "2026/10/01 18:47:00.544774 juicefs[989530] <DEBUG>: compaction inode=596156 chunk=2 slice=3722358 phase=object slices=18 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3722359": {
+      "inode": 596156,
+      "chunk": 3,
+      "time": "2026/10/01 18:47:00.545572",
+      "line": "2026/10/01 18:47:00.545572 juicefs[989530] <DEBUG>: compaction inode=596156 chunk=3 slice=3722359 phase=object slices=57 bytes=9048064 [compactChunk@base.go:2909]"
+    },
+    "3722955": {
+      "inode": 596152,
+      "chunk": 0,
+      "time": "2026/10/01 18:48:12.073268",
+      "line": "2026/10/01 18:48:12.073268 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=0 slice=3722955 phase=object slices=1000 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3723308": {
+      "inode": 596158,
+      "chunk": 0,
+      "time": "2026/10/01 18:48:51.337620",
+      "line": "2026/10/01 18:48:51.337620 juicefs[989530] <DEBUG>: compaction inode=596158 chunk=0 slice=3723308 phase=object slices=99 bytes=62373888 [compactChunk@base.go:2909]"
+    },
+    "3723530": {
+      "inode": 596158,
+      "chunk": 1,
+      "time": "2026/10/01 18:48:57.583081",
+      "line": "2026/10/01 18:48:57.583081 juicefs[989530] <DEBUG>: compaction inode=596158 chunk=1 slice=3723530 phase=object slices=99 bytes=46391296 [compactChunk@base.go:2909]"
+    },
+    "3723640": {
+      "inode": 596158,
+      "chunk": 3,
+      "time": "2026/10/01 18:49:00.504444",
+      "line": "2026/10/01 18:49:00.504444 juicefs[989530] <DEBUG>: compaction inode=596158 chunk=3 slice=3723640 phase=object slices=6 bytes=4718592 [compactChunk@base.go:2909]"
+    },
+    "3723759": {
+      "inode": 596158,
+      "chunk": 0,
+      "time": "2026/10/01 18:49:07.242279",
+      "line": "2026/10/01 18:49:07.242279 juicefs[989530] <DEBUG>: compaction inode=596158 chunk=0 slice=3723759 phase=object slices=54 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3723956": {
+      "inode": 596158,
+      "chunk": 3,
+      "time": "2026/10/01 18:49:15.586831",
+      "line": "2026/10/01 18:49:15.586831 juicefs[989530] <DEBUG>: compaction inode=596158 chunk=3 slice=3723956 phase=object slices=71 bytes=9048064 [compactChunk@base.go:2909]"
+    },
+    "3725233": {
+      "inode": 596155,
+      "chunk": 3,
+      "time": "2026/10/01 18:51:36.791146",
+      "line": "2026/10/01 18:51:36.791146 juicefs[989530] <DEBUG>: compaction inode=596155 chunk=3 slice=3725233 phase=object slices=19 bytes=9048064 [compactChunk@base.go:2909]"
+    },
+    "3725243": {
+      "inode": 596156,
+      "chunk": 1,
+      "time": "2026/10/01 18:51:37.013526",
+      "line": "2026/10/01 18:51:37.013526 juicefs[989530] <DEBUG>: compaction inode=596156 chunk=1 slice=3725243 phase=object slices=22 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3726121": {
+      "inode": 596152,
+      "chunk": 1,
+      "time": "2026/10/01 18:53:24.935175",
+      "line": "2026/10/01 18:53:24.935175 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=1 slice=3726121 phase=object slices=1000 bytes=15773696 [compactChunk@base.go:2909]"
+    },
+    "3727672": {
+      "inode": 596152,
+      "chunk": 3,
+      "time": "2026/10/01 18:56:52.447825",
+      "line": "2026/10/01 18:56:52.447825 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=3 slice=3727672 phase=object slices=68 bytes=32112640 [compactChunk@base.go:2909]"
+    },
+    "3727768": {
+      "inode": 596152,
+      "chunk": 4,
+      "time": "2026/10/01 18:56:56.649361",
+      "line": "2026/10/01 18:56:56.649361 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=4 slice=3727768 phase=object slices=40 bytes=52760576 [compactChunk@base.go:2909]"
+    },
+    "3728120": {
+      "inode": 596152,
+      "chunk": 5,
+      "time": "2026/10/01 18:57:10.239310",
+      "line": "2026/10/01 18:57:10.239310 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=5 slice=3728120 phase=object slices=99 bytes=63242240 [compactChunk@base.go:2909]"
+    },
+    "3728399": {
+      "inode": 596152,
+      "chunk": 6,
+      "time": "2026/10/01 18:57:16.589375",
+      "line": "2026/10/01 18:57:16.589375 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=6 slice=3728399 phase=object slices=99 bytes=27590656 [compactChunk@base.go:2909]"
+    },
+    "3728548": {
+      "inode": 596152,
+      "chunk": 7,
+      "time": "2026/10/01 18:57:26.654850",
+      "line": "2026/10/01 18:57:26.654850 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=7 slice=3728548 phase=object slices=99 bytes=59535360 [compactChunk@base.go:2909]"
+    },
+    "3728795": {
+      "inode": 596152,
+      "chunk": 8,
+      "time": "2026/10/01 18:57:32.222023",
+      "line": "2026/10/01 18:57:32.222023 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=8 slice=3728795 phase=object slices=99 bytes=62128128 [compactChunk@base.go:2909]"
+    },
+    "3728807": {
+      "inode": 596152,
+      "chunk": 9,
+      "time": "2026/10/01 18:57:37.352166",
+      "line": "2026/10/01 18:57:37.352166 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=9 slice=3728807 phase=object slices=99 bytes=43057152 [compactChunk@base.go:2909]"
+    },
+    "3729311": {
+      "inode": 596152,
+      "chunk": 3,
+      "time": "2026/10/01 18:57:43.143957",
+      "line": "2026/10/01 18:57:43.143957 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=3 slice=3729311 phase=object slices=99 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3729322": {
+      "inode": 596152,
+      "chunk": 9,
+      "time": "2026/10/01 18:57:50.462026",
+      "line": "2026/10/01 18:57:50.462026 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=9 slice=3729322 phase=object slices=199 bytes=57868288 [compactChunk@base.go:2909]"
+    },
+    "3729850": {
+      "inode": 596152,
+      "chunk": 13,
+      "time": "2026/10/01 18:58:08.247175",
+      "line": "2026/10/01 18:58:08.247175 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=13 slice=3729850 phase=object slices=99 bytes=57671680 [compactChunk@base.go:2909]"
+    },
+    "3729869": {
+      "inode": 596152,
+      "chunk": 14,
+      "time": "2026/10/01 18:58:15.230187",
+      "line": "2026/10/01 18:58:15.230187 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=14 slice=3729869 phase=object slices=99 bytes=59637760 [compactChunk@base.go:2909]"
+    },
+    "3730118": {
+      "inode": 596152,
+      "chunk": 9,
+      "time": "2026/10/01 18:58:22.221445",
+      "line": "2026/10/01 18:58:22.221445 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=9 slice=3730118 phase=object slices=199 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3730285": {
+      "inode": 596152,
+      "chunk": 3,
+      "time": "2026/10/01 18:58:31.918350",
+      "line": "2026/10/01 18:58:31.918350 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=3 slice=3730285 phase=object slices=36 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3730763": {
+      "inode": 596152,
+      "chunk": 14,
+      "time": "2026/10/01 19:00:29.071105",
+      "line": "2026/10/01 19:00:29.071105 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=14 slice=3730763 phase=object slices=99 bytes=64487424 [compactChunk@base.go:2909]"
+    },
+    "3731843": {
+      "inode": 596152,
+      "chunk": 14,
+      "time": "2026/10/01 19:04:01.347262",
+      "line": "2026/10/01 19:04:01.347262 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=14 slice=3731843 phase=object slices=99 bytes=66387968 [compactChunk@base.go:2909]"
+    },
+    "3731954": {
+      "inode": 596153,
+      "chunk": 0,
+      "time": "2026/10/01 19:04:28.317996",
+      "line": "2026/10/01 19:04:28.317996 juicefs[989530] <DEBUG>: compaction inode=596153 chunk=0 slice=3731954 phase=object slices=1000 bytes=60465152 [compactChunk@base.go:2909]"
+    },
+    "3732297": {
+      "inode": 596152,
+      "chunk": 0,
+      "time": "2026/10/01 19:05:48.429947",
+      "line": "2026/10/01 19:05:48.429947 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=0 slice=3732297 phase=object slices=1000 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3732661": {
+      "inode": 596154,
+      "chunk": 0,
+      "time": "2026/10/01 19:07:42.688107",
+      "line": "2026/10/01 19:07:42.688107 juicefs[989530] <DEBUG>: compaction inode=596154 chunk=0 slice=3732661 phase=object slices=1000 bytes=50331648 [compactChunk@base.go:2909]"
+    },
+    "3732941": {
+      "inode": 596152,
+      "chunk": 15,
+      "time": "2026/10/01 19:09:00.290590",
+      "line": "2026/10/01 19:09:00.290590 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=15 slice=3732941 phase=object slices=99 bytes=2105344 [compactChunk@base.go:2909]"
+    },
+    "3732997": {
+      "inode": 596152,
+      "chunk": 2,
+      "time": "2026/10/01 19:09:08.589088",
+      "line": "2026/10/01 19:09:08.589088 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=2 slice=3732997 phase=object slices=99 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3733039": {
+      "inode": 596152,
+      "chunk": 14,
+      "time": "2026/10/01 19:09:15.817355",
+      "line": "2026/10/01 19:09:15.817355 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=14 slice=3733039 phase=object slices=99 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3733593": {
+      "inode": 596158,
+      "chunk": 0,
+      "time": "2026/10/01 19:10:58.816015",
+      "line": "2026/10/01 19:10:58.816015 juicefs[989530] <DEBUG>: compaction inode=596158 chunk=0 slice=3733593 phase=object slices=189 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3733872": {
+      "inode": 596155,
+      "chunk": 0,
+      "time": "2026/10/01 19:11:08.017728",
+      "line": "2026/10/01 19:11:08.017728 juicefs[989530] <DEBUG>: compaction inode=596155 chunk=0 slice=3733872 phase=object slices=198 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3733873": {
+      "inode": 596155,
+      "chunk": 2,
+      "time": "2026/10/01 19:11:08.032959",
+      "line": "2026/10/01 19:11:08.032959 juicefs[989530] <DEBUG>: compaction inode=596155 chunk=2 slice=3733873 phase=object slices=3 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3734304": {
+      "inode": 596156,
+      "chunk": 0,
+      "time": "2026/10/01 19:11:42.471649",
+      "line": "2026/10/01 19:11:42.471649 juicefs[989530] <DEBUG>: compaction inode=596156 chunk=0 slice=3734304 phase=object slices=165 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3734305": {
+      "inode": 596153,
+      "chunk": 0,
+      "time": "2026/10/01 19:24:53.002653",
+      "line": "2026/10/01 19:24:53.002653 juicefs[989530] <DEBUG>: compaction inode=596153 chunk=0 slice=3734305 phase=object slices=1000 bytes=62521344 [compactChunk@base.go:2909]"
+    },
+    "3734306": {
+      "inode": 596152,
+      "chunk": 0,
+      "time": "2026/10/01 19:32:11.511081",
+      "line": "2026/10/01 19:32:11.511081 juicefs[989530] <DEBUG>: compaction inode=596152 chunk=0 slice=3734306 phase=object slices=803 bytes=67108864 [compactChunk@base.go:2909]"
+    },
+    "3734307": {
+      "inode": 596154,
+      "chunk": 0,
+      "time": "2026/10/01 19:32:35.519380",
+      "line": "2026/10/01 19:32:35.519380 juicefs[989530] <DEBUG>: compaction inode=596154 chunk=0 slice=3734307 phase=object slices=1000 bytes=54329344 [compactChunk@base.go:2909]"
+    },
+    "3734308": {
+      "inode": 596154,
+      "chunk": 0,
+      "time": "2026/10/01 19:41:56.893885",
+      "line": "2026/10/01 19:41:56.893885 juicefs[989530] <DEBUG>: compaction inode=596154 chunk=0 slice=3734308 phase=object slices=903 bytes=57409536 [compactChunk@base.go:2909]"
+    },
+    "3734309": {
+      "inode": 596153,
+      "chunk": 0,
+      "time": "2026/10/01 20:21:16.893659",
+      "line": "2026/10/01 20:21:16.893659 juicefs[989530] <DEBUG>: compaction inode=596153 chunk=0 slice=3734309 phase=object slices=795 bytes=64421888 [compactChunk@base.go:2909]"
+    }
+  }
+}

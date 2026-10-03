@@ -1,0 +1,8 @@
+juicefs_compaction_gc_events_total 0
+juicefs_compaction_gc_events_total 302
+juicefs_compaction_gc_events_total 23109
+juicefs_compaction_gc_events_total 0
+juicefs_compaction_gc_events_total 23109
+juicefs_object_request_uploading 18
+juicefs_staging_block_bytes 45162496
+juicefs_staging_blocks 643

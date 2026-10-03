@@ -1,0 +1,13 @@
+=== RUN   TestFUSEWaitsForPendingFsync
+=== RUN   TestFUSEWaitsForPendingFsync/completion
+=== RUN   TestFUSEWaitsForPendingFsync/storage_error
+=== RUN   TestFUSEWaitsForPendingFsync/watchdog_reproduction
+2026-10-02 07:57:33.264713 I | interrupt request 32(max: 32) after 1.000058329s(timeout: 100ms): &{Length:56 Opcode:20 Unique:32 NodeId:2 Caller:{Owner:{Uid:1000 Gid:1000} Pid:180162} Padding:0}
+=== RUN   TestFUSEWaitsForPendingFsync/kernel_cancel
+--- PASS: TestFUSEWaitsForPendingFsync (3.46s)
+    --- PASS: TestFUSEWaitsForPendingFsync/completion (1.21s)
+    --- PASS: TestFUSEWaitsForPendingFsync/storage_error (1.21s)
+    --- PASS: TestFUSEWaitsForPendingFsync/watchdog_reproduction (1.01s)
+    --- PASS: TestFUSEWaitsForPendingFsync/kernel_cancel (0.03s)
+PASS
+ok  	github.com/juicedata/juicefs/pkg/fuse	3.491s

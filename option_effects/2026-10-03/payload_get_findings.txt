@@ -1,0 +1,25 @@
+追加read/GET異常追跡（read-only、元ログ/source/実機変更なし）
+
+最新runのGET404
+対象chunks/4/4913/4913906_3_4194304、inode596156、slice4913906。
+- 耐久log line21203612: 2026/10/03 02:11:23.611062旧PID683253がinode596156 chunk39 compaction出力として生成。
+- line21208467: 02:11:48.254058同block PUT成功、raw4194304、payload3881530 bytes。
+- 全16blocksPUT成功後line21212483: 02:12:02.758244compaction metadata done errno0。
+- line22170765: 02:58:17.075984read cache eviction。この行はcloud DELETEではない。
+- 最新log line634027: 14:36:19.571627 PID1156153 GET404、cost29.157302862s。
+- line634028: 同readSlice failure、slice offset13070336、size12288、clen67108864、inode596156。
+- line638003: 14:36:23.204409、同exactkey GET成功、cost3.621191956s。
+- line805000: 14:37:00.158744同slice block2 GET成功。
+対象sliceIDのPUT・GET・compaction・cache記録を耐久/最新両logから抽出したが、同ID DELETE/local retirement記録は観測しなかった。
+このkeyについて、stage early retirementによる永久消失を示す証拠はない。同keyGET成功に回復しておりstorageの一時404/バックエンド状態等は未確定。GET成功後のdecompress/read返却全体をここで成功と断定しない。
+
+耐久runのread EIO
+耐久logline1195911: 2026/10/02 20:42:48.624261 PID683253 read file596155 input/output error。
+周囲1001行を抽出し、20:42:48.289549～.624122にslice4238443のreadSlice failures12件（すべてcontext canceled）を確認。GET404やchecksum mismatchの記録はこの周辺windowにはない。
+個別readの最終errnoとcontext cancel原因はwriter/health担当で別途照合。『耐久runはread failureなし』とは言えないが、この内部EIOだけで永久データ破壊とは言えない。
+
+証跡
+payload_get4913906.txt: ID文字列で両logから抽出（requestID偶然一致の数行も含むため文脈を確認）。
+payload_read_window_vm-io-20261002-201718.txt: ERRORread周囲±500行。
+payload_read_window_vm-io-20261003-142854.txt: GET404周囲±500行（同keyGET成功は別抽出traceに含む）。
+この追加対象検索は発見時点のlogをreadしたが、上記報告イベントはいずれも固定manifestprefix期間内。追加全体集計はしていない。

@@ -1,0 +1,395 @@
+{
+  "manifest_spec": {
+    "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261003-142854.log",
+    "role": "recent_restart_wait15_idle10",
+    "prefix_bytes": 267671574,
+    "size_at_capture": 267671574,
+    "mtime_ns": 1791009199318010553
+  },
+  "sha256_prefix": "ca11d874de1b1c2fcc91aa1c05ac890a67b7eb32f4df72d4f17210cc64237692",
+  "line_count": 1603566,
+  "last_byte_newline": true,
+  "first_timestamp": "2026/10/03 14:29:02.632003",
+  "last_timestamp": "2026/10/03 15:33:19.320911",
+  "pids": {
+    "1155704": 2,
+    "1155723": 12,
+    "1156153": 1603544
+  },
+  "versions": [
+    "2026/10/03 14:29:04.538198 juicefs[1156153] <INFO>: JuiceFS version 1.4.1+2026-10-02.3bed0d82-vm-io-gc-retire-local [mount@mount.go:705]"
+  ],
+  "level_line_counts": {
+    "DEBUG": 1600975,
+    "INFO": 291,
+    "WARNING": 2292,
+    "untagged": 8
+  },
+  "level_bytes": {
+    "DEBUG": 267108677,
+    "INFO": 48267,
+    "WARNING": 513024,
+    "untagged": 1606
+  },
+  "checksum_lines": 1151000,
+  "checksum_bytes": 192620471,
+  "checksum_line_share": 0.7177752583928569,
+  "checksum_byte_share": 0.7196149674077831,
+  "checksum_mismatches": 0,
+  "health_counts": {
+    "prefetch_context_canceled": 397,
+    "slow_operation_OK": 8,
+    "NoSuchKey": 2,
+    "readSlice_other_failure": 1
+  },
+  "writer_counts": {
+    "begin": 82234,
+    "end": 82234,
+    "errno_0": 82234
+  },
+  "writer_origin_latency_seconds": {
+    "vfs.Flush": {
+      "count": 6,
+      "sum": 0.00037394699999999996,
+      "mean": 6.23245e-05,
+      "median": 5.2191499999999997e-05,
+      "p95": 0.00010734199999999999,
+      "p99": 0.00010734199999999999,
+      "max": 0.00010734199999999999
+    },
+    "vfs.Release": {
+      "count": 6,
+      "sum": 0.00031216,
+      "mean": 5.202666666666667e-05,
+      "median": 5.38455e-05,
+      "p95": 6.2618e-05,
+      "p99": 6.2618e-05,
+      "max": 6.2618e-05
+    },
+    "internal.close": {
+      "count": 6,
+      "sum": 0.00043452599999999997,
+      "mean": 7.242099999999999e-05,
+      "median": 4.7057499999999995e-05,
+      "p95": 0.00014098599999999998,
+      "p99": 0.00014098599999999998,
+      "max": 0.00014098599999999998
+    },
+    "vfs.Read": {
+      "count": 74246,
+      "sum": 226.916495113,
+      "mean": 0.0030562790603264824,
+      "median": 4.5178e-05,
+      "p95": 0.00226286,
+      "p99": 0.010931611,
+      "max": 12.90611895
+    },
+    "vfs.Fsync": {
+      "count": 7912,
+      "sum": 705.612598769,
+      "mean": 0.08918258326200708,
+      "median": 0.041365645500000006,
+      "p95": 0.271387387,
+      "p99": 0.852874109,
+      "max": 14.191823914
+    },
+    "vfs.Fallocate": {
+      "count": 58,
+      "sum": 39.104426981,
+      "mean": 0.6742142582931034,
+      "median": 0.0381786925,
+      "p95": 4.549145448,
+      "p99": 6.29696137,
+      "max": 6.29696137
+    }
+  },
+  "slow_operation_latency_seconds": {
+    "read_OK": {
+      "count": 5,
+      "sum": 83.619651,
+      "mean": 16.7239302,
+      "median": 12.874772,
+      "p95": 32.80237,
+      "p99": 32.80237,
+      "max": 32.80237
+    },
+    "write_OK": {
+      "count": 2,
+      "sum": 23.666765,
+      "mean": 11.8333825,
+      "median": 11.8333825,
+      "p95": 11.992857,
+      "p99": 11.992857,
+      "max": 11.992857
+    },
+    "fsync_OK": {
+      "count": 1,
+      "sum": 14.191857,
+      "mean": 14.191857,
+      "median": 14.191857,
+      "p95": 14.191857,
+      "p99": 14.191857,
+      "max": 14.191857
+    }
+  },
+  "compaction_phase_counts": {
+    "read": 285,
+    "object": 276,
+    "metadata": 274,
+    "done": 274
+  },
+  "completed_slow_compaction_latency_seconds": {
+    "once_false_total": {
+      "count": 274,
+      "sum": 4186.517621656,
+      "mean": 15.27926139290511,
+      "median": 12.084268005999999,
+      "p95": 37.902711253,
+      "p99": 50.218301718,
+      "max": 53.067456186
+    },
+    "once_false_queue_wait": {
+      "count": 274,
+      "sum": 0.000878565,
+      "mean": 3.206441605839416e-06,
+      "median": 1.6384999999999999e-06,
+      "p95": 3.422e-06,
+      "p99": 2.0546999999999998e-05,
+      "max": 0.000352197
+    },
+    "once_false_object": {
+      "count": 274,
+      "sum": 4157.671553377,
+      "mean": 15.173983771448905,
+      "median": 11.994590496,
+      "p95": 37.807635345,
+      "p99": 50.125835406,
+      "max": 52.976260389
+    },
+    "once_false_metadata": {
+      "count": 274,
+      "sum": 25.931806794,
+      "mean": 0.0946416306350365,
+      "median": 0.081445119,
+      "p95": 0.12014834399999999,
+      "p99": 0.357727071,
+      "max": 1.368646354
+    }
+  },
+  "sync_metadata_writes_ge2500": [],
+  "top_source_categories": [
+    {
+      "source": "ReadAt@disk_cache.go",
+      "lines": 1151000,
+      "bytes": 192620471,
+      "byte_share": 0.7196149674077831
+    },
+    {
+      "source": "end@writer_trace.go",
+      "lines": 82234,
+      "bytes": 14007360,
+      "byte_share": 0.05233039799736075
+    },
+    {
+      "source": "Write@base.go",
+      "lines": 90852,
+      "bytes": 13889475,
+      "byte_share": 0.05188998888615644
+    },
+    {
+      "source": "beginWriterFlush@writer_trace.go",
+      "lines": 82234,
+      "bytes": 13072362,
+      "byte_share": 0.04883731882564415
+    },
+    {
+      "source": "logRequest@cached_store.go",
+      "lines": 38482,
+      "bytes": 7311675,
+      "byte_share": 0.0273158441545982
+    },
+    {
+      "source": "logFreeze@writer_trace.go",
+      "lines": 22713,
+      "bytes": 6391905,
+      "byte_share": 0.02387965559615232
+    },
+    {
+      "source": "txn@redis.go",
+      "lines": 48205,
+      "bytes": 6199266,
+      "byte_share": 0.02315997140585425
+    },
+    {
+      "source": "logFinish@writer_trace.go",
+      "lines": 22713,
+      "bytes": 4486875,
+      "byte_share": 0.016762612977349624
+    },
+    {
+      "source": "commitThread@writer.go",
+      "lines": 22713,
+      "bytes": 3303615,
+      "byte_share": 0.012342046451297814
+    },
+    {
+      "source": "dispatch@compaction_gc.go",
+      "lines": 20918,
+      "bytes": 3158825,
+      "byte_share": 0.01180112237095449
+    },
+    {
+      "source": "uploadStagingFile@cached_store.go",
+      "lines": 12611,
+      "bytes": 1894467,
+      "byte_share": 0.007077580079534332
+    },
+    {
+      "source": "getDirParent@quota.go",
+      "lines": 4142,
+      "bytes": 533372,
+      "byte_share": 0.001992635945720557
+    },
+    {
+      "source": "compactChunk@base.go",
+      "lines": 1659,
+      "bytes": 283658,
+      "byte_share": 0.0010597240333035886
+    },
+    {
+      "source": "scanStaging@disk_cache.go",
+      "lines": 856,
+      "bytes": 173758,
+      "byte_share": 0.0006491462556274279
+    },
+    {
+      "source": "cleanupFull-range1@disk_cache.go",
+      "lines": 772,
+      "bytes": 109127,
+      "byte_share": 0.0004076899103227151
+    },
+    {
+      "source": "readSlice@reader.go",
+      "lines": 398,
+      "bytes": 74815,
+      "byte_share": 0.00027950297030793415
+    },
+    {
+      "source": "finishStagingUpload@cached_store.go",
+      "lines": 268,
+      "bytes": 44770,
+      "byte_share": 0.00016725720752103473
+    },
+    {
+      "source": "Compact@compact.go",
+      "lines": 276,
+      "bytes": 36792,
+      "byte_share": 0.00013745202544368794
+    },
+    {
+      "source": "upload@cached_store.go",
+      "lines": 160,
+      "bytes": 26402,
+      "byte_share": 9.863580060242034e-05
+    },
+    {
+      "source": "deleteSlice_@base.go",
+      "lines": 93,
+      "bytes": 20939,
+      "byte_share": 7.822646120801756e-05
+    },
+    {
+      "source": "replyAttr@fuse.go",
+      "lines": 118,
+      "bytes": 11800,
+      "byte_share": 4.40838742181865e-05
+    },
+    {
+      "source": "Readdir@vfs.go",
+      "lines": 81,
+      "bytes": 8913,
+      "byte_share": 3.329826872090647e-05
+    },
+    {
+      "source": "untagged",
+      "lines": 8,
+      "bytes": 1768,
+      "byte_share": 6.605109289640147e-06
+    },
+    {
+      "source": "logit@accesslog.go",
+      "lines": 8,
+      "bytes": 1172,
+      "byte_share": 4.378500049467337e-06
+    },
+    {
+      "source": "scanCached@disk_cache.go",
+      "lines": 6,
+      "bytes": 1162,
+      "byte_share": 4.341140834028196e-06
+    }
+  ],
+  "selected_health_events": [
+    {
+      "line_number": 634027,
+      "timestamp": "2026/10/03 14:36:19.571627",
+      "categories": [
+        "NoSuchKey"
+      ],
+      "line": "2026/10/03 14:36:19.571627 juicefs[1156153] <WARNING>: slow request: GET chunks/4/4913/4913906_3_4194304 (req_id: \"34D024F9D4BED23F\", err: operation error S3: GetObject, https response error StatusCode: 404, RequestID: 34D024F9D4BED23F, HostID: MzREMDI0RjlENEJFRDIzRjM0RDAyNEY5RDRCRUQyM0YzNEQwMjRGOUQ0QkVEMjNGMzREMDI0RjlENEJFRDIzRg==, NoSuchKey: , cost: 29.157302862s) [logRequest@cached_store.go:718]"
+    },
+    {
+      "line_number": 634028,
+      "timestamp": "2026/10/03 14:36:19.571703",
+      "categories": [
+        "NoSuchKey"
+      ],
+      "line": "2026/10/03 14:36:19.571703 juicefs[1156153] <WARNING>: fail to read sliceId 4913906 (off:13070336, size:12288, clen: 67108864, inode: 596156): get chunks/4/4913/4913906_3_4194304: operation error S3: GetObject, https response error StatusCode: 404, RequestID: 34D024F9D4BED23F, HostID: MzREMDI0RjlENEJFRDIzRjM0RDAyNEY5RDRCRUQyM0YzNEQwMjRGOUQ0QkVEMjNGMzREMDI0RjlENEJFRDIzRg==, NoSuchKey:  [readSlice@reader.go:830]"
+    }
+  ],
+  "file_size_after_analysis": 344232275,
+  "elapsed_analysis_seconds": 13.599709389003692,
+  "interpretation_notes": [
+    "writer flush end errno0 is not proof of no read-side error.",
+    "nonzero_metadata_errno includes a compaction EINVAL; ordinary metadata write failure is a separate category.",
+    "slow compaction once=false mixes force=true recursive call frames in the original aggregate; use health_compaction_modes.json for background-only comparison.",
+    "force=true total includes recursive child calls because recursion occurs before the deferred log; the arithmetic residual is not measured stall time."
+  ],
+  "critical_health_events": [
+    {
+      "line_number": 634027,
+      "timestamp": "2026/10/03 14:36:19.571627",
+      "categories": [
+        "NoSuchKey"
+      ],
+      "line": "2026/10/03 14:36:19.571627 juicefs[1156153] <WARNING>: slow request: GET chunks/4/4913/4913906_3_4194304 (req_id: \"34D024F9D4BED23F\", err: operation error S3: GetObject, https response error StatusCode: 404, RequestID: 34D024F9D4BED23F, HostID: MzREMDI0RjlENEJFRDIzRjM0RDAyNEY5RDRCRUQyM0YzNEQwMjRGOUQ0QkVEMjNGMzREMDI0RjlENEJFRDIzRg==, NoSuchKey: , cost: 29.157302862s) [logRequest@cached_store.go:718]"
+    },
+    {
+      "line_number": 634028,
+      "timestamp": "2026/10/03 14:36:19.571703",
+      "categories": [
+        "NoSuchKey"
+      ],
+      "line": "2026/10/03 14:36:19.571703 juicefs[1156153] <WARNING>: fail to read sliceId 4913906 (off:13070336, size:12288, clen: 67108864, inode: 596156): get chunks/4/4913/4913906_3_4194304: operation error S3: GetObject, https response error StatusCode: 404, RequestID: 34D024F9D4BED23F, HostID: MzREMDI0RjlENEJFRDIzRjM0RDAyNEY5RDRCRUQyM0YzNEQwMjRGOUQ0QkVEMjNGMzREMDI0RjlENEJFRDIzRg==, NoSuchKey:  [readSlice@reader.go:830]"
+    }
+  ],
+  "metadata_write_nonzero_count": 0,
+  "critical_health_events_after_20261003_1429": [
+    {
+      "line_number": 634027,
+      "timestamp": "2026/10/03 14:36:19.571627",
+      "categories": [
+        "NoSuchKey"
+      ],
+      "line": "2026/10/03 14:36:19.571627 juicefs[1156153] <WARNING>: slow request: GET chunks/4/4913/4913906_3_4194304 (req_id: \"34D024F9D4BED23F\", err: operation error S3: GetObject, https response error StatusCode: 404, RequestID: 34D024F9D4BED23F, HostID: MzREMDI0RjlENEJFRDIzRjM0RDAyNEY5RDRCRUQyM0YzNEQwMjRGOUQ0QkVEMjNGMzREMDI0RjlENEJFRDIzRg==, NoSuchKey: , cost: 29.157302862s) [logRequest@cached_store.go:718]"
+    },
+    {
+      "line_number": 634028,
+      "timestamp": "2026/10/03 14:36:19.571703",
+      "categories": [
+        "NoSuchKey"
+      ],
+      "line": "2026/10/03 14:36:19.571703 juicefs[1156153] <WARNING>: fail to read sliceId 4913906 (off:13070336, size:12288, clen: 67108864, inode: 596156): get chunks/4/4913/4913906_3_4194304: operation error S3: GetObject, https response error StatusCode: 404, RequestID: 34D024F9D4BED23F, HostID: MzREMDI0RjlENEJFRDIzRjM0RDAyNEY5RDRCRUQyM0YzNEQwMjRGOUQ0QkVEMjNGMzREMDI0RjlENEJFRDIzRg==, NoSuchKey:  [readSlice@reader.go:830]"
+    }
+  ]
+}

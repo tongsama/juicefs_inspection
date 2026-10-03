@@ -1,0 +1,3 @@
+ok  	github.com/juicedata/juicefs/pkg/vfs	10.785s
+ok  	github.com/juicedata/juicefs/pkg/fs	2.054s
+ok  	github.com/juicedata/juicefs/pkg/fuse	5.275s

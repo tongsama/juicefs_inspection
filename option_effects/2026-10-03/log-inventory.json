@@ -1,0 +1,65 @@
+{
+  "files": [
+    {
+      "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261001-183557.log",
+      "bytes": 144316877,
+      "observed_open_by_juicefs": false,
+      "cleanup_action": "none"
+    },
+    {
+      "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261001-202619.log",
+      "bytes": 21119,
+      "observed_open_by_juicefs": false,
+      "cleanup_action": "none"
+    },
+    {
+      "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261001-202737.log",
+      "bytes": 849994992,
+      "observed_open_by_juicefs": false,
+      "cleanup_action": "none"
+    },
+    {
+      "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261001-223558.log",
+      "bytes": 1008054385,
+      "observed_open_by_juicefs": false,
+      "cleanup_action": "none"
+    },
+    {
+      "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-014922.log",
+      "bytes": 1047960683,
+      "observed_open_by_juicefs": false,
+      "cleanup_action": "none"
+    },
+    {
+      "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-145332.log",
+      "bytes": 47334,
+      "observed_open_by_juicefs": false,
+      "cleanup_action": "none"
+    },
+    {
+      "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-145808.log",
+      "bytes": 794809736,
+      "observed_open_by_juicefs": false,
+      "cleanup_action": "none"
+    },
+    {
+      "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-201455.log",
+      "bytes": 1273703,
+      "observed_open_by_juicefs": false,
+      "cleanup_action": "none"
+    },
+    {
+      "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261002-201718.log",
+      "bytes": 5976493230,
+      "observed_open_by_juicefs": true,
+      "cleanup_action": "none"
+    },
+    {
+      "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261003-142854.log",
+      "bytes": 381377956,
+      "observed_open_by_juicefs": true,
+      "cleanup_action": "none"
+    }
+  ],
+  "notes": "open status from captured JuiceFS processes; no log compressed, moved, removed, or truncated"
+}
