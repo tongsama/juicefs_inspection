@@ -13,7 +13,50 @@
 
 `.gitignore` の `/juicefs` により、本体のリポジトリをこのルートの commit に含めません。submodule ではありません。本体は後から配置する構成でも、このプロジェクトの文書を読めます。公式リポジトリを取得しただけでは、この個人改善版の差分は含まれません。
 
-2026-10-03 の整理時点では、本体のブランチは `fix/vm-io-wait-policy`、HEAD は `3bed0d82eecaaacc7f635f6e033f1433e2196bca` です。後続の改善実装には未コミット差分があります。このルートの文書を commit しても、本体の差分は保存されないため、本体は別途管理します。
+本体の改修は `tongsama/juicefs` の `fix/vm-io-wait-policy` ブランチで管理しています（2026-10-04 時点の HEAD は `84f19ca43f77c8e52eaffc2955a42bd9ac1d4c9b`）。このルートの文書を commit しても本体の差分は保存されないため、本体は別途 commit・push します。2026-10-03 の整理時点の HEAD `3bed0d82` は、author の書き換えにより `2ae17f94` になっています（内容は同一）。
+
+## 改修版バイナリの配布とインストール
+
+このリポジトリは、改修版 JuiceFS のビルド済みバイナリの配布元も兼ねています。本体のリポジトリは公式の構成に近いまま保ち、配布に必要なもの（インストールスクリプト、ビルド用 workflow、版の対応表、リリースノート）はすべてこちらに置いています。
+
+- 配布先: [GitHub Releases](https://github.com/tongsama/juicefs_inspection/releases)（最初の版は [v1.4.1-kaz.1](https://github.com/tongsama/juicefs_inspection/releases/tag/v1.4.1-kaz.1)）
+- 対象: `linux-amd64`、`linux-arm64`（aarch64）、`windows-amd64`。32bit ARM（armv7）と macOS は対象外です。
+- 各版のビルド元となる本体の commit は [`release/versions.json`](release/versions.json) に、変更内容は [`docs/release-notes/`](docs/release-notes/) にあります。
+
+### Linux
+
+```bash
+curl -fsSL https://github.com/tongsama/juicefs_inspection/releases/latest/download/install.sh | sh
+```
+
+- 既定では `/usr/local/bin/juicefs` に置きます。書き込めない場合は sudo を使います。
+- インストール先は第1引数で変えられます: `curl -fsSL …/install.sh | sh -s /opt/bin`
+- 版を固定する場合（本番ホストではこちらを推奨）: `curl -fsSL …/install.sh | JFS_VERSION=v1.4.1-kaz.1 sh`
+- 公式版と並べて置く場合: `JFS_INSTALL_NAME=juicefs-kaz` を指定します。
+- `checksums.txt` の SHA-256 と照合し、一致した場合だけ既存のファイルを1回の `mv` で置き換えます。途中で失敗したときは既存のファイルに触れません。
+
+**稼働中の mount についての注意:** 置き換えても、稼働中の mount は再起動されません。ただし、mount の子プロセスが異常終了して supervisor が自動で再起動した場合は、置き換え後の新しい版で動き始めます（`juicefs/cmd/mount_unix.go` は起動時に取得した実行ファイルのパスで子プロセスを起動し直すため）。本番ホストで置き換えるときは、この点を踏まえて計画してください。
+
+### Windows（PowerShell）
+
+```powershell
+irm https://github.com/tongsama/juicefs_inspection/releases/latest/download/install.ps1 | iex
+```
+
+- 既定では `%LOCALAPPDATA%\Programs\juicefs\juicefs.exe` に置きます。PATH には追加しません。
+- 環境変数 `JFS_INSTALL_DIR`（インストール先）と `JFS_VERSION`（版の固定）で変えられます。
+- mount には別途 [WinFsp](https://winfsp.dev/rel/) が必要です。スクリプトは WinFsp を自動では入れず、見つからない場合に警告だけを出します。
+- Windows 版は、ビルドと起動（`juicefs version`）までしか確認していません。改修したコードの Windows での mount 動作は未検証です。
+
+### 新しい版を出す手順
+
+1. 本体（`tongsama/juicefs`）で修正し、`kaz` リモートへ push する。
+2. このリポジトリの `release/versions.json` に、新しいタグ（例: `v1.4.1-kaz.2`）と本体の 40 桁の commit SHA を追加し、`docs/release-notes/<タグ>.md` を書いて commit・push する。
+3. 必要なら、Release を作らずにビルドだけ試す: `gh workflow run release.yml --repo tongsama/juicefs_inspection -f tag=<タグ>`
+4. タグを push する（`git tag <タグ> && git push original <タグ>`）。workflow が3種類をビルド・確認し、draft の Release を作る。
+5. draft の中身を確認して、GitHub の画面で公開する。
+
+`juicefs version` は `1.4.1+<本体commitの日付>.<SHAの先頭8桁>-kaz.<n>` と表示されます。仕組みの詳細は [配布の仕様](docs/superpowers/specs/2026-10-04-release-distribution.md) を参照してください。
 
 ## 最初に読む資料
 
@@ -46,8 +89,11 @@ juicefs_inspection/
 ├── AGENTS.md
 ├── agent_memo.md
 ├── TODO.md
+├── .github/workflows/release.yml  # バイナリのビルドと draft Release の作成
+├── release/                  # install.sh / install.ps1、versions.json、テスト
 ├── docs/
 │   ├── findings.md
+│   ├── release-notes/        # 配布版ごとのリリースノート
 │   ├── development/vm_io_diagnostics.md
 │   └── superpowers/
 │       ├── specs/
