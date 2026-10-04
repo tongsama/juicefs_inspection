@@ -1,0 +1,249 @@
+# 改修版 JuiceFS のバイナリをビルドし、draft Release を作る。
+# - タグ v<base>-kaz.<n> の push：検証 → ビルド → install.ps1 の確認 → draft Release
+# - 手動実行（workflow_dispatch）：Release は作らず、検証・ビルド・確認だけを行う
+# 本体 repo（versions.json の juicefs_repo）は読み取るだけで、書き込まない。
+name: release
+
+on:
+  push:
+    tags: ['v*-kaz.*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'versions.json に登録済みのタグ（例: v1.4.1-kaz.1）'
+        required: true
+
+permissions:
+  contents: read
+
+env:
+  VERSION_PKG: github.com/juicedata/juicefs/pkg/version
+
+jobs:
+  # タグと versions.json を検証し、ビルドに必要な値を後続の job へ渡す。
+  resolve:
+    runs-on: ubuntu-24.04
+    outputs:
+      tag: ${{ steps.r.outputs.tag }}
+      base: ${{ steps.r.outputs.base }}
+      kaz: ${{ steps.r.outputs.kaz }}
+      repo: ${{ steps.r.outputs.repo }}
+      commit: ${{ steps.r.outputs.commit }}
+      sha8: ${{ steps.r.outputs.sha8 }}
+      go_version: ${{ steps.r.outputs.go_version }}
+      notes: ${{ steps.r.outputs.notes }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: r
+        env:
+          TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          fail() { echo "::error::$*"; exit 1; }
+          [[ "$TAG" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)-(kaz\.[0-9]+)$ ]] || fail "タグの形式が不正です: $TAG"
+          base=${BASH_REMATCH[1]}
+          kaz=${BASH_REMATCH[2]}
+          entry=$(jq -e --arg t "$TAG" '.[$t]' release/versions.json) || fail "release/versions.json に $TAG がありません"
+          repo=$(jq -r '.juicefs_repo // ""' <<<"$entry")
+          commit=$(jq -r '.juicefs_commit // ""' <<<"$entry")
+          go_version=$(jq -r '.go_version // ""' <<<"$entry")
+          notes=$(jq -r '.notes // ""' <<<"$entry")
+          [[ "$repo" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || fail "juicefs_repo が不正です: $repo"
+          [[ "$commit" =~ ^[0-9a-f]{40}$ ]] || fail "juicefs_commit は 40 桁の SHA にしてください: $commit"
+          [[ "$go_version" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]] || fail "go_version が不正です: $go_version"
+          [ -n "$notes" ] && [ -f "$notes" ] || fail "リリースノートがありません: $notes"
+          if ! got=$(gh api "repos/$repo/commits/$commit" --jq .sha 2>/dev/null) || [ "$got" != "$commit" ]; then
+            fail "$repo に commit $commit がありません"
+          fi
+          {
+            echo "tag=$TAG"; echo "base=$base"; echo "kaz=$kaz"; echo "repo=$repo"
+            echo "commit=$commit"; echo "sha8=${commit:0:8}"
+            echo "go_version=$go_version"; echo "notes=$notes"
+          } >> "$GITHUB_OUTPUT"
+
+  # Linux 向けを各アーキテクチャのネイティブ runner で、musl の静的リンクでビルドする。
+  build-linux:
+    needs: resolve
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - target: linux-amd64
+            runner: ubuntu-24.04
+          - target: linux-arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ needs.resolve.outputs.repo }}
+          ref: ${{ needs.resolve.outputs.commit }}
+          path: juicefs
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ needs.resolve.outputs.go_version }}
+          cache-dependency-path: juicefs/go.sum
+      - name: install toolchain
+        run: sudo apt-get update && sudo apt-get install -y musl-tools file
+      - name: build
+        working-directory: juicefs
+        env:
+          CC: musl-gcc
+          CGO_ENABLED: '1'
+          REV: ${{ needs.resolve.outputs.sha8 }}-${{ needs.resolve.outputs.kaz }}
+        run: |
+          set -euo pipefail
+          revdate=$(git log -1 --format=%cd --date=short)
+          echo "REVDATE=$revdate" >> "$GITHUB_ENV"
+          go build -ldflags "-s -w -X $VERSION_PKG.revision=$REV -X $VERSION_PKG.revisionDate=$revdate -linkmode external -extldflags '-static'" -o juicefs .
+      - name: verify and package
+        working-directory: juicefs
+        env:
+          WANT_PREFIX: juicefs version ${{ needs.resolve.outputs.base }}+
+          WANT_SUFFIX: .${{ needs.resolve.outputs.sha8 }}-${{ needs.resolve.outputs.kaz }}
+          TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          file juicefs
+          file juicefs | grep -Eq 'statically linked|static-pie linked' || { echo "::error::静的リンクになっていません"; exit 1; }
+          got=$(./juicefs version)
+          want="${WANT_PREFIX}${REVDATE}${WANT_SUFFIX}"
+          [ "$got" = "$want" ] || { echo "::error::version が一致しません: got '$got' want '$want'"; exit 1; }
+          tar -czf "juicefs-$TARGET.tar.gz" juicefs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: juicefs-${{ matrix.target }}
+          path: juicefs/juicefs-${{ matrix.target }}.tar.gz
+          if-no-files-found: error
+
+  # Windows 向けを mingw-w64 と本体同梱の WinFsp ヘッダーでクロスビルドする。
+  build-windows:
+    needs: resolve
+    runs-on: ubuntu-24.04
+    outputs:
+      expected: ${{ steps.b.outputs.expected }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ needs.resolve.outputs.repo }}
+          ref: ${{ needs.resolve.outputs.commit }}
+          path: juicefs
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ needs.resolve.outputs.go_version }}
+          cache-dependency-path: juicefs/go.sum
+      - name: install toolchain
+        run: |
+          sudo apt-get update && sudo apt-get install -y gcc-mingw-w64-x86-64 file zip
+          sudo mkdir -p /usr/local/include/winfsp
+          sudo cp juicefs/hack/winfsp_headers/* /usr/local/include/winfsp/
+      - id: b
+        name: build, verify and package
+        working-directory: juicefs
+        env:
+          GOOS: windows
+          GOARCH: amd64
+          CGO_ENABLED: '1'
+          CC: x86_64-w64-mingw32-gcc
+          REV: ${{ needs.resolve.outputs.sha8 }}-${{ needs.resolve.outputs.kaz }}
+          BASE: ${{ needs.resolve.outputs.base }}
+        run: |
+          set -euo pipefail
+          revdate=$(git log -1 --format=%cd --date=short)
+          go build -buildmode exe -ldflags "-s -w -X $VERSION_PKG.revision=$REV -X $VERSION_PKG.revisionDate=$revdate" -o juicefs.exe .
+          file juicefs.exe
+          file juicefs.exe | grep -q 'PE32+ executable' || { echo "::error::PE32+ ではありません"; exit 1; }
+          file juicefs.exe | grep -q 'x86-64' || { echo "::error::x86-64 ではありません"; exit 1; }
+          zip -j juicefs-windows-amd64.zip juicefs.exe
+          echo "expected=juicefs version ${BASE}+${revdate}.${REV}" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: juicefs-windows-amd64
+          path: juicefs/juicefs-windows-amd64.zip
+          if-no-files-found: error
+
+  # ビルドした zip を手元で配信し、install.ps1 を iex の形で実行して確認する。
+  verify-windows:
+    needs: [resolve, build-windows]
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: juicefs-windows-amd64
+          path: srv/download/${{ needs.resolve.outputs.tag }}
+      - name: install.ps1 (success and checksum mismatch)
+        env:
+          TAG: ${{ needs.resolve.outputs.tag }}
+          JFS_VERSION: ${{ needs.resolve.outputs.tag }}
+          JFS_DOWNLOAD_BASE: http://127.0.0.1:8765
+          JFS_INSTALL_DIR: ${{ runner.temp }}\jfs
+          EXPECTED: ${{ needs.build-windows.outputs.expected }}
+        run: |
+          $dir = "srv/download/$env:TAG"
+          $h = (Get-FileHash "$dir/juicefs-windows-amd64.zip" -Algorithm SHA256).Hash.ToLower()
+          "$h  juicefs-windows-amd64.zip" | Set-Content -Encoding ascii "$dir/checksums.txt"
+          $srv = Start-Process python -ArgumentList '-m','http.server','8765','--bind','127.0.0.1','--directory','srv' -PassThru -WindowStyle Hidden
+          try {
+            for ($i = 0; $i -lt 50; $i++) {
+              try { Invoke-WebRequest http://127.0.0.1:8765/ -UseBasicParsing | Out-Null; break } catch { Start-Sleep -Milliseconds 200 }
+            }
+            # 1. 正常にインストールでき、期待した版が表示される
+            Get-Content release/install.ps1 -Raw | Invoke-Expression
+            $got = & "$env:JFS_INSTALL_DIR\juicefs.exe" version | Select-Object -First 1
+            if ($got -ne $env:EXPECTED) { throw "version mismatch: got '$got' want '$env:EXPECTED'" }
+            # 2. sha256 が合わなければ失敗し、既存の exe は変わらない
+            $before = (Get-FileHash "$env:JFS_INSTALL_DIR\juicefs.exe").Hash
+            ('0' * 64) + '  juicefs-windows-amd64.zip' | Set-Content -Encoding ascii "$dir/checksums.txt"
+            $failed = $false
+            try { Get-Content release/install.ps1 -Raw | Invoke-Expression } catch { $failed = $true; Write-Host "expected failure: $_" }
+            if (-not $failed) { throw 'checksum mismatch was not detected' }
+            if ((Get-FileHash "$env:JFS_INSTALL_DIR\juicefs.exe").Hash -ne $before) { throw 'existing juicefs.exe was modified' }
+            Write-Host 'install.ps1 checks passed'
+          } finally {
+            Stop-Process -Id $srv.Id -Force -ErrorAction SilentlyContinue
+          }
+
+  # すべて成功したときだけ、タグの push で draft Release を作る。
+  release:
+    if: github.event_name == 'push'
+    needs: [resolve, build-linux, build-windows, verify-windows]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: juicefs-*
+          merge-multiple: true
+      - name: assemble
+        run: |
+          set -euo pipefail
+          cp release/install.sh release/install.ps1 dist/
+          cd dist
+          for f in juicefs-linux-amd64.tar.gz juicefs-linux-arm64.tar.gz juicefs-windows-amd64.zip install.sh install.ps1; do
+            [ -f "$f" ] || { echo "::error::$f がありません"; exit 1; }
+          done
+          sha256sum juicefs-linux-amd64.tar.gz juicefs-linux-arm64.tar.gz juicefs-windows-amd64.zip install.sh install.ps1 > checksums.txt
+          cat checksums.txt
+      - name: create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.resolve.outputs.tag }}
+          NOTES: ${{ needs.resolve.outputs.notes }}
+          JREPO: ${{ needs.resolve.outputs.repo }}
+          COMMIT: ${{ needs.resolve.outputs.commit }}
+          GOV: ${{ needs.resolve.outputs.go_version }}
+        run: |
+          set -euo pipefail
+          if gh release list --repo "$GITHUB_REPOSITORY" --limit 1000 --json tagName --jq '.[].tagName' | grep -qxF "$TAG"; then
+            echo "::error::$TAG の Release はすでにあります（draft を含む）。上書きしません"; exit 1
+          fi
+          { cat "$NOTES"; printf '\n\n---\nビルド元: https://github.com/%s/commit/%s（Go %s）\n' "$JREPO" "$COMMIT" "$GOV"; } > notes.md
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --verify-tag --title "$TAG" --notes-file notes.md dist/*

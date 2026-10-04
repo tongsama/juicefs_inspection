@@ -1,0 +1,8 @@
+{
+  "v1.4.1-kaz.1": {
+    "juicefs_repo": "tongsama/juicefs",
+    "juicefs_commit": "84f19ca43f77c8e52eaffc2955a42bd9ac1d4c9b",
+    "go_version": "1.25.11",
+    "notes": "docs/release-notes/v1.4.1-kaz.1.md"
+  }
+}
