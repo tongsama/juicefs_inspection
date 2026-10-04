@@ -149,6 +149,7 @@
 - [x] cmd接続/customstore互換とerror伝播、独立review、cachedStore通常試験を確認。
 - [x] fullVFSの診断capture競合をcontrolledRED→testhookで解消、fullVFS/FS/FUSE再検証PASS。
 - [x] 別名binary build/version/SHA、docs/memo/testevidence最終化。ownisolatedRedis停止結果はmemoへ記録。
+- [x] 統合版＋補正をローカルコミット 84f19ca4（旧69fd077b、fix/vm-io-wait-policy、author tongsama、2026-10-03）。push無し。
 - [ ] 実機適用後にlocal_retire_success/hint_overflow/remote_deferredとstagingage/PUTを定量照合。ユーザーによる更新・低staging・安定という初期報告あり。agentからの本番変更は行わない。
 
 fullpkgchunkはGo1.25.11(goenv)で通常49PASS（TMPDIRはルートFS上）。raceはHEADにも既存の11失敗あり、新retire testsはrace PASS。hourlyhintoverflow回復・別clientのinflightuploadlease不在は残る。guest再起動解消を未実証のまま確定扱いしない。
@@ -194,3 +195,14 @@ fullpkgchunkはGo1.25.11(goenv)で通常49PASS（TMPDIRはルートFS上）。ra
 - [x] 呼出元は耐久期間Fsync85.2%/Fallocate11.2%/Read3.6%（新しくfreezeしたslice数の比率）。writerbarrier呼出回数335774/56437/167768とは区別する。
 - [x] filewriter.Flushは同inode全pendingchunksのsliceをfreezeし、Finishの保存と作成順metadata commitの完了を待つ。Read前も範囲限定ではなく同file全pendingを対象。WBではcloud全upload完了と別。
 - [ ] Fallocate mode(通常予約/punch-hole/zero-range等)と、Read時のどの範囲のpendingがflushされたかの実機内訳は未分類。整合性維持の上で必要性を検討する際の次の診断対象。
+
+
+### 改修版バイナリの配布（2026-10-04）
+
+- [x] 設計の合意（Actions、3対象、draft Release、install.sh/ps1）。armv7は対象外。
+- [x] 仕様 docs/superpowers/specs/2026-10-04-release-distribution.md のユーザーレビュー
+- [x] 仕様の承認と実装計画の作成（docs/superpowers/plans/2026-10-04-release-distribution.md）。
+- [x] Task1〜4の実装と全体レビュー（未コミット）。install.shのテストは13/13合格。
+- [x] shellcheck / actionlint 実行、指摘0（2026-10-04）
+- [ ] ユーザーのcommitとpush → Task5（workflow_dispatchでの試行。Windowsビルドが改修コードで通るかをここで確認）→ Task6（タグのpushとdraft Release、公開はユーザー）
+- [ ] 保留したMinor 10件（ledgerを参照）

@@ -506,3 +506,45 @@ README.mdに主題/scope/別Git管理/資料入口/成果と留保/配置/検証
 原log/metadata/cache/stage/VM/稼働設定に変更なし。本体Goソース・testsに変更なし（文書移設のみ）。履歴の検証データ/JSON/CSVは書換せず、元のsnapshotとして保存する。
 
 文書整理の最終確認: README/AGENTS/TODO/memo/移設docs等12Markdownのローカルリンク30件を検査し、broken link0。移設時SHA一致7ファイル（本文6＋既存swap1）を確認。source配置先がparentGitignore対象、Pythoncache/swapも除外を確認。parent/childともstaged paths0、diffcheck成功。独立文書reviewでhostEIOとguestFS障害の個別時刻因果を言い切る表現を修正し、両証跡と未検証の対応範囲を分けた。検証記録はdocs/documentation-verification.json。文書移設後も本体HEAD3bed/branch保持、Go/test本体変更なし。
+
+## 本体repoのauthor変更とローカルコミット（2026-10-03）
+
+ユーザー指示: juicefs本体のローカルブランチのauthorを、ルートrepoの既定（`.git/config` の tongsama <getpow2@gmail.com>）へ変更し、現在の変更をローカルコミットしてよい。
+
+- juicefs/.git/config に user.name=tongsama / user.email=getpow2@gmail.com を設定した（global の kwatanabe 設定は変更していない）。以後このrepoのcommitはtongsamaになる。
+- 統合版＋staging回収補正を1コミットにした。新規ファイル（compaction_gc/scheduler/writer_trace/各test）と、ルートの `docs/` へ移動済みの本体docs 2件の削除を含む。コミット前に Go1.25.11 で build/vet が成功。
+- 両ブランチともremoteに含まれていないことを確認したうえで、0b90c7db 以降をrebaseし、author/committerをtongsamaへ書き換えた。author日時・commit日時・treeは同一。
+  - improve/flush-wait-alter: febf149a → **396d8f6a**
+  - fix/vm-io-wait-policy: 3bed0d82 → **2ae17f94**、その上に統合コミット **69fd077b**（現checkout）
+- 旧hash（febf149a/3bed0d82）はreflogにだけ残る。過去のmemo/証跡/binary version文字列（`3bed0d82-...`）は旧hashのまま。内容は 2ae17f94 と同一。push/remote変更なし。
+
+## Co-Authored-By削除とローカルmain作成（2026-10-03）
+
+- ユーザー指摘: commitにClaudeのCo-Authored-Byを勝手に入れない（永続方針）。統合commitからtrailerを削除し、69fd077b → **84f19ca4**（treeは同一）。本memo上の69fd077bは84f19ca4と読み替える。
+- 「fix(vfs)がmainにある」件を確認: ローカルmainはもともと存在しなかった（cloneしてv1.4.1をdetachedでcheckoutしてから派生）。履歴はv1.4.1から一直線で、mainには入っていない。
+- ユーザー意図（A案）: main → v1.4.1 → 派生ブランチの形に戻したいだけで、rebaseはしない。`git fetch origin`（origin/mainはadcca1ccのまま）のあと、ローカル `main` を作成してorigin/mainを追跡させた。続けてローカル `release-1.4`（origin/release-1.4 = 0b90c7db = v1.4.1）も追跡ブランチとして作成した。さらにユーザー指示で、ローカルmain（adcca1cc）から `develop_kaz` を作成した（upstream未設定、checkoutはfix/vm-io-wait-policyのまま）。v1.4.1（0b90c7db）はrelease-1.4上にありmainの祖先ではない。派生ブランチ2本は無変更。push無し。
+- juicefs本体のpush先（2026-10-03）: ユーザーが追加したremote `kaz` = git@github.com:tongsama/juicefs.git。`develop_kaz` と `fix/vm-io-wait-policy` に branch.<b>.pushRemote=kaz を設定。upstreamが無くsimpleだとpush先が解決しないため、repo-localで push.default=current を設定した（同名ブランチへpush）。main/release-1.4はpush先がorigin（公式）のままなので、pushしないこと。push自体は未実行で、実行前には必ずユーザーに確認する。
+- ユーザー指示で、ローカルブランチ `improve/flush-wait-alter` を削除した（`git branch -d`）。commit 396d8f6a は fix/vm-io-wait-policy の履歴に含まれている。
+
+## JuiceFS バイナリサイズの比較（2026-10-03）
+
+ユーザー質問に基づき、変更せずに以下を読み取り比較した。
+
+- `/tmp/juicefs-vm-io-gc-retire-20261002` と `/home/kwatanabe/.local/bin/juicefs` は同じファイル内容。両方177,381,752 bytes、SHA-256 `1a022a7e186eda8b88593842d16dc90316b2698b15c1aee254346f48fa70073f`、version `1.4.1+2026-10-02.3bed0d82-vm-io-gc-retire-local`。Go1.26.4、VCS revision 3bed0d82、`vcs.modified=true`、ELFはnot strippedでdebug_infoあり。
+- 現 checkout `/home/kwatanabe/tmp_local/juicefs_inspection/juicefs/juicefs` は125,961,416 bytes、SHA-256 `9eaf9c055cff8083f2fc07aeb84af15db49b7896e4dea58822a695dacf037d28`、version `1.4.1+2026-10-03.84f19ca4`。Go1.25.11、VCS revision84f19ca、`vcs.modified=false`、`-s -w`付きでstripped。旧バイナリより51,420,336 bytes（約29.0%）小さい。
+- `mount --help` ではslice timers、writer flush timeout/reuse window、compaction GC/scheduler各flagを3つとも出力。現HEAD84f19caに該当実装が存在。サイズ差には新HEAD、Go compiler版、debug情報stripの差が関係する。SHA/build metadataから同一ELFとは言えない。旧バイナリはdirty worktreeから生成されVCS metadataに全dirty source tree hashが保存されていないため、厳密なソースtree一致はbuild-infoだけでは証明できない。
+- 本比較でPATH上のコマンド選択、稼働中mount、バイナリ置換は行っていない。root docs memo/TODO以外のプログラムやbinaryに変更なし。base branch HEADは84f19ca、push済み状態をユーザーが報告。
+
+## 改修版バイナリ配布の設計（2026-10-04、仕様レビュー待ち）
+
+ユーザー方針: 本体repoは公式の形を保ち、配布物（install.sh/install.ps1、Actions、Releases、版の対応表）はinspection repo（tongsama/juicefs_inspection、公開）に置く。本体はSHA指定でcheckoutするだけ。
+- 対象: linux-amd64 / linux-arm64（=aarch64）/ windows-amd64。armv7は、groupcache/tikvの32bit intオーバーフローでビルド不可かつ整合性未検証のため、ユーザー合意で対象外（後で追加できる構成にする）。darwinも対象外。
+- ビルド: GitHub Actions（方式1）。arm64はubuntu-24.04-armのネイティブrunner、windowsはmingw+hack/winfsp_headers。draft Releaseまで作り、公開はユーザーが行う。workflow_dispatchでビルドだけ試すモードを用意する。
+- install: 既定のインストール名はjuicefs（公式版を置き換える）。WindowsはPATHへ追加せず、WinFspは警告のみ。
+- 仕様: docs/superpowers/specs/2026-10-04-release-distribution.md。ユーザーのレビュー待ちで、未コミット（文書のcommitはユーザーが行う）。
+- 2026-10-04 仕様の訂正: 本体のpkg/versionは `-X` で上書きできる文字列が revision/revisionDate だけ（1.4.1は固定値）。版表示は `juicefs version 1.4.1+<本体commit日付>.<sha8>-kaz.<n>` とする（pre-releaseに入れないので、metadataのクライアント版比較にも影響しない）。install.ps1はirm|iexで実行するため、JFS_INSTALL_DIRを追加し、exitを使わずthrowで失敗を返す。配布スクリプトはASCIIのみで書く。同じタグのReleaseの有無は、draftも見えるように、release job（contents: write）で作成直前に確認する。
+- 実装計画: docs/superpowers/plans/2026-10-04-release-distribution.md（Task1 install.sh+テスト、Task2 install.ps1、Task3 versions.json+リリースノート、Task4 workflow、Task5 手動実行での試行、Task6 draft Release）。commit/push/タグ/Release作成はユーザーが行う。ユーザーのレビュー待ち。
+- 2026-10-04 実装（Task1〜4、未コミット）: release/install.sh、release/tests/test_install.sh（13ケース全て合格）、release/install.ps1、release/versions.json（v1.4.1-kaz.1 → 84f19ca4）、docs/release-notes/v1.4.1-kaz.1.md、.github/workflows/release.yml。resolveを手元で実行して期待どおり。ldflagsの版文字列も手元のビルドで一致を確認。
+- 全体レビュー（opus subagent）: Critical なし。Important「再mountまで旧版のまま」は誤りと判明した。juicefsのmount supervisorは、起動時に取得した実行ファイルのパスで子プロセスを再起動する（cmd/mount_unix.go:984-1006）ので、置き換え後に子プロセスが異常終了すると新版で動き出す。install.shの文言、仕様、リリースノートを修正した。リリースノートには slice-flush-wait/idle と max-deletes の説明、Windows版のmount動作が未検証であることも追記した。Minor 10件は保留（ledger .superpowers/sdd/2026-10-04-release-distribution/progress.md）。
+- 2026-10-04 shellcheck（install.sh・test_install.sh）とactionlint（release.yml）はユーザーの許可を得て実行し、指摘0。
+- 残り: ユーザーのcommitとpush、Task5（手動実行での試行）、Task6（draft Release）。
