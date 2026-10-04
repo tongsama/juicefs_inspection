@@ -204,5 +204,7 @@ fullpkgchunkはGo1.25.11(goenv)で通常49PASS（TMPDIRはルートFS上）。ra
 - [x] 仕様の承認と実装計画の作成（docs/superpowers/plans/2026-10-04-release-distribution.md）。
 - [x] Task1〜4の実装と全体レビュー（未コミット）。install.shのテストは13/13合格。
 - [x] shellcheck / actionlint 実行、指摘0（2026-10-04）
-- [ ] ユーザーのcommitとpush → Task5（workflow_dispatchでの試行。Windowsビルドが改修コードで通るかをここで確認）→ Task6（タグのpushとdraft Release、公開はユーザー）
+- [x] commitとpush（085a43b、4f69f00）、Task5の手動実行 run 37189012217 が全job成功（2026-10-04）
+- [x] Task6: タグ v1.4.1-kaz.1 をpushし、draft Releaseを作成（run 37190020196、2026-10-04）
+- [x] v1.4.1-kaz.1 を公開し、実URLからのインストールを確認（2026-10-04）
 - [ ] 保留したMinor 10件（ledgerを参照）
