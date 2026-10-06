@@ -19,7 +19,7 @@
 
 このリポジトリは、改修版 JuiceFS のビルド済みバイナリの配布元も兼ねています。本体のリポジトリは公式の構成に近いまま保ち、配布に必要なもの（インストールスクリプト、ビルド用 workflow、版の対応表、リリースノート）はすべてこちらに置いています。
 
-- 配布先: [GitHub Releases](https://github.com/tongsama/juicefs_inspection/releases)（最初の版は [v1.4.1-kaz.1](https://github.com/tongsama/juicefs_inspection/releases/tag/v1.4.1-kaz.1)）
+- 配布先: [GitHub Releases](https://github.com/tongsama/juicefs_inspection/releases)（最新は [v1.4.1-kaz.2](https://github.com/tongsama/juicefs_inspection/releases/tag/v1.4.1-kaz.2)、最初の版は [v1.4.1-kaz.1](https://github.com/tongsama/juicefs_inspection/releases/tag/v1.4.1-kaz.1)）
 - 対象: `linux-amd64`、`linux-arm64`（aarch64）、`windows-amd64`。32bit ARM（armv7）と macOS は対象外です。
 - 各版のビルド元となる本体の commit は [`release/versions.json`](release/versions.json) に、変更内容は [`docs/release-notes/`](docs/release-notes/) にあります。
 
@@ -31,7 +31,7 @@ curl -fsSL https://github.com/tongsama/juicefs_inspection/releases/latest/downlo
 
 - 既定では `/usr/local/bin/juicefs` に置きます。書き込めない場合は sudo を使います。
 - インストール先は第1引数で変えられます: `curl -fsSL …/install.sh | sh -s /opt/bin`
-- 版を固定する場合（本番ホストではこちらを推奨）: `curl -fsSL …/install.sh | JFS_VERSION=v1.4.1-kaz.1 sh`
+- 版を固定する場合（本番ホストではこちらを推奨）: `curl -fsSL …/install.sh | JFS_VERSION=v1.4.1-kaz.2 sh`
 - 公式版と並べて置く場合: `JFS_INSTALL_NAME=juicefs-kaz` を指定します。
 - `checksums.txt` の SHA-256 と照合し、一致した場合だけ既存のファイルを1回の `mv` で置き換えます。途中で失敗したときは既存のファイルに触れません。
 
