@@ -4,13 +4,15 @@
 
 ## 現在の状態
 
-- 本体ブランチ `fix/vm-io-wait-policy`、HEAD `3bed0d82`。後続改善の実装差分は本体に未コミットで残っている。
+- 本体ブランチ `release-1.4.1-kaz.2`（kaz の既定ブランチ）、HEAD `9268beb4`（2026-10-06 に push 済み）。旧 `fix/vm-io-wait-policy`（84f19ca4）はローカル・リモートとも削除済みで、このブランチに含まれる。
 - ユーザーが staging 回収補正版を適用し、30s/10s で耐久試験合格と報告した。10/03 の再起動で15s/10sへ変更。15秒版は短期観測。
 - 最終runtime確認はwriter/FUSE期限0、reuse16、GCdeferred、priority、max-deletes10、max-uploads18。
 - 保存待機は耐久fsync335774件全成功。一方、Readfile EIOと旧clientのVFS EIO累積1207が見つかり、全I/O無エラーとは評価しない。
 - ドキュメントは調査ルートへ分離した。文書と本体のcommitはユーザーが別々に行う。agentからadd/commit/pushしない。
 
 ## 次の優先作業
+
+- [ ] **staging fsync（2026-10-06）:** `--writeback-fsync` は e6ab89b8 として commit 済み、`release-1.4.1-kaz.2`（9268beb4）へ merge 済み（未 push）。実 VM 負荷での書き込みレイテンシ・PUT への影響を計測し、必要なら次の配布版（v1.4.1-kaz.2 など）に含める。
 
 - [ ] **Read EIO:** shared retry counter／singleflight先頭ctx取消fanout→sticky EIOを隔離再現し、3bed baselineと比較する。実エラーは隠さず、再現回帰を先行させる。
 - [ ] Read異常のcaller、sliceReader identity、取消元・理由、retry値の診断を検討する。既存counterだけでQEMU／guestへの帰属を決めない。
@@ -44,6 +46,10 @@
 - [ ] 本番への修正版適用とconfig FuseOpts.Timeout0確認（明示指示なしで実行しない）。現在稼働版はsmallput-diag-local/Timeout15mのまま。
 - [ ] backend/削除queueの30分級cleanup停滞への対策。必要ならenqueue wait/queue長・cleanup producerの診断とdurablecleanup設計を検討。単にqueuewaitをerror/未保存successへ変えない。
 - [ ] 隔離VMでの継続再現とguestFS状態確認。既に障害を受けたdataの復旧/repairは別作業、勝手に実行しない。
+- [x] rclone serve s3 の PUT 30s timeout（2026-10-06）: 原因は、Drive の変更通知による VFS ディレクトリの全件読み直し。ユーザーが `--poll-interval 0`／`--dir-cache-time 1h` を 10:40 に適用し、短期の観測で解消を確認した。詳細は `rclone_put_timeout/2026-10-06/report-ja.md`。
+- [ ] 上記対策の長時間観測: chunks ディレクトリの切り替わり、1時間ごとのキャッシュ期限切れのとき、`/rclone-s3` を変更するのがこの rclone だけであることの維持。
+- [ ] 任意: JuiceFS の `ResponseHeaderTimeout` 30s 固定の扱い（設定可能にするか）。staging 再送が上限に達したときに WARN を出すか。zstd レベル 1 と 3 の圧縮率・CPU 比較（どれも未着手、実装はユーザーの指示があってから）。
+- [ ] 任意: rclone の `--rc` は localhost のみで、`--rc-user`／`--rc-pass` がない。同じホストの他ユーザーから操作できるので、必要なら認証を付ける。
 
 ## 優先1: VM向けの待機・エラー方針
 

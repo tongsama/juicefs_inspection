@@ -1,6 +1,6 @@
 # JuiceFS 改善版の知見と評価
 
-更新: 2026-10-03。対象は Google Drive をバックエンドとする rclone S3 上の JuiceFS CE v1.4.1 系で、VM 仮想ディスク等の巨大ファイルの部分更新です。この文書は現在の入口として、確定した事実と未検証事項をまとめます。詳細な時系列は [agent_memo](../agent_memo.md)、測定値は [ログ解析報告](../option_effects/2026-10-03/report-ja.txt) を参照してください。
+更新: 2026-10-06（rclone serve s3 の PUT 詰まりの節を追加）。2026-10-03。対象は Google Drive をバックエンドとする rclone S3 上の JuiceFS CE v1.4.1 系で、VM 仮想ディスク等の巨大ファイルの部分更新です。この文書は現在の入口として、確定した事実と未検証事項をまとめます。詳細な時系列は [agent_memo](../agent_memo.md)、測定値は [ログ解析報告](../option_effects/2026-10-03/report-ja.txt) を参照してください。
 
 ## 方針
 
@@ -126,6 +126,24 @@ force=true slowログ3,649件は再帰callframeの完了数で、独立した手
 
 [Read EIO のソース経路と留保](../option_effects/2026-10-03/writer_read_error_findings.txt)。実保存失敗を隠す方向で直さず、安全な再現を先行する。
 
+## rclone serve s3 の PUT 詰まり（2026-10-06）
+
+詳細と証跡は [報告](../rclone_put_timeout/2026-10-06/report-ja.md) にある。
+
+- **症状**: JuiceFS で `slow request: PUT ... exceeded maximum number of attempts, 1 ... timeout awaiting response headers`（30.00秒）が続き、転送が大きく遅れる。
+- **文言の意味**: `attempts, 1` は JuiceFS 側の SDK 設定（`RetryMaxAttempts=1`。再試行は JuiceFS が自前で行う）。30秒は JuiceFS の固定値 `ResponseHeaderTimeout`（`pkg/object/restful.go`）で、`--put-timeout` では変えられない。rclone がエラーを返したわけではなく、rclone の `--low-level-retries` とも無関係。Drive のレート制限も観測されていない。
+- **原因**: rclone VFS は Drive の変更通知（既定の `--poll-interval 1m`）を受けるたびに、ディレクトリのキャッシュを捨てる。次の Open では、そのディレクトリ（例: `chunks/5/5913`、約2,800件）を全件読み直し、その間は同じディレクトリへの操作が待たされる。変更通知の発生源は JuiceFS 自身の PUT／DELETE なので、自分の書き込みでキャッシュを壊し続ける。ディレクトリが大きくなるほど遅くなる（PUT 完了は10分あたり 1,226件 → 275件）。
+- **悪循環**: JuiceFS が30秒で切った PUT も、rclone は最後まで実行する。JuiceFS の再送と合わせて重複アップロードになり（同じ key が3回完了したものが179件）、変更通知も増えて、さらに遅くなる。
+- **対策**: rclone に `--poll-interval 0` と `--dir-cache-time 1h` を指定する。前提は、`/rclone-s3` の配下をこの rclone だけが変更すること。同じドライブの他のディレクトリは、この rclone の VFS のキャッシュ対象外なので影響しない。2026-10-06 10:40 にユーザーが適用し、その後の約20分で無効化0回、PUT タイムアウト0件、PUT 完了は1分あたり約35件 → 約340件になった。長時間の観測はまだ。
+- **rclone の停止**: SIGTERM で停止する。SIGHUP は終了せず、VFS のディレクトリキャッシュを捨てるだけ。`rclone rc core/quit` は `--rc` 付きで起動したときだけ使える。rclone の停止が約14秒を超えると、キャッシュにないデータを読む VM に EIO が返る可能性がある（読み込みの再試行は10回で、待ちの合計は約13.5秒）。staging・compaction・メタデータは再試行で回復するので、不整合は起きない。
+
+### 関連する JuiceFS の挙動（ソースで確認）
+
+- **staging からのアップロード**: 1回の処理での上限は3回で固定。超えてもエラーは返さず、WARN も出さない。staging と pending の登録を残したまま、1分ごとの scan で無期限に再送する。成功するか、GC で不要になるまで続く。
+- **compaction の書き込み**: writeback を無効にした同期アップロードで、上限は `--io-retries`＋1（既定11回）。超えたら中断して、後でやり直す。
+- **キャッシュに入る書き込み**: writeback では、書き込みも staging のハードリンクとして読み取りキャッシュに入る。アップロードが終わるまでは LRU の追い出し対象外で、`--cache-size` にも数えない。完了したら LRU に加わり、最終アクセス時刻はアップロード完了時刻になる。`--cache-large-write` が効くのは、staging を通らない経路（compaction の出力と、staging に失敗したブロック）だけ。`--cache-expire` は、LRU の追い出しでは使われない。
+- **圧縮の扱い**: キャッシュも staging も展開済み（生）のデータで、圧縮はアップロードのたびに行う。`--cache-size` や staging の容量は、生のサイズで消費される。zstd のレベルは `ZSTD_LEVEL = 1`（"fastest"）で固定。オプションにしない理由はソースにも履歴にもない。レベルは展開の互換性に影響しない。
+
 ## 検証範囲
 
 対象の Redis／SQLite／MemKV、queue飽和、共有reference、marker回復、upload取消、fsync／read-after-write、実kernel FUSE等を隔離して検証した。PostgreSQLはユーザー指示でsource reviewのみ、runtime未実施。他KV engineの全runtime atomicityまで保証しない。
@@ -133,6 +151,9 @@ force=true slowログ3,649件は再帰callframeの完了数で、独立した手
 Go1.26では既存mockeyのruntime.duffcopy／duffzero link不整合がある。Go1.25.11では、`TMPDIR`をroot filesystem上に置いて `pkg/chunk` 通常49PASSの記録がある。全体raceは今回版11FAIL／44DATA RACE、未変更3bed archiveでも同じ11件等／48DATA RACEを再現した既存問題で、全suite race-cleanとはしない。今回追加のretire9testsはrace3回成功。[Go1.25検証記録](../gc_backlog/2026-10-02/improvement/go1.25_chunk/)
 
 writebackの既存stage処理はfile／directory fsyncによるhost power-loss耐久性を追加保証していない。プロセス・I/O遅延下の試験と、停電／host crash／全cloud保存の保証は分ける。
+
+**実例（2026-10-06）**: 13:38:34 に WSL（juicefs を動かす OS）がクラッシュし、再起動後の staging scan（19:06）で `invalid file size 0` が16件出た。0バイトの staging は mtime 13:38:04〜13:38:24、つまりクラッシュ直前約30秒（dirty writeback の既定 30s）に書かれたもの。tmp→rename の後でもデータが未 flush のまま rename だけ journal に残った典型。通常稼働で0バイトの正式名が残る経路は source 上にない。Redis で逆引きすると、16件中13件は inode 603330 の chunk 225 内で後続 slice に完全に上書き済み（可視0B）、3件は chunk から参照なしで、実害はなかった。ユーザーが該当ファイルを手動で削除済み。
+**対策（本体 e6ab89b8、`release-1.4.1-kaz.2` に merge 済み）**: `--writeback-fsync`（既定 true）を追加。staged block を rename 前に fdatasync し、rename 後に親ディレクトリと、この process でまだ永続化していない祖先ディレクトリを fsync する。失敗すると stage は失敗扱いになり、既存の直接アップロードに切り替わる。`=false` で従来どおり（OS クラッシュで失われ得る）。read キャッシュの書き込みは対象外。
 
 ## 次の調査とログ保管
 

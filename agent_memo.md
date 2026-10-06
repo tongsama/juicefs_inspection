@@ -552,3 +552,27 @@ README.mdに主題/scope/別Git管理/資料入口/成果と留保/配置/検証
 - 2026-10-04 Task6: ユーザーの許可を得てタグ v1.4.1-kaz.1（4f69f00）をinspection repoへpush。run 37190020196 が全job成功し、draft Release（6ファイル）ができた。手元でダウンロードし、checksumsは全OK、配布されたスクリプトはrepoと一致、amd64のversionも一致。公開はユーザーが行う。公開後に、実URLから scratchpad へのインストールを確認する。
 - 2026-10-04 公開完了: ユーザーが v1.4.1-kaz.1 を公開（https://github.com/tongsama/juicefs_inspection/releases/tag/v1.4.1-kaz.1）。実URLの `curl -fsSL .../releases/latest/download/install.sh | sh -s <dir>` で scratchpad にインストールして version一致を確認。JFS_VERSIONでの版の固定と、存在しない版での404停止も確認。配布の計画（Task1〜6）は完了。保留中のMinor 10件は ledger（.superpowers/sdd/2026-10-04-release-distribution/progress.md）を参照。
 - 次の版を出す手順: 本体で修正してkazにpush → release/versions.json に新しいタグ（v1.4.1-kaz.2 など）と40桁のSHAを追加し、docs/release-notes/<tag>.md を書いてcommit・push → 必要なら workflow_dispatch で試す → タグをpush → draftを確認して公開。
+
+## rclone serve s3 の PUT 30秒タイムアウトの原因調査（2026-10-06）
+
+証跡: `rclone_put_timeout/2026-10-06/report-ja.md`（元ログの prefix と SHA を記録。元ログは無変更）。
+- JuiceFS の `timeout awaiting response headers` は、JuiceFS 自身の `restful.go` に固定で入っている `ResponseHeaderTimeout` 30s。`exceeded maximum number of attempts, 1` は JuiceFS 側の SDK 設定 `RetryMaxAttempts=1`。どちらも rclone の `--low-level-retries` とは無関係。
+- rclone 側では、Drive の changeNotify ごとに `chunks/5/5913` のディレクトリキャッシュが無効になり、Open のたびに約2,800件を全件再読み込みしていた（約6〜8秒周期）。ディレクトリが大きくなるほど処理件数が落ちる（07:2x の 1,226件/10分 → 09:5x の 275件）。Drive のレート制限は観測されていない。
+- JuiceFS が切った PUT も rclone は最後まで実行していた。再送と合わせて、同じ key が最大3回完了している（179 key）。
+- 対策候補: rclone `--poll-interval 0` と、長めの `--dir-cache-time`（単一書き込みが前提）。JuiceFS 側の30s固定値の扱い。いずれも未検証で、本番設定は未変更。
+- 追記（同日）: ユーザーが 10:40 に rclone を再起動し、`--poll-interval 0 --dir-cache-time 1h --rc --rc-addr localhost:5572` を適用した（PID 100624。rc の認証はなし）。再起動後の約20分で changeNotify・invalidation 0回、PUT 完了は1分あたり約35件 → 約340件、PUT の30秒タイムアウトは 10:41 以降0件。長時間の観測は未実施。
+- 同日に source で確認した関連事項（`docs/findings.md` の同名の節にまとめた）: staging からのアップロードは1回の処理で3回まで、超えると1分ごとの scan で無期限に再送する（WARN なし）。compaction は io-retries＋1 回。writeback の書き込みは staging のハードリンクとして読み取りキャッシュに入り、アップロード完了で LRU に加わる（atime は完了時刻）。cache-large-write は同期経路だけに効く。キャッシュ・staging は展開済みのデータ。zstd レベルは1で固定（理由の記述なし）。rclone は SIGTERM で停止し、SIGHUP はディレクトリキャッシュを捨てるだけ。rclone の停止が約14秒を超えると、キャッシュにない Read が EIO になり得る。
+- 注意: 起動スクリプト `~/utilities/cloudfs/rclone_s3_start.sh` に OAuth の client_secret と token が平文で入っている。調査中に agent が伏せ忘れてツールの出力に表示してしまった（外部への送信や保存はしていない）ので、ユーザーに通知済み。今後このスクリプトを読むときは、`client_secret`／`token`／`*_KEY`／`*_SECRET` を伏せて表示すること。
+
+## staging の0バイト化と `--writeback-fsync`（2026-10-06）
+
+- 事象: WSL のクラッシュ（13:38:34）後、`rawstaging` に0バイトの正式名ファイルが16件残り、`uploadStagingFile` が `invalid file size 0` を出した。mtime はクラッシュ直前の約30秒。原因は、staging の書き込み（`flushPage`）が tmp→rename だけで fsync していないこと。新しいバグではない。
+- 調査メモ: エラーが出るかどうか（`isPendingValid`）は、メモリ上の `pendingKeys` を見ているだけで、metadata を参照しているかとは無関係（最初の回答で誤って説明し、訂正済み）。Redis の chunk list（`c{inode}_{indx}`、24バイト/slice、big endian）を SCAN/LRANGE で逆引きするツールを scratchpad に作った（可視バイト数の計算つき）。結果は全件無害。trash はユーザー設定で無効。
+- 実装（本体ブランチ `fix/staging-fsync` の e6ab89b8。親は `fix/vm-io-wait-policy` の 84f19ca4）:
+  - `chunk.Config.StagingNoSync`（ゼロ値で同期ありにして、gateway/sdk など他の呼び出し元も安全側にした）と mount フラグ `--writeback-fsync`（既定 true）。docs の en/zh_cn `_common_options.mdx` にも追記。
+  - `flushPage(..., durable)`: データ書き込み後に fdatasync（linux は `unix.Fdatasync`、darwin/windows は `f.Sync`）→ close → rename → 親ディレクトリを fsync → 祖先ディレクトリを親で fsync。`durableDirs` には、祖先まで全部 sync し終えたディレクトリだけを記録する（同時に書く側が親の sync を飛ばさないため）。staging scan が空ディレクトリを消したときは記録から外す。ディレクトリの sync に失敗したら正式名を消し、stage を失敗させて直接アップロードに切り替える。
+  - テスト: `pkg/chunk/staging_sync_test.go`（8件。順序・NoSync・read キャッシュは対象外・file/dir の sync 失敗・既存ディレクトリ・再作成）と `cmd/staging_sync_flag_test.go`。pkg/chunk の失敗は既知の環境依存の `TestInRootVolume` だけ。vfs は Redis が必要な4件を除いて ok。fs と cmd の対象テストも ok。
+  - 実バイナリ: `juicefs webdav --writeback`（FUSE は sandbox の setuid/ptrace 制限で strace 不可）で、20ブロックに対し既定は fdatasync 20回・fsync 24回、`=false` では 0/0。
+  - 既存の問題: `-race` で `stageFull` の読み書き競合（`checkFreeSpace` と `stage`）が検出される。今回の変更とは無関係。
+- 2026-10-06 ユーザーの指示で e6ab89b8 を commit し、`release-1.4.1-kaz.2`（84f19ca4 から作成）へ --no-ff で merge した（9268beb4）。中身は release-1.4（0b90c7db）＋ kaz の3 commit ＋ staging fsync。develop_kaz/main は upstream main のミラーで、kaz 独自の commit はない。push はしていない。
+- 2026-10-06 ユーザーの許可を得て、`release-1.4.1-kaz.2` を kaz へ push（9268beb4）。kaz の既定ブランチをこのブランチへ変更し、リモートの `fix/vm-io-wait-policy` を削除した。ローカルの `fix/vm-io-wait-policy` と `fix/staging-fsync` も削除。kaz に残っているのは develop_kaz・main（upstream の写し）と release-1.4.1-kaz.2。84f19ca4（kaz.1 の versions.json が参照）は release ブランチの祖先なので、まだ到達できる。
