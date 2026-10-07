@@ -601,3 +601,90 @@ README.mdに主題/scope/別Git管理/資料入口/成果と留保/配置/検証
 - 注意: このマシンの `cat`/`dd` は uutils coreutils 0.10.0。uutils の `cat` は `.accesslog`（サイズ0の特殊ファイル）を即 EOF にする。`dd` は読める。ユーザーは GNU coreutils を `~/gnu` に入れた。
 - 2026-10-07 raw 計測（ユーザー実施、14:49〜15:25、条件は qcow2 回と同じ、discard 未設定）: **約36分（qcow2 は約84分）**。fallocate 0回。最大の待ちは Read 前 flush（32,205回、799s、max 24.8s）。flush 中の Write 停止による write の1秒超が31回（121s）。commit は17,312件（qcow2 62,317）、doWrite 41.5ms、lock 待ちの平均160ms。metrics-after はユーザー保存が無く、agent が 15:25:58 に取得した（証跡ディレクトリ内）。報告は install-report-ja.md の追加節。優先順位: Read 前 flush の範囲限定 → Fallocate 前 flush の範囲限定 → group commit。
 - 2026-10-07 計画書を実測に合わせて改訂した（§7 の順番、C4 の詳細化、§8〜§10）。Phase 1 = Read／Fallocate 前の flush を範囲に限定（`--writer-flush-scope=file|range`、既定 file）。設計上の注意: (1) 待つ集合は対象 chunk の slice の snapshot と、`s.dep` の閉包（dep の chunk の先頭から dep まで、再帰）。(2) `flushwaiting` は増やさない。(3) commitThread は committed 後に range 待ちがあれば通知する。(4) `fileWriter.Truncate` は無条件上書き（writer.go:504-509）なので、Fallocate 後は縮めない `GrowTo` を使う。(5) fsync・close・Truncate・CopyFileRange は全 flush のまま。実装はユーザーの承認待ち。
+
+## Phase 1 C4 実装: Read／Fallocate 前の flush を範囲に限定（2026-10-07）
+
+ユーザー依頼で計画書 C4 を実装した。本体ブランチ `feat/range-flush`。**ユーザー指示で `1.4.1-improve-kaz`（ea2c3757）から切り直した**（最初は release-1.4.1-kaz.2 から作ったが、commit なしのまま削除して作り直した。tree は同一の 7c805e4d なので検証結果はそのまま有効。切り直し後に新規テストと cmd テストを再実行して ok）。今後の改修ブランチは `1.4.1-improve-kaz` から切る。**未コミット**（commit・push はユーザーの指示待ち。新規ファイル `pkg/vfs/writer_range_test.go` も未 add）。
+
+- 実装:
+  - `--writer-flush-scope=file|range`（既定 file）を追加。`vfs.Config.WriterFlushScope`。不正値は CLI で拒否し、NewDataWriter では file に戻す。
+  - `fileWriter.flushRange`: 対象 chunk の slice の snapshot と、`s.dep` の閉包（dep の chunk の先頭から dep まで、再帰）を待つ。`flushwaiting` は増やさず、`rangewaiting` を使う。commitThread は committed 後、`rangewaiting>0` なら `flushcond.Broadcast`。
+  - 待ちループ（deadline・取消・5分 WARN・期限切れ時の dump）は `waitFlushed` に共通化した。全 flush の挙動は変えていない。
+  - `dataWriter.FlushRange`／`GrowTo` を追加。`VFS.Read`／`VFS.Fallocate` は `flushForRange` 経由で呼ぶ。range のとき、Fallocate 後は Truncate ではなく GrowTo を使う（file は従来どおり Truncate）。fsync・close・Truncate・CopyFileRange・pkg/fs（SDK／gateway）の pread は全 flush のまま。
+  - docs en/zh_cn の `_common_options.mdx` に追記した。
+- テスト（RED を確認してから GREEN）:
+  - `pkg/vfs/writer_range_test.go`: 範囲外 pending ありの read-after-write（chunk 境界をまたぐ場合を含む）、範囲外 Write を止めない（別 handle、flushwaiting=0、範囲外は freeze されない、commit 後1秒以内に起きる）、dep 閉包、EOF 付近の Read、Fallocate 4 mode×2 範囲（committed 長を越える範囲を含む）で writer 長が縮まず file／range の最終内容と長さが一致、f.err の伝播、Read の commit 失敗 errno、並行の先読み＋最終内容の一致、scope の正規化。`cmd/writer_flush_test.go` に flag のテスト。
+  - 変異で確認: 閉包の削除、GrowTo→Truncate、range→全 flush、Broadcast の削除、のどれでもテストが落ちる。
+  - `JFS_TEST_WRITER_FLUSH_SCOPE=range` で、pkg/vfs と pkg/fuse の既存の suite を range でも回せる（テスト専用）。
+- 検証（Go 1.25.11。一時 Redis 8.0.5 を apt download＋dpkg-deb で scratchpad に展開し、127.0.0.1:6379 で起動。終了後に停止。本番 56379 には接続していない）:
+  - 対象テスト 26件の `-race -count=3`: 全 PASS、DATA RACE 0。
+  - `TestSmallPUT*` の writeback 系を含めると、既知の pkg/chunk `stageFull`／`checkFreeSpace` の DATA RACE で FAIL する。release-1.4.1-kaz.2（git archive）の baseline でも同じ stack で再現するので、既存の問題。
+  - pkg/vfs 全体: file・range・baseline の3つとも ok（Redis なしだと Redis テストの log.Fatal で途中終了する。3つとも同じ）。pkg/fs: ok（変更版・baseline）。pkg/fuse: file・range・baseline とも ok。cmd の対象テスト: ok。build・gofmt・`git diff --check`: ok。
+  - 既存テストの sqlite3:// が作業ツリーに `pkg/vfs/?_journal=WAL&_timeout=5000&cache=shared` を生成する（baseline でも同じ）。agent が実行で生じたものを削除した。
+- 独立レビュー（subagent）: 確実なバグは0件。指摘に対応した点: goroutine 内の require、Broadcast の検出、committed 長を越える Fallocate のケース、docs の表現。
+- **残る懸念・仕様上の差（range のときだけ）**:
+  1. 同じ fh では、Read が `h.Rlock` を持ったまま preflush するので、同じ handle の Write は handle lock で待つ（handle.go:102-142）。writer 層では止めないが、QEMU が1つの fd を使う場合、Write の停止は「範囲 flush の時間」に短くなるだけで、ゼロにはならない。preflush を Rlock の外へ出すかは、別途の判断。
+  2. 範囲外の未 commit の追記が quota／容量エラーになる場合、file scope では、それを延長する Fallocate 自体がエラーを返す。range では Fallocate が成功し、エラーは後続の Read／fsync／close で返る（f.err は sticky なので、エラーは隠れない）。
+  3. Fallocate の後に範囲外の古い slice が commit されると、mtime がその slice の lastMod へ戻る（データには影響なし）。
+  4. 範囲外で後から起きた commit 失敗は、その Read では返らない（待ち開始時点で既に記録されたもの、待ちの間に起きたものは返す）。
+- 計測用バイナリ（初版）: 下記の追加修正版で置き換えた。
+
+### 追加修正: 2段階 preflush と mtime の巻き戻り防止（2026-10-07、ユーザー承認）
+
+ユーザーの判断: 懸念3（mtime の巻き戻り）は直す。file にも効かせる（upstream 由来の chunk 間の巻き戻りも直す）。懸念1は、Read と Fallocate の両方に2段階 preflush を入れる（agent の推奨。range のときだけ）。
+- 2段階 preflush（`vfs.go`）: range のとき、handle のロック（Read は Rlock、Fallocate は Wlock）を取る前に `FlushRange` で待つ（origin は `vfs.Read.prelock`／`vfs.Fallocate.prelock`）。ロックを取った後に、もう一度 `FlushRange` を呼ぶ（origin は従来の `vfs.Read`／`vfs.Fallocate`）。2段目は、1段目の間に完了した Write だけを待つ。read-after-write の保証は従来と同じ。file では何もしない。close 時の `cancelOp` は、ロックを持たない1段目を対象にしないが、1段目は close を妨げない。
+- mtime（`writer.go`）: `fileWriter` に `mtimeFloor`・`mtimeGen`・`commitMu` を追加した。commitThread は `commitMu` の下で mtime=max(s.lastMod, floor) を決めてから Meta.Write し、成功時に floor を上げる（失敗時と、utimes を挟んだ in-flight の commit では上げない）。`updateMtime`（utimes）は floor をリセットし、gen を進める。Fallocate は `dataWriter.UpdateMeta` で `commitMu` の下で Meta.Fallocate を実行し、成功時に floor=now にする。同 inode の Meta.Write は、もともと meta の openFile lock で直列なので、`commitMu` によるスループット低下はない想定（未計測）。lock の順序は `commitMu` → file lock。`s.lastMod` は変えない（idle タイマーへの影響を避けるため）。meta 層は変更なし。
+- 既存テストの変更: `TestWriterFlushCallerErrors` の正規表現を `origin=vfs.Read(\.prelock)?` に変えた（range ではエラーが1段目で返るため。errno の検査はそのまま）。
+- 新規 `pkg/vfs/writer_mtime_test.go`（6件）: chunk 間で古い slice が後から commit されても mtime が戻らない（file／range）、Fallocate 後に戻らない、utimes の過去時刻が優先される、失敗した commit では floor を上げない、同じ handle の Write が Read の待ち中に通り、待ち中に完了した重なる Write が Read に見える、Fallocate の待ち中に同じ handle の Read と Write が通る。RED を確認済み。変異（2段目の削除、1段目の削除（Read・Fallocate）、floor の削除、commitMu の削除、utimes のリセットの削除）は、すべてテストが検出した。
+- 検証（一時 Redis 8.0.5 を 127.0.0.1:6379 で起動し、終了後に停止）: 対象テストの race 3回は ok。pkg/vfs 全体: file は ok、range は1回目に `TestSmallPUTDiagnostics` が1回だけ FAIL した（PUT の payload サイズの診断の照合。log には payload_bytes=19 があった）。その後、range の全体2回、単独30回（file・range・baseline 各30回）で再現せず、未特定の flaky として扱う（barrier の変更とは別経路）。pkg/fuse（file／range／baseline）・pkg/fs・cmd の対象テスト・build・gofmt・diff --check は ok。baseline の race 失敗は既知の `stageFull`／`checkFreeSpace`。
+- 計測用バイナリ（追加修正版）: `/home/kwatanabe/tmp_local/juicefs-builds/juicefs-rangeflush-20261007`（125,990,216 bytes、SHA-256 `7e51661ef8eccaeba8fae95c3ae3446c36cf83824fb6e111ca121429b9d0adf7`、version `1.4.1+2026-10-07.ea2c3757-rangeflush-wip2`、vcs.revision ea2c3757、vcs.modified=true）。patch は同じディレクトリ（SHA-256 `40f9779c…f0e6`）。使うときは `--writer-flush-scope=range`。mtime の修正は file でも有効。
+- 残る懸念: (2) range では、範囲外の追記の quota エラーが Fallocate ではなく後続の I/O で返る。(4) 範囲外で後から起きた commit 失敗は、その Read では返らない。utimes と in-flight の commit の競合（commit が utimes の後に着いて新しい時刻で上書きする）は、従来からある。`commitMu` が Fallocate を in-flight の commit の後ろに並ばせるのは、meta の openFile lock と同じ順番待ちである。
+- 2026-10-07 ユーザーの指示で、本体を commit した: `feat/range-flush` の **18e641b8**（親は 1.4.1-improve-kaz の ea2c3757）。新規テスト2ファイル（agent がこのセッションで作成したもの）も含めた。Co-Authored-By は付けていない。push はしていない。調査リポジトリ側（memo/TODO）は未コミット。
+- 計測用バイナリは commit から作り直した: `/home/kwatanabe/tmp_local/juicefs-builds/juicefs-rangeflush-18e641b8`（125,990,216 bytes、SHA-256 `c94da572e8f90ff51f88074e56cad5038652c2e391f81ea713059834ec0c572e`、version `1.4.1+2026-10-07.18e641b8-rangeflush`、vcs.modified=false）。それまでの wip 版のバイナリと patch は削除した。
+- 次: ユーザーが qcow2（prealloc=off）と raw で、前回と同じ条件に `--writer-flush-scope=range` を足して計測する（任意で range なしの回も）。agent は prelock と2段目の待ちを分けて解析する。
+- 2026-10-07 17:34 ユーザーが新しいバイナリで検証インストールを開始した。agent が読み取りのみで確認した内容: mount は 17:26:51 に起動（PID 554198/554212）、exe の SHA は c94da572…（18e641b8 版と一致）、`.config` は WriterFlushScope=range・WriterFlushTimeout=0・WriterReuseWindow=32・SliceFlushWait=30s・SliceFlushIdle=16s・writeback=true、debug ログは `~/.juicefs/diagnostics/vm-io-20261007-172643.log`。起動スクリプトの mtime は 17:22。前回の計測（12:52／14:49）の reuse／timer の値は報告書に記録がなく、同じかどうかはユーザーに確認中。qcow2／raw のどちらかも確認中。
+- 同日 ユーザー回答: 今回は **qcow2（preallocation=off）**。slice timer と reuse window などの設定は前回と同じで、変更は `--writer-flush-scope=range` を足したことだけ（つまり前回の qcow2／raw の回も 30s/16s/reuse32 だった）。accesslog（~/gnu/bin/cat で取得）と metrics-before はインストール前に取得済み。
+- 2026-10-07 range 版 qcow2 計測（17:34〜18:27、約53分。前回は約84分）を解析した: `metadata_random_io/2026-10-07/install-range-report-ja.md`（入力は固定 prefix と SHA を記録、結果は `result-install-range-20261007.json`）。
+  - fallocate 合計 3,330s → 1,887s。Fallocate 前の flush 2,661s → 1,264s（ほぼすべて prelock）。write 合計 67s → 13s。commit 62,317 → 35,006件。slice の平均長 244KB → 481KB。compaction 587 → 257回。
+  - Read 前の flush は 360s → 363s で変わらなかった（同じ chunk を読むためと推定、未検証）。
+  - meta 層の lock_wait 4,542s → 5s は、commitMu へ待ちが移った分を含むので、「解消」とは評価しない。
+  - 終了時の rawstaging は 2,182 block（1.8GB）で、順調に減っていた（18:32 に 781件）。原因は、短い時間で書いたことによるアップロードの追いつき待ち。PUT の30秒タイムアウトが3件あり、再送で成功した。accesslog のエラーは0。
+  - 残る待ちは in-range の commit（約41ms/件）、Meta.Fallocate（約48ms/件）、Read 前の待ち。次は Phase 2（group commit）。
+
+## Phase 2: 同 chunk の slice commit をまとめる（2026-10-07、設計）
+
+- ユーザーとの合意:
+  - **案C**（chunk ごとの commitThread が、同じ chunk の連続した slice をまとめる）から始める。chunk をまたぐまとめ（案A）は計測の後に判断する。
+  - 3 engine すべてに、1回の transaction で書く実装を入れる（選択(c)。順番は Redis で計測 → SQL・TKV）。
+  - フラグは `--meta-write-batch=N`（既定 0 = 無効、0〜1024）。
+  - batch は flush の scope に関係なく効く（file・fsync・close にも）。
+- 方式を変えた理由: Phase 1 の commitMu が commit を VFS 側で直列にしているので、計画書 C3 の 2a（meta 層の leader/follower）は機能しない。range 版のログでは、連続して待っている commit の約84%が同じ chunk だった（scratchpad の batchable.py で推定）。
+- エラーの扱い: 未適用が確実なエラー（ENOENT・EPERM・ENOSPC・EDQUOT）のときだけ、1件ずつに戻して正確な n と errno を返す。EIO など適用されたか分からないエラーでは、二重登録を避けるため再実行しない。
+- SQL も、upsertSlice（連結した buf）と mustInsert（複数行）で、k 件をまとめてもほぼ1件分のコストになる（ソースで確認）。
+- 仕様: `docs/superpowers/specs/2026-10-07-meta-write-batch-design.md`（ユーザーのレビュー待ち、未コミット）。
+- 2026-10-07 ユーザー方針: **実機での計測は Redis だけ**（他の engine は環境の用意が大変なため）。SQL・TKV は、SQLite と memkv での単体テスト・共通テストで正しさを確認するところまで。性能は推定にとどめる。PostgreSQL・MySQL は source review のみ。仕様書の §9・§10 に反映した。
+- 2026-10-07 ユーザーが仕様を承認した。実装計画: `docs/superpowers/plans/2026-10-07-meta-write-batch.md`（Task 1〜8、Checkpoint A＝commit 1 と計測、Checkpoint B＝commit 2）。
+- 計画作成時のセルフレビューで、仕様を修正した: 適用されたか分からないエラー（EIO 等）で batch が失敗したときは、writer でも batch の残りの slice を再送せず、すべて失敗扱い（EIO）にする。最初の版の「残りは次の周回で commit し直す」は、EXEC が実は通っていた場合に二重登録になるため。あわせて、2,500件の同期 compaction のテストは外し（判定関数の単体テストと既存テストで確認する）、changelog の numSlices は従来の挙動のままとした。
+- 2026-10-07 ユーザー指示: Phase 2 は Native 実行。本体に新ブランチ `feat/meta-write-batch`（feat/range-flush 18e641b8 から）を作成した。**途中の commit は許可**（push はしない）。進捗の ledger は `.superpowers/sdd/2026-10-07-meta-write-batch/progress.md`（削除・コミットしない）。
+- 2026-10-07 Phase 2 の commit 1 相当（Task 1〜6）を `feat/meta-write-batch` に commit した: b915e321（compactionWanted）→ 38963d7a（WriteSlices と baseMeta）→ fcfd9a1f（Redis doWriteSlices）→ d795d725（VFS の設定とテスト用ラッパー）→ f8129d54（commitThread の batch）→ c79cfe97（`--meta-write-batch` と docs）。push はしていない。
+- 計測用バイナリ: `/home/kwatanabe/tmp_local/juicefs-builds/juicefs-metabatch-c79cfe97`（126,010,888 bytes、SHA-256 `a007c8d4714259201481f92ed744a1574e1b042f1f879afe3cd6a12d897a0cdc`、version `1.4.1+2026-10-07.c79cfe97-metabatch`、vcs.modified=false）。使うときは `--writer-flush-scope=range --meta-write-batch=64`。SQL・TKV はまだ1件ずつ（Task 7・8 で対応する）。
+- 2026-10-07 ユーザー依頼で、commitMu を取った後に batch を集め直す改善を入れた（e412fbeb、TestMetaWriteBatchRecollectsAfterCommitOrder）。計測用バイナリを作り直した: `/home/kwatanabe/tmp_local/juicefs-builds/juicefs-metabatch-e412fbeb`（SHA-256 ca64264c8c41a555dd48af98af3e95e91b3627209081ee970b902a5e564cfbd5、version `1.4.1+2026-10-07.e412fbeb-metabatch`）。c79cfe97 版は削除した。Checkpoint A の検証: pkg/meta の失敗は TestKeyDB・TestRedisCluster だけで baseline と同じ（サーバーがない環境要因）。pkg/vfs・pkg/fuse は batch {0,64} × scope {file,range} の4つの組み合わせで ok、race 3回 ok。
+- 2026-10-07 Phase 2 の実装を完了した（`feat/meta-write-batch`、18e641b8..f9308391 の14 commit、push なし）。Task 1〜8 と、ユーザー依頼の Task 5b（commitMu を取った後に batch を集め直す）。
+- 最終レビュー（opus、別コンテキスト）の指摘と対応:
+  - C1: MySQL の chunk.slices は BLOB（約2,730 slice が上限）。batch が maxSlices を飛び越えると溢れる → SQL の doWriteSlices は先に slice 数を読み、超えるなら書く前に fallback を返して1件ずつにする（c49f6863）。MySQL の新規 chunk で正確な件数を返すことも、これで直った。
+  - C2: TKV の genLog は transaction ID を key にするので、1 transaction の中の複数の WRITE 記録が上書きされる → ChangeLog が有効なら TKV は1件ずつにする（795d08db）。
+  - I3: 結果が分からない commit の後に、reader の invalidate を戻した。I4: `WriteSlices` は第3の戻り値 `uncertain` を返す。fallback 中の失敗では、送っていない slice をこれまでどおり再試行する（3c2ddaf3）。
+  - Minor 6件は先送りにした（ledger 参照）。
+- 検証（一時 Redis 8.0.5、127.0.0.1:6379。終了後に停止）: race 3回（vfs・meta）で DATA RACE 0。pkg/meta の失敗は TestKeyDB・TestRedisCluster だけで、baseline 18e641b8 でも同じ（KeyDB とクラスタのサーバーがない環境要因）。pkg/vfs・pkg/fuse は batch {0,64} × scope {file,range} の4つの組み合わせで ok。pkg/fs・cmd・build は ok。SQL の batch が1つの複数行 INSERT になることを、SQLite の SQL ログで確認した。PostgreSQL・MySQL は source review のみ。
+- 計測用バイナリ: `/home/kwatanabe/tmp_local/juicefs-builds/juicefs-metabatch-f9308391`（126,023,176 bytes、SHA-256 `236f2cdfb1717f32475849e09967ebc768a8d3aa8f32e259e244073a7161e066`、version `1.4.1+2026-10-07.f9308391-metabatch`、vcs.modified=false）。それまでの metabatch 版は削除した。使うときは `--writer-flush-scope=range --meta-write-batch=64`。
+- 2026-10-07 21:19 ユーザーが Phase 2 の計測（qcow2）を開始した。agent が読み取りのみで確認した内容: mount は 21:16:04 に起動し、exe の SHA は 236f2cdf…（f9308391 版と一致）。`.config` は WriterFlushScope=range、MetaWriteBatch=64、reuse 32、30s/16s、writeback。入力: debug ログ `vm-io-20261007-211557.log`、accesslog `accesslog-20261007-211753.txt`、`metrics-before-20261007-211753.txt`。ブランチの扱い（merge／PR／保留）は、計測後にユーザーが判断する。
+- 2026-10-07 Phase 2 の qcow2 計測（21:19〜22:02、約43分）を解析した: `metadata_random_io/2026-10-07/install-batch-report-ja.md`（入力の固定 prefix と SHA、新規スクリプト `analyze_batch.py`）。
+  - range 版（約53分）と比べて、transaction は 35,006 → 20,654（batch 6,419回、平均3.2件、doWrite は平均41ms で単発と同じ）。Read 前の待ちは 352s → 66s、Fallocate 前の待ちは 1,264s → 905s、fallocate 全体は 1,887s → 1,495s。エラー0。
+  - 残る主な待ち: Fallocate 前の commit 待ち、Meta.Fallocate（約590s、約44ms/回）、単発の commit 14,235件。次の候補は、Fallocate と commit を1つの transaction にまとめる、案A、C7（Redis の RTT 削減）。
+- 2026-10-07 ユーザーの指示で、本体の `feat/meta-write-batch`（Phase 1 の feat/range-flush を含む）を `1.4.1-improve-kaz` へ `--no-ff` で merge した: **78acd63d**（親 ea2c3757 と f9308391）。tree は検証済みの f9308391 と同じ 18f9068a。merge 後に build、vfs の対象テスト、meta の TestWriteSlices（一時 Redis を起動し、終了後に停止）が ok。push はしていない。feat/range-flush と feat/meta-write-batch のブランチは残してある（削除はユーザーの判断）。
+- ユーザー方針（2026-10-07）: 残りの改善は**次の機会に回す**。候補は TODO の「次の機会に回す改善」に記録した。
+
+## 追加の調査課題（2026-10-08、ユーザー依頼で TODO に追加。未着手）
+
+- client-cache（CSC）: メタデータの変更（例: パーミッション）が、client-cache を有効にした他の client に反映されない。メタデータ DB 側は正常に変更されている（ユーザーが確認済み）。再現テストから始める。
+- rclone serve s3: パスを直接取得するたびにディレクトリのリストを取る。dir cache を使うと、存在するファイルを無いと返す。やる場合は、JuiceFS と同様に rclone のソースをこのリポジトリの中の ignore したディレクトリに clone して修正し、このリポジトリで release する（release の構成の変更が必要かもしれない）。

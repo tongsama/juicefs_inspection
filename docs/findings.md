@@ -155,6 +155,8 @@ force=true slowログ3,649件は再帰callframeの完了数で、独立した手
 - Redis client-cache（meta URL の `client-cache`）は attr と entry のみで、chunk は対象外。有効時に doWrite が古い attr を読む経路がソース上成立する（未再現）。
 - **実測（2026-10-07、unsafe、Ubuntu インストール）**: 最大の待ちは qcow2 の cluster 割り当てに伴う `fallocate(ZERO_RANGE)` で、15,343回・合計 3,330s・平均 217ms。うち 173ms は、範囲に関係なく同 inode の全 pending commit を待つ flush。強制 freeze の89%がこの flush によるもの。commit は平均 43ms（≒ 4 RTT、RTT 約10ms）で62,317件、計測時間の52%を占めた。[解析報告](../metadata_random_io/2026-10-07/install-report-ja.md)
 - **同条件の raw では約36分（qcow2 は約84分、どちらも debug 付き）**。fallocate は0回。raw で残る最大の待ちは Read 前 flush（合計799s、最大24.8s）で、flush 中は同 inode の Write も止まる。
+- **Phase 1（`--writer-flush-scope=range`、本体 18e641b8）の qcow2 計測（2026-10-07）: 約84分 → 約53分**。Read と Fallocate 前の flush を、触る chunk の pending と、その依存に限定した。待ちは handle のロックの外で行い、ロックの中でもう一度確認する。fallocate の合計は 3,330s → 1,887s、commit は −44%、write の合計は −80%。Read 前の待ちは変わらなかった。残る待ちは in-range の commit（約41ms/件）と Meta.Fallocate で、次は group commit。mtime が古い slice の commit で巻き戻る upstream 由来の問題も、同じ commit で修正した（scope に関係なく有効）。fsync・close は全体の flush のまま。[報告](../metadata_random_io/2026-10-07/install-range-report-ja.md)
+- **Phase 2（`--meta-write-batch=64`、本体 f9308391）の qcow2 計測（2026-10-07）: 約53分 → 約43分**（変更前の約84分からは −49%）。同じ chunk の連続した slice を1回の transaction でまとめ、transaction 数は 35,006 → 20,654（−41%）、batch は平均3.2件。batch 1回の時間は単発と同じ約41ms。Read 前の待ちは 352s → 66s（−81%）、Fallocate 前の待ちは 1,264s → 905s（−28%）。残る主な待ちは、Fallocate 前の commit 待ち、Meta.Fallocate（約44ms/回）、単発の commit で、どれも Redis の transaction 1回 ≒ 41ms の直列に起因する。[報告](../metadata_random_io/2026-10-07/install-batch-report-ja.md)
 
 ## 検証範囲
 

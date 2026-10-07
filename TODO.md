@@ -12,15 +12,51 @@
 
 ## 次の優先作業
 
-- [ ] **metadata path 最適化（2026-10-07、計画段階）:** [調査結果と実装計画](docs/superpowers/specs/2026-10-07-metadata-random-io-optimization-plan.md)。主指標は qcow2 への Ubuntu Desktop 26.04 インストール時間（現状 約1時間）。ユーザーの計画承認後に着手する。
+- [ ] **client-cache（CSC）の不具合調査（2026-10-08 追加、未着手）:** メタデータの変更（例: ファイルのパーミッション）が、client-cache（meta URL の `client-cache=true`）を有効にした他の client に反映されない。
+  - ユーザーが確認した事実: 裏側のメタデータ DB（Redis）では、正しく変更されている。
+  - 関連: 計画書 §5.4（自分の commit が local cache を消さない、BCAST の invalidation が遅れる窓）、`pkg/meta/redis_csc.go`。実機は client-cache が有効（client-cache-expire=24h）。
+  - 進め方: 一時 Redis で2つの client（client-cache 有効）を使い、chmod 等が他方に反映されない状態の再現テストを先に作る。invalidation（tracking・BCAST・pubsub）の経路を確認する。本番の Redis（56379）には接続しない。
+
+- [ ] **rclone serve s3 の修正の検討（2026-10-08 追加、未着手）:**
+  - 症状（ユーザーの観察）:
+    - JuiceFS は object のパスを直接指定するので、ディレクトリのリストは要らない。それなのに、パスを直接取得しようとすると、rclone は毎回ディレクトリのリストを取りに行く。
+    - dir cache を使うと、今度はファイルの有無までキャッシュしてしまい、存在するはずのファイルを「無い」と返す。
+    - 背景: 2026-10-06 の調査（`rclone_put_timeout/2026-10-06/report-ja.md`）。現在は `--poll-interval 0 --dir-cache-time 1h` で運用中。
+  - 方針（やる場合）: JuiceFS と同じ形にする。
+    - rclone のソースを、このリポジトリの中の Git ignore したディレクトリ（例: `/rclone`）に clone して修正する。
+    - このリポジトリで release を作る。release のディレクトリ構成（`release/`、`versions.json`、workflow、install スクリプト）を、JuiceFS と rclone の2つの成果物に対応する形へ変える必要があるかもしれない。
+  - 先にやること:
+    - rclone VFS の、パス指定での取得（HEAD・GET）がディレクトリのリストを必要とする経路を、ソースで確認する。
+    - 「存在するはずのファイルを無いと返す」negative cache の条件（dir cache の有効期間、自分の PUT がキャッシュに反映されるか）を、ソースで確認する。
+    - 修正案と upstream への報告の要否を比較する。実装はユーザーの承認後。
+
+- [ ] **metadata path 最適化（2026-10-07。Phase 1・2 は実装済みで `1.4.1-improve-kaz` に merge 済み、残りは次の機会）:** [調査結果と実装計画](docs/superpowers/specs/2026-10-07-metadata-random-io-optimization-plan.md)。主指標は qcow2 への Ubuntu Desktop 26.04 インストール時間（現状 約1時間）。ユーザーの計画承認後に着手する。
   - [x] 2026-10-07 ユーザー実施の計測（unsafe、debug付き、12:52〜14:16）を解析した: [報告](metadata_random_io/2026-10-07/install-report-ja.md)。最大の待ちは fallocate(ZERO_RANGE) の全 inode flush（3,330s／173ms が flush 待ち）。commit は 43ms×62,317件。
   - [x] 同日 raw でも計測した: 約36分（qcow2 約84分）、fallocate 0回、最大の待ちは Read 前 flush 799s。
   - [x] 計画書を実測に合わせて改訂（§7 の順番、C4 の詳細設計・テスト・見込み）。
-  - [ ] **最優先（実測で変更、Phase 1）:** Read 前と Fallocate 前の writer flush を、対象範囲と重なる chunk の pending に限定する（計画書 C4、ユーザーの承認待ち）。その後 group commit。writeback（QEMU）条件での計測は未実施。
+  - [ ] **最優先（実測で変更、Phase 1）:** Read 前と Fallocate 前の writer flush を、対象範囲と重なる chunk の pending に限定する（計画書 C4）。その後 group commit。writeback（QEMU）条件での計測は未実施。
+    - [x] 2026-10-07 実装・検証済み（本体 `feat/range-flush` 18e641b8。`1.4.1-improve-kaz` から作成。2026-10-07 に merge 済み）。`--writer-flush-scope=range` で有効。詳細・懸念は agent_memo の「Phase 1 C4 実装」。計測用バイナリ `~/tmp_local/juicefs-builds/juicefs-rangeflush-20261007`。
+    - [x] qcow2 の range 計測（2026-10-07 17:34〜18:27）: **約84分 → 約53分**。fallocate 3,330s → 1,887s、commit −44%、write 合計 −80%。Read 前の待ちは変わらず。[報告](metadata_random_io/2026-10-07/install-range-report-ja.md)
+    - [x] raw の range 計測は、ユーザーの判断で行わない（ほとんど変わらない見込みのため、2026-10-07）。
+    - [x] 本体の commit: `feat/range-flush` 18e641b8（2026-10-07、未 push）。バイナリ `~/tmp_local/juicefs-builds/juicefs-rangeflush-18e641b8`。
+    - [x] 同じ handle の Write が preflush 中に待つ件 → 2段階 preflush（Read・Fallocate、range のみ）で対応した（2026-10-07）。
+    - [x] mtime の巻き戻り → commit の順序と mtime の下限で対応した（file にも有効）（2026-10-07）。
+    - [ ] 要判断: range では、範囲外の追記の quota エラーが Fallocate ではなく後続の I/O で返る。
+    - [ ] `TestSmallPUTDiagnostics` が全体実行で1回だけ FAIL した（payload サイズの照合）。再現せず、原因は未特定。
   - [ ] 実機で client-cache が有効なので、stale attr の再現テストを先に行う。statfs を約1秒周期で呼ぶ uid0 の pid 565/567/569 の正体（WSL 側？）は未確認。compaction GC local_error 487件も別途確認。
   - [ ] Phase 0: metadata metrics（op 別 p95/p99、open-file／txn lock 待ち、Redis cmd RTT、flush 時 pending 数、slices/chunk、compaction 回数）と、Redis RTT・インストール時の baseline 計測。
   - [ ] Phase 1: 同期 compaction（≥2500）を open-file lock の外へ。実機 meta URL の `client-cache` 有無を確認し、doWrite の stale attr（ファイル長後退）の可能性を再現テストで確認。
-  - [ ] Phase 2: per-inode group commit（2a: meta 層、2b: 同 chunk 複数 slice）。`--meta-write-batch`、`--large-file-mode`。
+  - [x] Phase 2: 同 chunk の slice commit をまとめる（案C、3 engine、`--meta-write-batch` 既定0）。本体 `feat/meta-write-batch` f9308391（push なし）。[設計](docs/superpowers/specs/2026-10-07-meta-write-batch-design.md)・[計画](docs/superpowers/plans/2026-10-07-meta-write-batch.md)。最終レビューの Critical 2件・Important 3件を修正済み。
+    - [x] qcow2 の計測（2026-10-07 21:19〜22:02）: **約53分 → 約43分**。transaction −41%、Read 前の待ち −81%、Fallocate 前の待ち −28%。[報告](metadata_random_io/2026-10-07/install-batch-report-ja.md)
+    - [x] 2026-10-07 `1.4.1-improve-kaz` へ `--no-ff` で merge した（78acd63d、push なし）。feat/range-flush・feat/meta-write-batch のブランチは残してある。
+  - **次の機会に回す改善（2026-10-07 ユーザー方針）**。根拠は [batch 版の報告](metadata_random_io/2026-10-07/install-batch-report-ja.md) の「次の候補」:
+    - [ ] Fallocate の metadata 更新を、範囲内の pending の commit と同じ transaction にまとめる（Fallocate 前の待ち 905s ＋ Meta.Fallocate 約590s が対象。meta API と 3 engine に関わる）。
+    - [ ] chunk をまたぐまとめ（案A）。まず、単発の commit 14,235件のうち、他の chunk とまとめられる割合をログから見積もる。
+    - [ ] Redis の transaction の RTT 削減（計画書 C7。WATCH／GET／MULTI-EXEC／UNWATCH を pipeline や Lua で 1〜2 RTT に）。
+    - [ ] 計画書の残り: C2（同期 compaction を lock の外へ）、C5・C6（chunk cache の更新、空 chunk の cache）、client-cache の stale attr の再現テスト、`--large-file-mode`。
+    - [ ] Phase 2 で先送りにした Minor 6件（`.superpowers/sdd/2026-10-07-meta-write-batch/progress.md`）。加えて、`TestWriteSlicesRedis` は Redis がないと skip せずに失敗する（`newRedisMeta` が接続エラーを返さないため。既存の TestRedisClient と同じ挙動）。
+    - [ ] writeback（QEMU cache=writeback）条件での計測（fsync の待ちへの batch の効果）。
+    - [ ] 先送りにした Minor 6件（ledger `.superpowers/sdd/2026-10-07-meta-write-batch/progress.md`）。chunk をまたぐまとめ（案A）と `--large-file-mode` は計測の後に判断する。
   - [ ] Phase 3: Read 前 flush の範囲限定、自分の commit 結果で chunk cache 更新、空 chunk の cache。
   - [ ] Phase 4: Redis txn の RTT 削減（WATCH+GET pipeline、Lua）を実測次第で判断。
   - 前提: fio・redis-server は未導入、RTT 注入（netem／toxiproxy／docker image）はユーザーの承認が必要。
