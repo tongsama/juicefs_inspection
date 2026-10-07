@@ -691,3 +691,5 @@ README.mdに主題/scope/別Git管理/資料入口/成果と留保/配置/検証
 - 2026-10-08 ユーザーの指示で、調査リポジトリの未コミット分を main に commit した（49df3a5）。続けて v1.4.1-kaz.3 の準備のため、調査リポジトリに `release-1.4.1-kaz.3` ブランチ（main から）を作った。versions.json（→ 本体 78acd63d、1.4.1-improve-kaz）、リリースノート docs/release-notes/v1.4.1-kaz.3.md、README の「最新」と JFS_VERSION の例を更新した（未コミット）。本体側は、ユーザーの指示で今は触らない（本体の release ブランチは、必要になったら作る）。**注意: 78acd63d はまだどのリモートにもない**ので、workflow が checkout できるように、事前に本体の push が必要（push はユーザーの確認後）。
 - 2026-10-08 ユーザーが本体を push した。kaz の `1.4.1-improve-kaz` が 78acd63d になり、kaz の既定ブランチ（HEAD）も `1.4.1-improve-kaz` になった（ls-remote で確認）。README の本体ブランチの説明を更新した（下書き、未コミット）。
 - 2026-10-08 ユーザーの指示で、release-1.4.1-kaz.3 ブランチ（versions.json・リリースノート・README・memo）を commit し、original へ push した。
+- 2026-10-08 ユーザーの指示で、ビルドだけの試行（workflow_dispatch、ref release-1.4.1-kaz.3、tag v1.4.1-kaz.3）を実行した: run 37651898463 は全 job 成功（resolve、build-linux amd64/arm64、build-windows、verify-windows。release は skip）。本体は 78acd63d を checkout し、REV は 78acd63d-kaz.3。
+- 2026-10-08 ユーザーの指示で、memo を commit した commit にタグ v1.4.1-kaz.3（軽量タグ、kaz.1・kaz.2 と同じ形式）を付けて push し、その後 main へ fast-forward で merge して push した。
