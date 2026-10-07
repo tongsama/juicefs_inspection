@@ -13,13 +13,13 @@
 
 `.gitignore` の `/juicefs` により、本体のリポジトリをこのルートの commit に含めません。submodule ではありません。本体は後から配置する構成でも、このプロジェクトの文書を読めます。公式リポジトリを取得しただけでは、この個人改善版の差分は含まれません。
 
-本体の改修は `tongsama/juicefs` の `release-1.4.1-kaz.2` ブランチ（既定ブランチ）で管理しています（2026-10-06 時点の HEAD は `9268beb4b356d4eea6307ba1463e9b49e2dbe2fe`）。以前の `fix/vm-io-wait-policy`（`84f19ca4`、v1.4.1-kaz.1）はこのブランチに含まれ、2026-10-06 に削除しました。このルートの文書を commit しても本体の差分は保存されないため、本体は別途 commit・push します。2026-10-03 の整理時点の HEAD `3bed0d82` は、author の書き換えにより `2ae17f94` になっています（内容は同一）。
+本体の改修は `tongsama/juicefs` の `1.4.1-improve-kaz` ブランチ（既定ブランチ）で管理しています（2026-10-08 時点の HEAD は `78acd63d235db5f275068d3ff75b45baa4b2f616`、v1.4.1-kaz.3 のビルド元）。v1.4.1-kaz.2 のビルド元は `release-1.4.1-kaz.2` ブランチ（`9268beb4`）に残っています。以前の `fix/vm-io-wait-policy`（`84f19ca4`、v1.4.1-kaz.1）はこのブランチに含まれ、2026-10-06 に削除しました。このルートの文書を commit しても本体の差分は保存されないため、本体は別途 commit・push します。2026-10-03 の整理時点の HEAD `3bed0d82` は、author の書き換えにより `2ae17f94` になっています（内容は同一）。
 
 ## 改修版バイナリの配布とインストール
 
 このリポジトリは、改修版 JuiceFS のビルド済みバイナリの配布元も兼ねています。本体のリポジトリは公式の構成に近いまま保ち、配布に必要なもの（インストールスクリプト、ビルド用 workflow、版の対応表、リリースノート）はすべてこちらに置いています。
 
-- 配布先: [GitHub Releases](https://github.com/tongsama/juicefs_inspection/releases)（最新は [v1.4.1-kaz.2](https://github.com/tongsama/juicefs_inspection/releases/tag/v1.4.1-kaz.2)、最初の版は [v1.4.1-kaz.1](https://github.com/tongsama/juicefs_inspection/releases/tag/v1.4.1-kaz.1)）
+- 配布先: [GitHub Releases](https://github.com/tongsama/juicefs_inspection/releases)（最新は [v1.4.1-kaz.3](https://github.com/tongsama/juicefs_inspection/releases/tag/v1.4.1-kaz.3)、最初の版は [v1.4.1-kaz.1](https://github.com/tongsama/juicefs_inspection/releases/tag/v1.4.1-kaz.1)）
 - 対象: `linux-amd64`、`linux-arm64`（aarch64）、`windows-amd64`。32bit ARM（armv7）と macOS は対象外です。
 - 各版のビルド元となる本体の commit は [`release/versions.json`](release/versions.json) に、変更内容は [`docs/release-notes/`](docs/release-notes/) にあります。
 
@@ -31,7 +31,7 @@ curl -fsSL https://github.com/tongsama/juicefs_inspection/releases/latest/downlo
 
 - 既定では `/usr/local/bin/juicefs` に置きます。書き込めない場合は sudo を使います。
 - インストール先は第1引数で変えられます: `curl -fsSL …/install.sh | sh -s /opt/bin`
-- 版を固定する場合（本番ホストではこちらを推奨）: `curl -fsSL …/install.sh | JFS_VERSION=v1.4.1-kaz.2 sh`
+- 版を固定する場合（本番ホストではこちらを推奨）: `curl -fsSL …/install.sh | JFS_VERSION=v1.4.1-kaz.3 sh`
 - 公式版と並べて置く場合: `JFS_INSTALL_NAME=juicefs-kaz` を指定します。
 - `checksums.txt` の SHA-256 と照合し、一致した場合だけ既存のファイルを1回の `mv` で置き換えます。途中で失敗したときは既存のファイルに触れません。
 

@@ -688,3 +688,6 @@ README.mdに主題/scope/別Git管理/資料入口/成果と留保/配置/検証
 
 - client-cache（CSC）: メタデータの変更（例: パーミッション）が、client-cache を有効にした他の client に反映されない。メタデータ DB 側は正常に変更されている（ユーザーが確認済み）。再現テストから始める。
 - rclone serve s3: パスを直接取得するたびにディレクトリのリストを取る。dir cache を使うと、存在するファイルを無いと返す。やる場合は、JuiceFS と同様に rclone のソースをこのリポジトリの中の ignore したディレクトリに clone して修正し、このリポジトリで release する（release の構成の変更が必要かもしれない）。
+- 2026-10-08 ユーザーの指示で、調査リポジトリの未コミット分を main に commit した（49df3a5）。続けて v1.4.1-kaz.3 の準備のため、調査リポジトリに `release-1.4.1-kaz.3` ブランチ（main から）を作った。versions.json（→ 本体 78acd63d、1.4.1-improve-kaz）、リリースノート docs/release-notes/v1.4.1-kaz.3.md、README の「最新」と JFS_VERSION の例を更新した（未コミット）。本体側は、ユーザーの指示で今は触らない（本体の release ブランチは、必要になったら作る）。**注意: 78acd63d はまだどのリモートにもない**ので、workflow が checkout できるように、事前に本体の push が必要（push はユーザーの確認後）。
+- 2026-10-08 ユーザーが本体を push した。kaz の `1.4.1-improve-kaz` が 78acd63d になり、kaz の既定ブランチ（HEAD）も `1.4.1-improve-kaz` になった（ls-remote で確認）。README の本体ブランチの説明を更新した（下書き、未コミット）。
+- 2026-10-08 ユーザーの指示で、release-1.4.1-kaz.3 ブランチ（versions.json・リリースノート・README・memo）を commit し、original へ push した。
