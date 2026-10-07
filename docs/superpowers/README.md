@@ -8,5 +8,6 @@
 | FUSE 待機・GC 分離・背景 scheduler・slice 再利用 | [統合仕様](specs/2026-10-02-vm-io-combined.md) | [統合計画](plans/2026-10-02-vm-io-combined.md) |
 | 不要 staging の早期回収と upload 競合 | [local retirement 仕様](specs/2026-10-02-vm-io-gc-retirement.md) | [local retirement 計画](plans/2026-10-02-vm-io-gc-retirement.md) |
 | 改修版バイナリの配布（Releases・install スクリプト） | [配布仕様](specs/2026-10-04-release-distribution.md) | [配布計画](plans/2026-10-04-release-distribution.md) |
+| 巨大ファイル random I/O の metadata path 最適化（調査・計画、未実装） | [調査結果と実装計画](specs/2026-10-07-metadata-random-io-optimization-plan.md) | 同左（Phase 0〜4） |
 
 文書中の `pkg/`・`cmd/` と Go コマンドは、本体の `juicefs/` を基準にします。ソースを本体から移したものではなく、調査文書の管理先だけを分離しています。

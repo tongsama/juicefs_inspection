@@ -1,6 +1,6 @@
 # JuiceFS 改善版の知見と評価
 
-更新: 2026-10-06（rclone serve s3 の PUT 詰まりの節を追加）。2026-10-03。対象は Google Drive をバックエンドとする rclone S3 上の JuiceFS CE v1.4.1 系で、VM 仮想ディスク等の巨大ファイルの部分更新です。この文書は現在の入口として、確定した事実と未検証事項をまとめます。詳細な時系列は [agent_memo](../agent_memo.md)、測定値は [ログ解析報告](../option_effects/2026-10-03/report-ja.txt) を参照してください。
+更新: 2026-10-07（metadata path の節を追加）。2026-10-06（rclone serve s3 の PUT 詰まりの節を追加）。2026-10-03。対象は Google Drive をバックエンドとする rclone S3 上の JuiceFS CE v1.4.1 系で、VM 仮想ディスク等の巨大ファイルの部分更新です。この文書は現在の入口として、確定した事実と未検証事項をまとめます。詳細な時系列は [agent_memo](../agent_memo.md)、測定値は [ログ解析報告](../option_effects/2026-10-03/report-ja.txt) を参照してください。
 
 ## 方針
 
@@ -143,6 +143,18 @@ force=true slowログ3,649件は再帰callframeの完了数で、独立した手
 - **compaction の書き込み**: writeback を無効にした同期アップロードで、上限は `--io-retries`＋1（既定11回）。超えたら中断して、後でやり直す。
 - **キャッシュに入る書き込み**: writeback では、書き込みも staging のハードリンクとして読み取りキャッシュに入る。アップロードが終わるまでは LRU の追い出し対象外で、`--cache-size` にも数えない。完了したら LRU に加わり、最終アクセス時刻はアップロード完了時刻になる。`--cache-large-write` が効くのは、staging を通らない経路（compaction の出力と、staging に失敗したブロック）だけ。`--cache-expire` は、LRU の追い出しでは使われない。
 - **圧縮の扱い**: キャッシュも staging も展開済み（生）のデータで、圧縮はアップロードのたびに行う。`--cache-size` や staging の容量は、生のサイズで消費される。zstd のレベルは `ZSTD_LEVEL = 1`（"fastest"）で固定。オプションにしない理由はソースにも履歴にもない。レベルは展開の互換性に影響しない。
+
+## 巨大ファイル random I/O の metadata path（2026-10-07、ソース調査）
+
+詳細と実装計画は [調査結果と実装計画](superpowers/specs/2026-10-07-metadata-random-io-optimization-plan.md)。実測はまだで、以下はソースで確認した構造。
+
+- FUSE write は memory copy だけで返り、metadata RTT は 0。commit は非同期だが、fsync・close・Read は同 inode の全 pending commit を待つ。
+- Redis の Meta.Write は 1 slice あたり 4 RTT（WATCH／GET／MULTI…EXEC／UNWATCH）。同 inode の commit は open-file lock と Redis txLock で client 内完全直列（upstream #6398 に該当）。1 inode の commit 上限は約 1/(4×RTT) slice/s。
+- NewSlice は既に 4096 個単位で予約しており、RTT は 4096 回に 1 回。
+- 自分の commit 後は chunk cache を invalidate し、次の GetAttr の mtime 差で全 chunk cache も消える。Read 前 flush は読む範囲に関係なく全 pending が対象。
+- Redis client-cache（meta URL の `client-cache`）は attr と entry のみで、chunk は対象外。有効時に doWrite が古い attr を読む経路がソース上成立する（未再現）。
+- **実測（2026-10-07、unsafe、Ubuntu インストール）**: 最大の待ちは qcow2 の cluster 割り当てに伴う `fallocate(ZERO_RANGE)` で、15,343回・合計 3,330s・平均 217ms。うち 173ms は、範囲に関係なく同 inode の全 pending commit を待つ flush。強制 freeze の89%がこの flush によるもの。commit は平均 43ms（≒ 4 RTT、RTT 約10ms）で62,317件、計測時間の52%を占めた。[解析報告](../metadata_random_io/2026-10-07/install-report-ja.md)
+- **同条件の raw では約36分（qcow2 は約84分、どちらも debug 付き）**。fallocate は0回。raw で残る最大の待ちは Read 前 flush（合計799s、最大24.8s）で、flush 中は同 inode の Write も止まる。
 
 ## 検証範囲
 

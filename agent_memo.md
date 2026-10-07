@@ -577,3 +577,27 @@ README.mdに主題/scope/別Git管理/資料入口/成果と留保/配置/検証
 - 2026-10-06 ユーザーの指示で e6ab89b8 を commit し、`release-1.4.1-kaz.2`（84f19ca4 から作成）へ --no-ff で merge した（9268beb4）。中身は release-1.4（0b90c7db）＋ kaz の3 commit ＋ staging fsync。develop_kaz/main は upstream main のミラーで、kaz 独自の commit はない。push はしていない。
 - 2026-10-06 ユーザーの許可を得て、`release-1.4.1-kaz.2` を kaz へ push（9268beb4）。kaz の既定ブランチをこのブランチへ変更し、リモートの `fix/vm-io-wait-policy` を削除した。ローカルの `fix/vm-io-wait-policy` と `fix/staging-fsync` も削除。kaz に残っているのは develop_kaz・main（upstream の写し）と release-1.4.1-kaz.2。84f19ca4（kaz.1 の versions.json が参照）は release ブランチの祖先なので、まだ到達できる。
 - 2026-10-06 v1.4.1-kaz.2: 調査リポジトリの `release-1.4.1-kaz.2` ブランチで versions.json（→ 9268beb4）・リリースノート・README を更新し、6c488e8 として commit・push。ユーザーの許可を得てタグ v1.4.1-kaz.2 を push。run 37463101128 が全 job 成功し、draft Release（6ファイル）ができた。手元にダウンロードして、checksums が全 OK、配布されたスクリプトが repo と一致、amd64 は静的リンクで version `1.4.1+2026-10-06.9268beb4-kaz.2`、`--writeback-fsync`（default: true）がヘルプに出ることを確認。試しビルドの workflow_dispatch は、ユーザーの指示で省略。公開はユーザーが行う。Actions の Node.js 20 非推奨の警告が出ている（actions/checkout@v4 など。現状は動作する）。
+
+## 巨大ファイル random I/O の metadata path 調査（2026-10-07）
+
+ユーザー依頼: qcow2 等の巨大ファイルの random I/O を、metadata backend の RTT × 回数と inode 単位の直列化の観点で調査し、実装計画を作る（実装は未着手）。主指標は qcow2 への Ubuntu Desktop 26.04 インストール時間（現状 約1時間）。小さいファイルの性能と堅牢性を犠牲にしない。large-file 優先モードを flag で on/off できる形を検討する。writeback が主対象。
+
+- 方針変更: 2026-10-02 に対象外とした「inode-wide lock の構造変更」が、今回の依頼で再び対象になった。ただし計画では lock 分割ではなく group commit を推奨。
+- 計画: `docs/superpowers/specs/2026-10-07-metadata-random-io-optimization-plan.md`。証跡（sub-worker の file:line 付きレポート4件）: `metadata_random_io/2026-10-07/`。調査基準は本体 `1.4.1-improve-kaz` HEAD ea2c3757（tree は release-1.4.1-kaz.2 と同一）。本体のソース・git は無変更。
+- 確定事項（ソース）:
+  - NewSlice は既に `sliceIdBatch=4096` 単位で予約済み（base.go:51, :2150）。依頼の仮説1は否定。
+  - Redis doWrite は WATCH／GET／MULTI…EXEC／UNWATCH の 4 RTT。overwrite でも inode を SET する。同 inode の commit は openFile.Lock と txLock(fnv(inodeKey)) で client 内完全直列。upstream #6398 に該当。
+  - chunk 単位 lock にしても、txLock と WATCH inode で直列は解けない（10/01 memo の指摘を再確認）。
+  - FUSE write は RTT 0。fsync・close・Read が同 inode の全 pending commit（N × 4 RTT）を待つ。Read 前 flush は範囲に関係なく全 pending。
+  - 自分の commit で chunk cache を invalidate し、GetAttr の mtime 差で全 chunk cache も消える（openfile.go:187）。
+  - client-cache は meta URL param（upstream 由来）。attr と entry だけで chunk は対象外。有効時に doWrite が stale attr を読み、ファイル長が後退し得る経路がソース上成立する（未再現）。
+  - ≥2500 slice の同期 compaction は openFile.Lock 保持のまま。
+- 推奨順: Phase0 計測 → Phase1 同期 compaction を lock 外へ・client-cache 確認 → Phase2 per-inode group commit → Phase3 Read 前 flush の範囲限定・cache 更新 → Phase4 Lua 等。遅延 metadata commit は不採用。
+- 環境: fio・redis-server なし、sudo はパスワード要、docker あり（image なし）。RTT 注入や image 取得はユーザーの承認が必要。
+- 2026-10-07 実機の確認（読み取りのみ）: 起動スクリプト `~/utilities/cloudfs/juicefs_mount.sh` の meta URL は `client-cache=true&client-cache-size=1000000&client-cache-expire=24h&client-cache-preload=600000` → **client-cache は実機で有効**（§5.4 のリスクが該当。tracking は pubsub 接続の BCAST・NOLOOP なしなので自分の SET も通知されるが、処理が次 commit の GET より遅れる窓は残る）。起動時ログの `Ping redis latency` は 9.7ms（commit 1件 ≒ 4 RTT ≒ 40ms、1 inode 約25 slice/s の上限）。open-cache=0、attr/entry 1s、FUSE writeback_cache なし、max_write 128K。
+- 同日: mount に繋がっていない旧 client（PID 87430/87444、kaz.1、10/06 20:39 起動、exe deleted、session 160）が生存しており、`--backup-meta 3601` の backup（約30分/回、512k inodes）を新 client（131444）と交互に実行している。Redis 負荷による RTT 変動要因。停止はユーザー判断（agent は触らない）。
+- 計測はユーザーが `~/mnt_juicefs` 上で qcow2 への Ubuntu インストールで実施し、agent はログ解析を担当する。
+- 2026-10-07 計測（ユーザー実施、unsafe、--debug、--backup-meta 0、ISO はローカル FS、12:52〜14:16）を解析した: `metadata_random_io/2026-10-07/install-report-ja.md`（入力の固定 prefix と SHA を記録、スクリプト `analyze_install.py`）。**最大の待ちは fallocate(mode 0x10 ZERO_RANGE、64KiB 境界＝qcow2 の cluster 割り当て)**: 15,343回、3,330s、平均 217ms。うち VFS.Fallocate の全 inode flush が 173ms、Meta.Fallocate が 43ms。freeze の89%が Fallocate 起因。commit 43ms×62,317件（計測時間の52%）、lock_wait 合計 4,542s。Read 前 flush 360s。計画の最優先を「Fallocate／Read 前 flush の範囲限定」に変更した。
+- 注意: このマシンの `cat`/`dd` は uutils coreutils 0.10.0。uutils の `cat` は `.accesslog`（サイズ0の特殊ファイル）を即 EOF にする。`dd` は読める。ユーザーは GNU coreutils を `~/gnu` に入れた。
+- 2026-10-07 raw 計測（ユーザー実施、14:49〜15:25、条件は qcow2 回と同じ、discard 未設定）: **約36分（qcow2 は約84分）**。fallocate 0回。最大の待ちは Read 前 flush（32,205回、799s、max 24.8s）。flush 中の Write 停止による write の1秒超が31回（121s）。commit は17,312件（qcow2 62,317）、doWrite 41.5ms、lock 待ちの平均160ms。metrics-after はユーザー保存が無く、agent が 15:25:58 に取得した（証跡ディレクトリ内）。報告は install-report-ja.md の追加節。優先順位: Read 前 flush の範囲限定 → Fallocate 前 flush の範囲限定 → group commit。
+- 2026-10-07 計画書を実測に合わせて改訂した（§7 の順番、C4 の詳細化、§8〜§10）。Phase 1 = Read／Fallocate 前の flush を範囲に限定（`--writer-flush-scope=file|range`、既定 file）。設計上の注意: (1) 待つ集合は対象 chunk の slice の snapshot と、`s.dep` の閉包（dep の chunk の先頭から dep まで、再帰）。(2) `flushwaiting` は増やさない。(3) commitThread は committed 後に range 待ちがあれば通知する。(4) `fileWriter.Truncate` は無条件上書き（writer.go:504-509）なので、Fallocate 後は縮めない `GrowTo` を使う。(5) fsync・close・Truncate・CopyFileRange は全 flush のまま。実装はユーザーの承認待ち。

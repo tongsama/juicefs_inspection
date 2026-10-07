@@ -1,0 +1,642 @@
+# HELP juicefs_blockcache_blocks number of cached blocks
+# TYPE juicefs_blockcache_blocks gauge
+juicefs_blockcache_blocks{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 6128
+# HELP juicefs_blockcache_bytes number of cached bytes
+# TYPE juicefs_blockcache_bytes gauge
+juicefs_blockcache_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.5352414208e+10
+# HELP juicefs_blockcache_drops dropped block
+# TYPE juicefs_blockcache_drops counter
+juicefs_blockcache_drops{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+# HELP juicefs_blockcache_evicts evicted cache blocks
+# TYPE juicefs_blockcache_evicts counter
+juicefs_blockcache_evicts{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 11590
+# HELP juicefs_blockcache_hit_bytes read bytes from cached block
+# TYPE juicefs_blockcache_hit_bytes counter
+juicefs_blockcache_hit_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 8.9589798258e+10
+# HELP juicefs_blockcache_hits read from cached block
+# TYPE juicefs_blockcache_hits counter
+juicefs_blockcache_hits{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 137208
+# HELP juicefs_blockcache_miss missed read from cached block
+# TYPE juicefs_blockcache_miss counter
+juicefs_blockcache_miss{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1997
+# HELP juicefs_blockcache_miss_bytes missed bytes from cached block
+# TYPE juicefs_blockcache_miss_bytes counter
+juicefs_blockcache_miss_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 7.252854236e+09
+# HELP juicefs_blockcache_read_hist_seconds read cached block latency distribution
+# TYPE juicefs_blockcache_read_hist_seconds histogram
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="1e-05"} 9
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="2e-05"} 1008
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="4e-05"} 16905
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="8e-05"} 43508
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00016"} 64560
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00032"} 78896
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00064"} 91249
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00128"} 100740
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00256"} 111090
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00512"} 123286
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.01024"} 133584
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.02048"} 135927
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.04096"} 136765
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.08192"} 137068
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.16384"} 137192
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.32768"} 137206
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.65536"} 137208
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="1.31072"} 137208
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="2.62144"} 137208
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="5.24288"} 137208
+juicefs_blockcache_read_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="+Inf"} 137208
+juicefs_blockcache_read_hist_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 248.74885774299943
+juicefs_blockcache_read_hist_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 137208
+# HELP juicefs_blockcache_write_bytes write bytes of cached block
+# TYPE juicefs_blockcache_write_bytes counter
+juicefs_blockcache_write_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 9.020315113e+10
+# HELP juicefs_blockcache_write_hist_seconds write cached block latency distribution
+# TYPE juicefs_blockcache_write_hist_seconds histogram
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="1e-05"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="2e-05"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="4e-05"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="8e-05"} 0
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00016"} 1
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00032"} 29
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00064"} 62
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00128"} 245
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00256"} 4622
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00512"} 14446
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.01024"} 50052
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.02048"} 81622
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.04096"} 92143
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.08192"} 95147
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.16384"} 96111
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.32768"} 96556
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.65536"} 97161
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="1.31072"} 97372
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="2.62144"} 97645
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="5.24288"} 97645
+juicefs_blockcache_write_hist_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="+Inf"} 97645
+juicefs_blockcache_write_hist_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2325.070788226008
+juicefs_blockcache_write_hist_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 97645
+# HELP juicefs_blockcache_writes written cached block
+# TYPE juicefs_blockcache_writes counter
+juicefs_blockcache_writes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 97645
+# HELP juicefs_compact_size_histogram_bytes Distribution of size of compacted data in bytes.
+# TYPE juicefs_compact_size_histogram_bytes histogram
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="1024"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="2048"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="4096"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="8192"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="16384"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="32768"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="65536"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="131072"} 0
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="262144"} 1
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="524288"} 1
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="1.048576e+06"} 1
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="2.097152e+06"} 5
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="4.194304e+06"} 10
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="8.388608e+06"} 14
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="1.6777216e+07"} 28
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="3.3554432e+07"} 63
+juicefs_compact_size_histogram_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="+Inf"} 854
+juicefs_compact_size_histogram_bytes_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 4.9952844928e+10
+juicefs_compact_size_histogram_bytes_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 854
+# HELP juicefs_compaction_gc_events_total Compaction GC phase outcomes; local success counts callbacks, not removed files; deferred remote intent remains durable.
+# TYPE juicefs_compaction_gc_events_total counter
+juicefs_compaction_gc_events_total{event="hint_overflow",instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+juicefs_compaction_gc_events_total{event="local_error",instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 590
+juicefs_compaction_gc_events_total{event="local_retire_success",instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 74442
+juicefs_compaction_gc_events_total{event="remote_deferred",instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+juicefs_compaction_gc_events_total{event="remote_enqueued",instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 74442
+# HELP juicefs_cpu_usage Accumulated CPU usage in seconds.
+# TYPE juicefs_cpu_usage gauge
+juicefs_cpu_usage{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1197.6416840000002
+# HELP juicefs_fuse_open_handlers number of open files and directories.
+# TYPE juicefs_fuse_open_handlers gauge
+juicefs_fuse_open_handlers{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+# HELP juicefs_fuse_ops_durations_histogram_seconds Operations latency distributions.
+# TYPE juicefs_fuse_ops_durations_histogram_seconds histogram
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="1e-05"} 234085
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="1.8e-05"} 410115
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="3.24e-05"} 625715
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="5.8320000000000004e-05"} 748567
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.000104976"} 815959
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00018895680000000003"} 846611
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00034012224000000006"} 861764
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0006122200320000001"} 870891
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0011019960576000001"} 880459
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0019835929036800004"} 888827
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0035704672266240007"} 892296
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.006426841007923201"} 895647
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.011568313814261762"} 916155
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.020822964865671173"} 957246
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.03748133675820811"} 979801
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0674664061647746"} 983874
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.12143953109659429"} 989244
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.21859115597386972"} 997581
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.3934640807529655"} 1.00295e+06
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.7082353453553379"} 1.003767e+06
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="1.2748236216396083"} 1.004481e+06
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="2.294682518951295"} 1.005025e+06
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="4.1304285341123315"} 1.005103e+06
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="7.434771361402197"} 1.005167e+06
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="13.382588450523954"} 1.005195e+06
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="24.088659210943117"} 1.005205e+06
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="43.35958657969761"} 1.005207e+06
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="78.0472558434557"} 1.005207e+06
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="140.48506051822028"} 1.005207e+06
+juicefs_fuse_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="+Inf"} 1.005207e+06
+juicefs_fuse_ops_durations_histogram_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 8165.239190076612
+juicefs_fuse_ops_durations_histogram_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.005207e+06
+# HELP juicefs_fuse_ops_durations_seconds Operations latency in seconds.
+# TYPE juicefs_fuse_ops_durations_seconds counter
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="copy_file_range",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.06072755
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="create",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.357399066
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="fallocate",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3329.576902579015
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="flush",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.229001027999999
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="fsync",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.20800188600000002
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="getattr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 126.25595871799993
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="getlk",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.45642489799999986
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="lookup",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 128.46646968900015
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="open",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 16.920132981000137
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="opendir",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.003393903000000004
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="read",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3165.6437627789464
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="readdir",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 6.218647007999997
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="release",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2.086321901
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="releasedir",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.002139948999999999
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="rename",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.072132642
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="setattr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.618124318
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="setlk",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 6.184739868999999
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="statfs",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1141.759892943001
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="unlink",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.31723158100000004
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="write",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 238.80178478700262
+# HELP juicefs_fuse_ops_io_errors Number of IO errors.
+# TYPE juicefs_fuse_ops_io_errors counter
+juicefs_fuse_ops_io_errors{errno="EINTR",instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1
+juicefs_fuse_ops_io_errors{errno="ENOENT",instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 11059
+# HELP juicefs_fuse_ops_total Total number of operations.
+# TYPE juicefs_fuse_ops_total counter
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="copy_file_range",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="create",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 8
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="fallocate",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 15343
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="flush",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 63222
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="fsync",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 5
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="getattr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 20194
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="getlk",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 45
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="lookup",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 67349
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="open",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 66159
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="opendir",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 781
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="read",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 218225
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="readdir",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 568
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="release",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 66167
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="releasedir",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 781
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="rename",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="setattr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 16
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="setlk",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 143
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="statfs",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 52879
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="unlink",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 5
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="write",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 433315
+# HELP juicefs_fuse_read_size_bytes size of read distributions.
+# TYPE juicefs_fuse_read_size_bytes histogram
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="4096"} 22888
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="8192"} 29320
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="12288"} 32785
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="16384"} 39274
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="20480"} 41038
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="24576"} 42424
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="28672"} 43571
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="32768"} 45640
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="36864"} 46407
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="40960"} 47099
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="45056"} 47678
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="49152"} 48439
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="53248"} 48897
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="57344"} 49310
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="61440"} 49740
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="65536"} 50847
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="69632"} 51166
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="73728"} 51419
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="77824"} 51650
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="81920"} 51905
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="86016"} 52099
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="90112"} 52308
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="94208"} 52515
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="98304"} 52924
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="102400"} 53125
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="106496"} 53289
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="110592"} 53508
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="114688"} 53784
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="118784"} 54327
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="122880"} 54924
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="126976"} 55564
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="131072"} 118904
+juicefs_fuse_read_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="+Inf"} 118904
+juicefs_fuse_read_size_bytes_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 9.523421032e+09
+juicefs_fuse_read_size_bytes_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 118904
+# HELP juicefs_fuse_written_size_bytes size of write distributions.
+# TYPE juicefs_fuse_written_size_bytes histogram
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="4096"} 96528
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="8192"} 120142
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="12288"} 131058
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="16384"} 143841
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="20480"} 148952
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="24576"} 153050
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="28672"} 155626
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="32768"} 163740
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="36864"} 167353
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="40960"} 171121
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="45056"} 173456
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="49152"} 175239
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="53248"} 177255
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="57344"} 179150
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="61440"} 180416
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="65536"} 196980
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="69632"} 197854
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="73728"} 198867
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="77824"} 199741
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="81920"} 200655
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="86016"} 201297
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="90112"} 201938
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="94208"} 202518
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="98304"} 207939
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="102400"} 208652
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="106496"} 209298
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="110592"} 209906
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="114688"} 210463
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="118784"} 210985
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="122880"} 211678
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="126976"} 212158
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="131072"} 433315
+juicefs_fuse_written_size_bytes_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="+Inf"} 433315
+juicefs_fuse_written_size_bytes_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3.3784177316e+10
+juicefs_fuse_written_size_bytes_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 433315
+# HELP juicefs_go_build_info Build information about the main Go module.
+# TYPE juicefs_go_build_info gauge
+juicefs_go_build_info{checksum="",instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",path="github.com/juicedata/juicefs",version="v0.0.0-20261006120549-9268beb4b356",vol_name="juicefs-data"} 1
+# HELP juicefs_go_gc_duration_seconds A summary of the wall-time pause (stop-the-world) duration in garbage collection cycles.
+# TYPE juicefs_go_gc_duration_seconds summary
+juicefs_go_gc_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",quantile="0"} 4.7479e-05
+juicefs_go_gc_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",quantile="0.25"} 0.00015507
+juicefs_go_gc_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",quantile="0.5"} 0.00026894
+juicefs_go_gc_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",quantile="0.75"} 0.000388682
+juicefs_go_gc_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",quantile="1"} 0.008285358
+juicefs_go_gc_duration_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.06292589
+juicefs_go_gc_duration_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 162
+# HELP juicefs_go_gc_gogc_percent Heap size target percentage configured by the user, otherwise 100. This value is set by the GOGC environment variable, and the runtime/debug.SetGCPercent function. Sourced from /gc/gogc:percent.
+# TYPE juicefs_go_gc_gogc_percent gauge
+juicefs_go_gc_gogc_percent{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 100
+# HELP juicefs_go_gc_gomemlimit_bytes Go runtime memory limit configured by the user, otherwise math.MaxInt64. This value is set by the GOMEMLIMIT environment variable, and the runtime/debug.SetMemoryLimit function. Sourced from /gc/gomemlimit:bytes.
+# TYPE juicefs_go_gc_gomemlimit_bytes gauge
+juicefs_go_gc_gomemlimit_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 9.223372036854776e+18
+# HELP juicefs_go_goroutines Number of goroutines that currently exist.
+# TYPE juicefs_go_goroutines gauge
+juicefs_go_goroutines{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 196
+# HELP juicefs_go_info Information about the Go environment.
+# TYPE juicefs_go_info gauge
+juicefs_go_info{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",version="go1.25.11",vol_name="juicefs-data"} 1
+# HELP juicefs_go_memstats_alloc_bytes Number of bytes allocated in heap and currently in use. Equals to /memory/classes/heap/objects:bytes.
+# TYPE juicefs_go_memstats_alloc_bytes gauge
+juicefs_go_memstats_alloc_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 7.7150944e+08
+# HELP juicefs_go_memstats_alloc_bytes_total Total number of bytes allocated in heap until now, even if released already. Equals to /gc/heap/allocs:bytes.
+# TYPE juicefs_go_memstats_alloc_bytes_total counter
+juicefs_go_memstats_alloc_bytes_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2.8454594064e+10
+# HELP juicefs_go_memstats_buck_hash_sys_bytes Number of bytes used by the profiling bucket hash table. Equals to /memory/classes/profiling/buckets:bytes.
+# TYPE juicefs_go_memstats_buck_hash_sys_bytes gauge
+juicefs_go_memstats_buck_hash_sys_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2.893917e+06
+# HELP juicefs_go_memstats_frees_total Total number of heap objects frees. Equals to /gc/heap/frees:objects + /gc/heap/tiny/allocs:objects.
+# TYPE juicefs_go_memstats_frees_total counter
+juicefs_go_memstats_frees_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3.42452335e+08
+# HELP juicefs_go_memstats_gc_sys_bytes Number of bytes used for garbage collection system metadata. Equals to /memory/classes/metadata/other:bytes.
+# TYPE juicefs_go_memstats_gc_sys_bytes gauge
+juicefs_go_memstats_gc_sys_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.2803888e+07
+# HELP juicefs_go_memstats_heap_alloc_bytes Number of heap bytes allocated and currently in use, same as go_memstats_alloc_bytes. Equals to /memory/classes/heap/objects:bytes.
+# TYPE juicefs_go_memstats_heap_alloc_bytes gauge
+juicefs_go_memstats_heap_alloc_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 7.7150944e+08
+# HELP juicefs_go_memstats_heap_idle_bytes Number of heap bytes waiting to be used. Equals to /memory/classes/heap/released:bytes + /memory/classes/heap/free:bytes.
+# TYPE juicefs_go_memstats_heap_idle_bytes gauge
+juicefs_go_memstats_heap_idle_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 4.30514176e+08
+# HELP juicefs_go_memstats_heap_inuse_bytes Number of heap bytes that are in use. Equals to /memory/classes/heap/objects:bytes + /memory/classes/heap/unused:bytes
+# TYPE juicefs_go_memstats_heap_inuse_bytes gauge
+juicefs_go_memstats_heap_inuse_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 7.86259968e+08
+# HELP juicefs_go_memstats_heap_objects Number of currently allocated objects. Equals to /gc/heap/objects:objects.
+# TYPE juicefs_go_memstats_heap_objects gauge
+juicefs_go_memstats_heap_objects{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 4.135665e+06
+# HELP juicefs_go_memstats_heap_released_bytes Number of heap bytes released to OS. Equals to /memory/classes/heap/released:bytes.
+# TYPE juicefs_go_memstats_heap_released_bytes gauge
+juicefs_go_memstats_heap_released_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3.8600704e+08
+# HELP juicefs_go_memstats_heap_sys_bytes Number of heap bytes obtained from system. Equals to /memory/classes/heap/objects:bytes + /memory/classes/heap/unused:bytes + /memory/classes/heap/released:bytes + /memory/classes/heap/free:bytes.
+# TYPE juicefs_go_memstats_heap_sys_bytes gauge
+juicefs_go_memstats_heap_sys_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.216774144e+09
+# HELP juicefs_go_memstats_last_gc_time_seconds Number of seconds since 1970 of last garbage collection.
+# TYPE juicefs_go_memstats_last_gc_time_seconds gauge
+juicefs_go_memstats_last_gc_time_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.7913542530991876e+09
+# HELP juicefs_go_memstats_mallocs_total Total number of heap objects allocated, both live and gc-ed. Semantically a counter version for go_memstats_heap_objects gauge. Equals to /gc/heap/allocs:objects + /gc/heap/tiny/allocs:objects.
+# TYPE juicefs_go_memstats_mallocs_total counter
+juicefs_go_memstats_mallocs_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3.46588e+08
+# HELP juicefs_go_memstats_mcache_inuse_bytes Number of bytes in use by mcache structures. Equals to /memory/classes/metadata/mcache/inuse:bytes.
+# TYPE juicefs_go_memstats_mcache_inuse_bytes gauge
+juicefs_go_memstats_mcache_inuse_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 12080
+# HELP juicefs_go_memstats_mcache_sys_bytes Number of bytes used for mcache structures obtained from system. Equals to /memory/classes/metadata/mcache/inuse:bytes + /memory/classes/metadata/mcache/free:bytes.
+# TYPE juicefs_go_memstats_mcache_sys_bytes gauge
+juicefs_go_memstats_mcache_sys_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 15704
+# HELP juicefs_go_memstats_mspan_inuse_bytes Number of bytes in use by mspan structures. Equals to /memory/classes/metadata/mspan/inuse:bytes.
+# TYPE juicefs_go_memstats_mspan_inuse_bytes gauge
+juicefs_go_memstats_mspan_inuse_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 5.94432e+06
+# HELP juicefs_go_memstats_mspan_sys_bytes Number of bytes used for mspan structures obtained from system. Equals to /memory/classes/metadata/mspan/inuse:bytes + /memory/classes/metadata/mspan/free:bytes.
+# TYPE juicefs_go_memstats_mspan_sys_bytes gauge
+juicefs_go_memstats_mspan_sys_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 9.43296e+06
+# HELP juicefs_go_memstats_next_gc_bytes Number of heap bytes when next garbage collection will take place. Equals to /gc/heap/goal:bytes.
+# TYPE juicefs_go_memstats_next_gc_bytes gauge
+juicefs_go_memstats_next_gc_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 9.49763554e+08
+# HELP juicefs_go_memstats_other_sys_bytes Number of bytes used for other system allocations. Equals to /memory/classes/other:bytes.
+# TYPE juicefs_go_memstats_other_sys_bytes gauge
+juicefs_go_memstats_other_sys_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3.169731e+06
+# HELP juicefs_go_memstats_stack_inuse_bytes Number of bytes obtained from system for stack allocator in non-CGO environments. Equals to /memory/classes/heap/stacks:bytes.
+# TYPE juicefs_go_memstats_stack_inuse_bytes gauge
+juicefs_go_memstats_stack_inuse_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.6351232e+07
+# HELP juicefs_go_memstats_stack_sys_bytes Number of bytes obtained from system for stack allocator. Equals to /memory/classes/heap/stacks:bytes + /memory/classes/os-stacks:bytes.
+# TYPE juicefs_go_memstats_stack_sys_bytes gauge
+juicefs_go_memstats_stack_sys_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.6351232e+07
+# HELP juicefs_go_memstats_sys_bytes Number of bytes obtained from system. Equals to /memory/classes/total:byte.
+# TYPE juicefs_go_memstats_sys_bytes gauge
+juicefs_go_memstats_sys_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.261441576e+09
+# HELP juicefs_go_sched_gomaxprocs_threads The current runtime.GOMAXPROCS setting, or the number of operating system threads that can execute user-level Go code simultaneously. Sourced from /sched/gomaxprocs:threads.
+# TYPE juicefs_go_sched_gomaxprocs_threads gauge
+juicefs_go_sched_gomaxprocs_threads{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 10
+# HELP juicefs_go_threads Number of OS threads created.
+# TYPE juicefs_go_threads gauge
+juicefs_go_threads{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 248
+# HELP juicefs_memory Used memory in bytes.
+# TYPE juicefs_memory gauge
+juicefs_memory{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 8.91150336e+08
+# HELP juicefs_meta_ops_duration_seconds Meta operation duration in seconds.
+# TYPE juicefs_meta_ops_duration_seconds counter
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="CopyFileRange",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.060651741
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="Fallocate",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 663.9784544490062
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GetAttr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 130.21459600300062
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="Lookup",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 127.90174983899927
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="Mknod",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.35476641700000006
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="NewDirHandler",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.013574442000000006
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="Read",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 125.07296238400002
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="Rename",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.072119641
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="SetAttr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.36004128300000005
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="StatFS",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1166.6315698030069
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="Truncate",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.257401772
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="Unlink",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.317174948
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="Write",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 10725.359339570061
+# HELP juicefs_meta_ops_durations_histogram_seconds Operation latency distributions.
+# TYPE juicefs_meta_ops_durations_histogram_seconds histogram
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0001"} 178434
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00015000000000000001"} 179421
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00022500000000000002"} 179787
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0003375"} 179835
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00050625"} 179846
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.000759375"} 179848
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0011390624999999999"} 179849
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0017085937499999998"} 179850
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0025628906249999996"} 179851
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0038443359374999994"} 179851
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00576650390625"} 179851
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.008649755859375"} 179851
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0129746337890625"} 204288
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.01946195068359375"} 215196
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.029192926025390625"} 259705
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.043789389038085935"} 299537
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0656840835571289"} 316036
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.09852612533569335"} 324465
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.14778918800354002"} 335769
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.22168378200531003"} 345116
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.33252567300796504"} 349462
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.49878850951194753"} 352661
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.7481827642679213"} 354962
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="1.122274146401882"} 356096
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="1.683411219602823"} 356248
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="2.5251168294042348"} 356275
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="3.787675244106352"} 356306
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="5.681512866159528"} 356347
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="8.52226929923929"} 356347
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="12.783403948858936"} 356347
+juicefs_meta_ops_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="+Inf"} 356347
+juicefs_meta_ops_durations_histogram_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 12940.594402291665
+juicefs_meta_ops_durations_histogram_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 356347
+# HELP juicefs_meta_ops_total Meta operation count
+# TYPE juicefs_meta_ops_total counter
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="CopyFileRange",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="Fallocate",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 15343
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GetAttr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 130607
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="Lookup",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 67349
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="Mknod",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 8
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="NewDirHandler",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 284
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="Read",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 9058
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="Rename",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="SetAttr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 11
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="StatFS",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 54037
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="Truncate",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 5
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="Unlink",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 5
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="Write",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 79638
+# HELP juicefs_object_request_data_bytes Object requests size in bytes.
+# TYPE juicefs_object_request_data_bytes counter
+juicefs_object_request_data_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data"} 6.455982623e+09
+juicefs_object_request_data_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data"} 3.0420229774e+10
+# HELP juicefs_object_request_durations_histogram_seconds Object requests latency distributions.
+# TYPE juicefs_object_request_durations_histogram_seconds histogram
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="0.01"} 58117
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="0.015"} 58171
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="0.0225"} 58205
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="0.03375"} 58215
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="0.050625"} 58216
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="0.0759375"} 58221
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="0.11390625000000001"} 58225
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="0.17085937500000004"} 58225
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="0.25628906250000005"} 58226
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="0.3844335937500001"} 58229
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="0.5766503906250001"} 58229
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="0.8649755859375001"} 61540
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="1.2974633789062502"} 77630
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="1.9461950683593754"} 83555
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="2.919292602539063"} 84190
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="4.378938903808595"} 84330
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="6.568408355712892"} 84354
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="9.852612533569339"} 84368
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="14.778918800354008"} 84375
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="22.168378200531013"} 84377
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="33.25256730079652"} 84379
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="49.87885095119478"} 84379
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="74.81827642679217"} 84379
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="112.22741464018824"} 84379
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="168.34112196028235"} 84379
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data",le="+Inf"} 84379
+juicefs_object_request_durations_histogram_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data"} 31318.173772723218
+juicefs_object_request_durations_histogram_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data"} 84379
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.01"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.015"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.0225"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.03375"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.050625"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.0759375"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.11390625000000001"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.17085937500000004"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.25628906250000005"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.3844335937500001"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.5766503906250001"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.8649755859375001"} 10
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="1.2974633789062502"} 421
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="1.9461950683593754"} 1397
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="2.919292602539063"} 1547
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="4.378938903808595"} 1560
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="6.568408355712892"} 1563
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="9.852612533569339"} 1570
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="14.778918800354008"} 1570
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="22.168378200531013"} 1570
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="33.25256730079652"} 1570
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="49.87885095119478"} 1570
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="74.81827642679217"} 1570
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="112.22741464018824"} 1570
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="168.34112196028235"} 1570
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="+Inf"} 1570
+juicefs_object_request_durations_histogram_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data"} 2463.2818304920006
+juicefs_object_request_durations_histogram_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data"} 1570
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.01"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.015"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.0225"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.03375"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.050625"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.0759375"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.11390625000000001"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.17085937500000004"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.25628906250000005"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.3844335937500001"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.5766503906250001"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="0.8649755859375001"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="1.2974633789062502"} 0
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="1.9461950683593754"} 6
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="2.919292602539063"} 16555
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="4.378938903808595"} 33761
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="6.568408355712892"} 36835
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="9.852612533569339"} 37196
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="14.778918800354008"} 37243
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="22.168378200531013"} 37262
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="33.25256730079652"} 37276
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="49.87885095119478"} 37276
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="74.81827642679217"} 37276
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="112.22741464018824"} 37276
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="168.34112196028235"} 37276
+juicefs_object_request_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data",le="+Inf"} 37276
+juicefs_object_request_durations_histogram_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data"} 120915.43622462713
+juicefs_object_request_durations_histogram_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data"} 37276
+# HELP juicefs_object_request_errors failed requests to object store
+# TYPE juicefs_object_request_errors counter
+juicefs_object_request_errors{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 14
+# HELP juicefs_object_request_uploading number of uploading requests
+# TYPE juicefs_object_request_uploading gauge
+juicefs_object_request_uploading{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 18
+# HELP juicefs_process_cpu_seconds_total Total user and system CPU time spent in seconds.
+# TYPE juicefs_process_cpu_seconds_total counter
+juicefs_process_cpu_seconds_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1197.63
+# HELP juicefs_process_max_fds Maximum number of open file descriptors.
+# TYPE juicefs_process_max_fds gauge
+juicefs_process_max_fds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 100000
+# HELP juicefs_process_network_receive_bytes_total Number of bytes received by the process over the network.
+# TYPE juicefs_process_network_receive_bytes_total counter
+juicefs_process_network_receive_bytes_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.27207796131e+11
+# HELP juicefs_process_network_transmit_bytes_total Number of bytes sent by the process over the network.
+# TYPE juicefs_process_network_transmit_bytes_total counter
+juicefs_process_network_transmit_bytes_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.87342006595e+11
+# HELP juicefs_process_open_fds Number of open file descriptors.
+# TYPE juicefs_process_open_fds gauge
+juicefs_process_open_fds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 72
+# HELP juicefs_process_resident_memory_bytes Resident memory size in bytes.
+# TYPE juicefs_process_resident_memory_bytes gauge
+juicefs_process_resident_memory_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 8.91150336e+08
+# HELP juicefs_process_start_time_seconds Start time of the process since unix epoch in seconds.
+# TYPE juicefs_process_start_time_seconds gauge
+juicefs_process_start_time_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.79134278977e+09
+# HELP juicefs_process_virtual_memory_bytes Virtual memory size in bytes.
+# TYPE juicefs_process_virtual_memory_bytes gauge
+juicefs_process_virtual_memory_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2.649264128e+09
+# HELP juicefs_process_virtual_memory_max_bytes Maximum amount of virtual memory available in bytes.
+# TYPE juicefs_process_virtual_memory_max_bytes gauge
+juicefs_process_virtual_memory_max_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.8446744073709552e+19
+# HELP juicefs_staging_block_bytes Total bytes of blocks in the staging path.
+# TYPE juicefs_staging_block_bytes gauge
+juicefs_staging_block_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 8.91027456e+08
+# HELP juicefs_staging_block_delay_seconds Total seconds of delay for staging blocks
+# TYPE juicefs_staging_block_delay_seconds counter
+juicefs_staging_block_delay_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 5.654405588541816e+06
+# HELP juicefs_staging_block_errors Total errors when staging blocks
+# TYPE juicefs_staging_block_errors counter
+juicefs_staging_block_errors{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+# HELP juicefs_staging_blocks Number of blocks in the staging path.
+# TYPE juicefs_staging_blocks gauge
+juicefs_staging_blocks{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 567
+# HELP juicefs_staging_write_bytes write bytes of blocks in the staging path.
+# TYPE juicefs_staging_write_bytes counter
+juicefs_staging_write_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3.3742729892e+10
+# HELP juicefs_staging_writing_blocks Number of writing blocks in staging.
+# TYPE juicefs_staging_writing_blocks gauge
+juicefs_staging_writing_blocks{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+# HELP juicefs_store_cache_size_bytes size of store cache.
+# TYPE juicefs_store_cache_size_bytes gauge
+juicefs_store_cache_size_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+# HELP juicefs_subdir_info Subdir configuration for JuiceFS mount (empty string means root mount)
+# TYPE juicefs_subdir_info gauge
+juicefs_subdir_info{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",subdir="",vol_name="juicefs-data"} 1
+# HELP juicefs_total_inodes Total number of inodes.
+# TYPE juicefs_total_inodes gauge
+juicefs_total_inodes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.0998281e+07
+# HELP juicefs_total_space Total space in bytes.
+# TYPE juicefs_total_space gauge
+juicefs_total_space{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.125899906842624e+15
+# HELP juicefs_transaction_durations_histogram_seconds Transactions latency distributions.
+# TYPE juicefs_transaction_durations_histogram_seconds histogram
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0001"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00015000000000000001"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00022500000000000002"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0003375"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00050625"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.000759375"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0011390624999999999"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0017085937499999998"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0025628906249999996"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0038443359374999994"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.00576650390625"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.008649755859375"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0129746337890625"} 0
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.01946195068359375"} 1
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.029192926025390625"} 642
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.043789389038085935"} 69800
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.0656840835571289"} 98103
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.09852612533569335"} 98597
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.14778918800354002"} 98692
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.22168378200531003"} 98715
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.33252567300796504"} 98809
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.49878850951194753"} 98815
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="0.7481827642679213"} 98820
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="1.122274146401882"} 98821
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="1.683411219602823"} 98822
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="2.5251168294042348"} 98822
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="3.787675244106352"} 98822
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="5.681512866159528"} 98823
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="8.52226929923929"} 98823
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="12.783403948858936"} 98823
+juicefs_transaction_durations_histogram_seconds_bucket{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",le="+Inf"} 98823
+juicefs_transaction_durations_histogram_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 4228.2774262820085
+juicefs_transaction_durations_histogram_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 98823
+# HELP juicefs_transaction_restart The number of times a transaction is restarted.
+# TYPE juicefs_transaction_restart counter
+juicefs_transaction_restart{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="cleanupZeroRef",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 103
+juicefs_transaction_restart{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="doCompactChunk",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 44
+juicefs_transaction_restart{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",method="doRefreshSession",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2
+# HELP juicefs_uptime Total running time in seconds.
+# TYPE juicefs_uptime gauge
+juicefs_uptime{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 11567.948861212
+# HELP juicefs_used_buffer_size_bytes size of currently used buffer.
+# TYPE juicefs_used_buffer_size_bytes gauge
+juicefs_used_buffer_size_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.85729024e+08
+# HELP juicefs_used_inodes Total used number of inodes.
+# TYPE juicefs_used_inodes gauge
+juicefs_used_inodes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 512521
+# HELP juicefs_used_read_buffer_size_bytes size of currently used buffer for read
+# TYPE juicefs_used_read_buffer_size_bytes gauge
+juicefs_used_read_buffer_size_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+# HELP juicefs_used_space Total used space in bytes.
+# TYPE juicefs_used_space gauge
+juicefs_used_space{instance="ODPC240501",juicefs_version="1.4.1+2026-10-06.9268beb4-kaz.2",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3.95108601856e+11

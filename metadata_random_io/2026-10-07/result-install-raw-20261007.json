@@ -1,0 +1,850 @@
+{
+ "inputs": {
+  "log": {
+   "path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261007-121301.log",
+   "prefix_bytes": 799409244,
+   "sha256": "79496c404ab03d08d53c1917becb65e0395830fb2f3f57a88a61963ef4f24a97"
+  },
+  "accesslog": {
+   "path": "/home/kwatanabe/.juicefs/diagnostics/accesslog-20261007-144812.txt",
+   "prefix_bytes": 41568387,
+   "sha256": "f888f947fbbba86b476041f9f45b20bc1884304987bffd012de5a0d82b53b915"
+  }
+ },
+ "window": {
+  "start": "2026/10/07 14:49:00",
+  "end": "2026/10/07 15:26:00"
+ },
+ "debug_log": {
+  "span_seconds": 2216.7047171592712,
+  "levels": {
+   "DEBUG": 1566527,
+   "WARNING": 791,
+   "INFO": 101
+  },
+  "commits": {
+   "count": 17312,
+   "total": {
+    "count": 17312,
+    "sum": 3489.935311,
+    "mean": 0.20159053319097667,
+    "p50": 0.12194991111755371,
+    "p95": 0.6741812229156494,
+    "p99": 1.192323923110962,
+    "max": 4.8990700244903564
+   },
+   "doWrite": {
+    "count": 17312,
+    "sum": 718.133919,
+    "mean": 0.04148185763360675,
+    "p50": 0.040522264999999995,
+    "p95": 0.051270161,
+    "p99": 0.058815427999999996,
+    "max": 0.588421383
+   },
+   "lock_wait": {
+    "count": 17312,
+    "sum": 2768.372188,
+    "mean": 0.15991059314261785,
+    "p50": 0.080285079,
+    "p95": 0.630411667,
+    "p99": 1.130951295,
+    "max": 4.860733199
+   }
+  },
+  "top_inodes": [
+   {
+    "inode": "613567",
+    "commits": 17312,
+    "chunks": 303,
+    "doWrite_busy_seconds": 718.134,
+    "doWrite_busy_ratio_of_span": 0.324,
+    "lock_wait": {
+     "count": 17312,
+     "sum": 2768.372188,
+     "mean": 0.15991059314261785,
+     "p50": 0.080285079,
+     "p95": 0.630411667,
+     "p99": 1.130951295,
+     "max": 4.860733199
+    },
+    "doWrite": {
+     "count": 17312,
+     "sum": 718.133919,
+     "mean": 0.04148185763360675,
+     "p50": 0.040522264999999995,
+     "p95": 0.051270161,
+     "p99": 0.058815427999999996,
+     "max": 0.588421383
+    },
+    "commit_total": {
+     "count": 17312,
+     "sum": 3489.935311,
+     "mean": 0.20159053319097667,
+     "p50": 0.12194991111755371,
+     "p95": 0.6741812229156494,
+     "p99": 1.192323923110962,
+     "max": 4.8990700244903564
+    },
+    "slices_at_commit": {
+     "count": 17312,
+     "sum": 1020589,
+     "mean": 58.95269177449168,
+     "p50": 41,
+     "p95": 173,
+     "p99": 229,
+     "max": 321
+    }
+   }
+  ],
+  "writer_flush_by_origin": {
+   "vfs.Flush": {
+    "count": 4,
+    "sum": 0.000305,
+    "mean": 7.627525e-05,
+    "p50": 5.9854e-05,
+    "p95": 0.00011835299999999998,
+    "p99": 0.00011835299999999998,
+    "max": 0.00011835299999999998
+   },
+   "vfs.Release": {
+    "count": 4,
+    "sum": 0.000403,
+    "mean": 0.00010085,
+    "p50": 6.2207e-05,
+    "p95": 0.000216916,
+    "p99": 0.000216916,
+    "max": 0.000216916
+   },
+   "internal.close": {
+    "count": 4,
+    "sum": 0.000227,
+    "mean": 5.666625e-05,
+    "p50": 4.381799999999999e-05,
+    "p95": 9.5294e-05,
+    "p99": 9.5294e-05,
+    "max": 9.5294e-05
+   },
+   "vfs.Read": {
+    "count": 32205,
+    "sum": 799.163884,
+    "mean": 0.024814900908181958,
+    "p50": 9.9733e-05,
+    "p95": 0.05313348,
+    "p99": 0.21922550200000002,
+    "max": 24.808008633
+   }
+  },
+  "freeze_reason": {
+   "explicit_flush": 12744,
+   "writable_window": 3724,
+   "idle": 833,
+   "age": 7,
+   "full_slice": 4
+  },
+  "freeze_origin": {
+   "vfs.Read": 12744,
+   "none": 4568
+  },
+  "freeze_raw_length": {
+   "count": 17312,
+   "sum": 18532855808,
+   "mean": 1070520.7837338264,
+   "p50": 16384,
+   "p95": 4513792,
+   "p99": 26214400,
+   "max": 67108864
+  },
+  "put_cost": {
+   "other": {
+    "count": 5492,
+    "sum": 16001.685163,
+    "mean": 2.9136353173785503,
+    "p50": 2.747423672,
+    "p95": 4.318480933,
+    "p99": 5.436355285,
+    "max": 9.387522432
+   },
+   "compaction_or_large": {
+    "count": 5736,
+    "sum": 18942.539222,
+    "mean": 3.30239526186053,
+    "p50": 3.12674674,
+    "p95": 4.924211331,
+    "p99": 6.516545838,
+    "max": 9.733948579
+   }
+  },
+  "compaction_phase_lines": {
+   "read": 271,
+   "object": 251,
+   "metadata": 250,
+   "done": 250
+  },
+  "warnings": {
+   "slow slice commit inode chunk slice metadata errno 0 [commitThread@writer.go": 257,
+   "slow metadata write inode chunk slice slices total lock_wait doWrite stat compac": 256,
+   "slow compaction inode chunk once force slices bytes total queue_wait object meta": 250,
+   "Transaction succeeded after 5 tries (241.912188ms), keys method last error trans": 1,
+   "slow request chunks/6/6197/6197289_2_360448 payload_bytes (req_id err cost [logR": 1,
+   "slow request chunks/6/6197/6197416_0_16384 payload_bytes (req_id err cost [logRe": 1,
+   "slow request chunks/6/6197/6197371_0_28672 payload_bytes (req_id err cost [logRe": 1,
+   "slow request chunks/6/6197/6197424_0_94208 payload_bytes (req_id err cost [logRe": 1,
+   "slow request chunks/6/6199/6199432_15_4194304 payload_bytes (req_id err cost [lo": 1,
+   "slow request chunks/6/6198/6198091_0_4194304 payload_bytes (req_id err error S3 ": 1,
+   "slow request chunks/6/6197/6197772_0_4096 payload_bytes (req_id err cost [logReq": 1,
+   "slow request chunks/6/6198/6198200_0_1675264 payload_bytes (req_id err cost [log": 1,
+   "slow request chunks/6/6198/6198716_0_16384 payload_bytes (req_id err cost [logRe": 1,
+   "slow request chunks/6/6204/6204036_2_4194304 payload_bytes (req_id err cost [log": 1,
+   "slow request chunks/6/6203/6203273_0_323584 payload_bytes (req_id err cost [logR": 1,
+   "slow request chunks/6/6203/6203263_0_413696 payload_bytes (req_id err cost [logR": 1,
+   "slow request chunks/6/6204/6204038_3_4194304 payload_bytes (req_id err cost [log": 1,
+   "slow request chunks/6/6204/6204038_7_4194304 payload_bytes (req_id err cost [log": 1,
+   "Transaction succeeded after 4 tries (178.372928ms), keys method last error trans": 1,
+   "slow request chunks/6/6204/6204306_7_4194304 payload_bytes (req_id err cost [log": 1,
+   "slow request chunks/6/6201/6201896_2_4194304 payload_bytes (req_id err cost [log": 1,
+   "slow request chunks/6/6205/6205206_0_106496 payload_bytes (req_id err cost [logR": 1,
+   "Transaction succeeded after 6 tries (302.133667ms), keys method last error trans": 1,
+   "slow request chunks/6/6211/6211009_5_4194304 payload_bytes (req_id err cost [log": 1,
+   "slow request chunks/6/6208/6208507_0_45056 payload_bytes (req_id err cost [logRe": 1,
+   "slow request chunks/6/6208/6208469_0_98304 payload_bytes (req_id err cost [logRe": 1,
+   "Transaction succeeded after 4 tries (172.386021ms), keys method last error trans": 1,
+   "slow request chunks/6/6204/6204106_0_237568 (req_id err error S3 exceeded maximu": 1,
+   "Delete data blocks of slice 6204106 (237568 bytes) error S3 exceeded maximum num": 1,
+   "slow request chunks/6/6212/6212952_1_4194304 payload_bytes (req_id err cost [log": 1
+  }
+ },
+ "accesslog": {
+  "target_inode": "613567",
+  "by_op": {
+   "read": {
+    "count": 56572,
+    "sum": 1034.620512,
+    "mean": 0.018288561691296047,
+    "p50": 9.3e-05,
+    "p95": 0.043273,
+    "p99": 0.174341,
+    "max": 24.819371
+   },
+   "statfs": {
+    "count": 10352,
+    "sum": 230.486048,
+    "mean": 0.022264880989180835,
+    "p50": 0.021055,
+    "p95": 0.02861,
+    "p99": 0.034015,
+    "max": 0.212131
+   },
+   "write": {
+    "count": 226626,
+    "sum": 171.390364,
+    "mean": 0.0007562696424946828,
+    "p50": 2.1e-05,
+    "p95": 9.8e-05,
+    "p99": 0.00024,
+    "max": 23.615054
+   },
+   "getattr": {
+    "count": 5907,
+    "sum": 47.675722,
+    "mean": 0.008071055019468427,
+    "p50": 0.0095,
+    "p95": 0.013739,
+    "p99": 0.018354,
+    "max": 0.943694
+   },
+   "open": {
+    "count": 13518,
+    "sum": 5.310564,
+    "mean": 0.00039285130936529076,
+    "p50": 3.4e-05,
+    "p95": 0.001553,
+    "p99": 0.009383,
+    "max": 0.189806
+   },
+   "setlk": {
+    "count": 12,
+    "sum": 0.531616,
+    "mean": 0.04430133333333333,
+    "p50": 0.040662,
+    "p95": 0.059429,
+    "p99": 0.059429,
+    "max": 0.059429
+   },
+   "release": {
+    "count": 13518,
+    "sum": 0.344937,
+    "mean": 2.5516866400355083e-05,
+    "p50": 2e-05,
+    "p95": 6.1e-05,
+    "p99": 9.1e-05,
+    "max": 0.030645
+   },
+   "lookup": {
+    "count": 10376,
+    "sum": 0.205275,
+    "mean": 1.978363531225906e-05,
+    "p50": 1.6e-05,
+    "p95": 4.4e-05,
+    "p99": 7.7e-05,
+    "max": 0.00022
+   },
+   "flush": {
+    "count": 12790,
+    "sum": 0.178171,
+    "mean": 1.3930492572322127e-05,
+    "p50": 3e-06,
+    "p95": 5e-06,
+    "p99": 2.1e-05,
+    "max": 0.045226
+   },
+   "getlk": {
+    "count": 3,
+    "sum": 0.034197,
+    "mean": 0.011399,
+    "p50": 0.010065,
+    "p95": 0.014195,
+    "p99": 0.014195,
+    "max": 0.014195
+   }
+  },
+  "target_by_op": {
+   "read": {
+    "count": 32232,
+    "sum": 1034.554794,
+    "mean": 0.032097133097542814,
+    "p50": 0.000442,
+    "p95": 0.082514,
+    "p99": 0.36409,
+    "max": 24.819371
+   },
+   "write": {
+    "count": 226626,
+    "sum": 171.390364,
+    "mean": 0.0007562696424946828,
+    "p50": 2.1e-05,
+    "p95": 9.8e-05,
+    "p99": 0.00024,
+    "max": 23.615054
+   },
+   "getattr": {
+    "count": 4159,
+    "sum": 47.529344,
+    "mean": 0.0114280702091849,
+    "p50": 0.010017,
+    "p95": 0.01483,
+    "p99": 0.019751,
+    "max": 0.943694
+   },
+   "open": {
+    "count": 746,
+    "sum": 1.497188,
+    "mean": 0.002006954423592493,
+    "p50": 3.1e-05,
+    "p95": 0.010147,
+    "p99": 0.014955,
+    "max": 0.020033
+   },
+   "setlk": {
+    "count": 12,
+    "sum": 0.531616,
+    "mean": 0.04430133333333333,
+    "p50": 0.040662,
+    "p95": 0.059429,
+    "p99": 0.059429,
+    "max": 0.059429
+   },
+   "statfs": {
+    "count": 14,
+    "sum": 0.281013,
+    "mean": 0.020072357142857145,
+    "p50": 0.019954,
+    "p95": 0.022522,
+    "p99": 0.022522,
+    "max": 0.022522
+   },
+   "flush": {
+    "count": 18,
+    "sum": 0.138741,
+    "mean": 0.007707833333333334,
+    "p50": 2e-06,
+    "p95": 0.045226,
+    "p99": 0.045226,
+    "max": 0.045226
+   },
+   "release": {
+    "count": 746,
+    "sum": 0.0532,
+    "mean": 7.1313672922252e-05,
+    "p50": 2.5e-05,
+    "p95": 6.2e-05,
+    "p99": 0.000113,
+    "max": 0.030645
+   },
+   "getlk": {
+    "count": 3,
+    "sum": 0.034197,
+    "mean": 0.011399,
+    "p50": 0.010065,
+    "p95": 0.014195,
+    "p99": 0.014195,
+    "max": 0.014195
+   }
+  },
+  "target_write_sizes_top": [
+   [
+    131072,
+    123897
+   ],
+   [
+    4096,
+    47266
+   ],
+   [
+    8192,
+    11371
+   ],
+   [
+    32768,
+    6783
+   ],
+   [
+    16384,
+    6342
+   ],
+   [
+    12288,
+    5244
+   ],
+   [
+    98304,
+    5172
+   ],
+   [
+    20480,
+    2410
+   ],
+   [
+    24576,
+    1962
+   ],
+   [
+    36864,
+    1892
+   ]
+  ],
+  "target_read_sizes_top": [
+   [
+    4096,
+    10890
+   ],
+   [
+    131072,
+    5958
+   ],
+   [
+    16384,
+    3362
+   ],
+   [
+    8192,
+    3196
+   ],
+   [
+    12288,
+    1835
+   ],
+   [
+    32768,
+    965
+   ],
+   [
+    20480,
+    910
+   ],
+   [
+    24576,
+    695
+   ],
+   [
+    28672,
+    528
+   ],
+   [
+    65536,
+    429
+   ]
+  ],
+  "errors": {},
+  "target_seconds_per_minute": [
+   {
+    "minute": "14:49",
+    "flush": 0.033,
+    "getattr": 0.0,
+    "getlk": 0.034,
+    "open": 0.011,
+    "read": 0.235,
+    "release": 0.0,
+    "setlk": 0.211,
+    "statfs": 0.1
+   },
+   {
+    "minute": "14:50",
+    "getattr": 0.001,
+    "open": 0.0,
+    "release": 0.0
+   },
+   {
+    "minute": "14:51",
+    "getattr": 0.0,
+    "open": 0.0,
+    "release": 0.0
+   },
+   {
+    "minute": "14:52",
+    "getattr": 0.013,
+    "open": 0.0,
+    "read": 0.89,
+    "release": 0.001,
+    "write": 0.008
+   },
+   {
+    "minute": "14:53",
+    "getattr": 0.137,
+    "open": 0.022,
+    "read": 25.194,
+    "release": 0.001,
+    "write": 5.493
+   },
+   {
+    "minute": "14:54",
+    "getattr": 0.37,
+    "open": 0.079,
+    "read": 25.113,
+    "release": 0.001,
+    "write": 25.443
+   },
+   {
+    "minute": "14:55",
+    "getattr": 0.13,
+    "open": 0.03,
+    "read": 23.616,
+    "release": 0.001,
+    "write": 24.331
+   },
+   {
+    "minute": "14:56",
+    "getattr": 0.134,
+    "open": 0.059,
+    "read": 28.227,
+    "release": 0.001,
+    "write": 9.417
+   },
+   {
+    "minute": "14:57",
+    "getattr": 0.248,
+    "open": 0.068,
+    "read": 21.445,
+    "release": 0.001,
+    "write": 8.851
+   },
+   {
+    "minute": "14:58",
+    "getattr": 0.092,
+    "open": 0.044,
+    "read": 12.734,
+    "release": 0.001,
+    "write": 1.016
+   },
+   {
+    "minute": "14:59",
+    "getattr": 0.083,
+    "open": 0.013,
+    "read": 1.953,
+    "release": 0.001,
+    "write": 2.153
+   },
+   {
+    "minute": "15:00",
+    "getattr": 14.04,
+    "open": 0.02,
+    "read": 33.022,
+    "release": 0.001,
+    "write": 3.937
+   },
+   {
+    "minute": "15:01",
+    "getattr": 0.247,
+    "open": 0.041,
+    "read": 35.261,
+    "release": 0.001,
+    "write": 1.701
+   },
+   {
+    "minute": "15:02",
+    "getattr": 0.765,
+    "open": 0.048,
+    "read": 41.027,
+    "release": 0.0,
+    "write": 0.222
+   },
+   {
+    "minute": "15:03",
+    "getattr": 0.928,
+    "open": 0.054,
+    "read": 33.816,
+    "release": 0.001,
+    "write": 3.424
+   },
+   {
+    "minute": "15:04",
+    "getattr": 0.294,
+    "open": 0.052,
+    "read": 20.281,
+    "release": 0.001,
+    "write": 7.743
+   },
+   {
+    "minute": "15:05",
+    "getattr": 0.021,
+    "open": 0.041,
+    "read": 8.262,
+    "release": 0.001,
+    "write": 0.24
+   },
+   {
+    "minute": "15:06",
+    "getattr": 2.35,
+    "open": 0.051,
+    "read": 49.021,
+    "release": 0.001,
+    "write": 0.839
+   },
+   {
+    "minute": "15:07",
+    "getattr": 5.836,
+    "open": 0.06,
+    "read": 235.018,
+    "release": 0.001,
+    "write": 12.21
+   },
+   {
+    "minute": "15:08",
+    "getattr": 0.093,
+    "open": 0.001,
+    "read": 0.499,
+    "release": 0.001,
+    "write": 0.036
+   },
+   {
+    "minute": "15:09",
+    "getattr": 0.011,
+    "open": 0.0,
+    "release": 0.001,
+    "write": 0.0
+   },
+   {
+    "minute": "15:10",
+    "getattr": 0.001,
+    "open": 0.001,
+    "release": 0.001
+   },
+   {
+    "minute": "15:11",
+    "getattr": 0.001,
+    "open": 0.001,
+    "release": 0.001
+   },
+   {
+    "minute": "15:12",
+    "getattr": 0.072,
+    "open": 0.001,
+    "release": 0.001,
+    "write": 0.066
+   },
+   {
+    "minute": "15:13",
+    "getattr": 0.157,
+    "open": 0.001,
+    "read": 1.47,
+    "release": 0.001,
+    "write": 0.031
+   },
+   {
+    "minute": "15:14",
+    "getattr": 0.022,
+    "open": 0.001,
+    "release": 0.001,
+    "write": 0.002
+   },
+   {
+    "minute": "15:15",
+    "getattr": 4.854,
+    "open": 0.1,
+    "read": 46.479,
+    "release": 0.001,
+    "write": 10.342
+   },
+   {
+    "minute": "15:16",
+    "getattr": 1.813,
+    "open": 0.098,
+    "read": 47.895,
+    "release": 0.001,
+    "write": 14.451
+   },
+   {
+    "minute": "15:17",
+    "getattr": 3.467,
+    "open": 0.086,
+    "read": 48.772,
+    "release": 0.001,
+    "write": 4.36
+   },
+   {
+    "minute": "15:18",
+    "getattr": 2.542,
+    "open": 0.121,
+    "read": 45.949,
+    "release": 0.0,
+    "write": 4.052
+   },
+   {
+    "minute": "15:19",
+    "getattr": 2.772,
+    "open": 0.136,
+    "read": 49.476,
+    "release": 0.001,
+    "write": 6.623
+   },
+   {
+    "minute": "15:20",
+    "getattr": 1.715,
+    "open": 0.052,
+    "read": 46.274,
+    "release": 0.0,
+    "write": 1.466
+   },
+   {
+    "minute": "15:21",
+    "getattr": 1.444,
+    "open": 0.061,
+    "read": 48.083,
+    "release": 0.001,
+    "write": 0.561
+   },
+   {
+    "minute": "15:22",
+    "getattr": 1.418,
+    "open": 0.027,
+    "read": 20.917,
+    "release": 0.001,
+    "write": 0.498
+   },
+   {
+    "minute": "15:23",
+    "getattr": 0.854,
+    "open": 0.069,
+    "read": 58.848,
+    "release": 0.001,
+    "write": 18.879
+   },
+   {
+    "minute": "15:24",
+    "getattr": 0.596,
+    "open": 0.029,
+    "read": 22.409,
+    "release": 0.001,
+    "write": 2.992
+   },
+   {
+    "minute": "15:25",
+    "flush": 0.106,
+    "getattr": 0.01,
+    "open": 0.021,
+    "read": 2.369,
+    "release": 0.031,
+    "setlk": 0.32,
+    "statfs": 0.181
+   }
+  ]
+ },
+ "metrics_diff": {
+  "juicefs_blockcache_blocks{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 496.0,
+  "juicefs_blockcache_bytes{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": -68185606.0,
+  "juicefs_blockcache_evicts{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 6130.0,
+  "juicefs_blockcache_hit_bytes{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 25698398208.0,
+  "juicefs_blockcache_hits{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 43045.0,
+  "juicefs_blockcache_read_hist_seconds_count{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 43045.0,
+  "juicefs_blockcache_read_hist_seconds_sum{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 60.565662014001845,
+  "juicefs_blockcache_write_bytes{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 31539449856.0,
+  "juicefs_blockcache_write_hist_seconds_count{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 23389.0,
+  "juicefs_blockcache_write_hist_seconds_sum{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 833.7801987459907,
+  "juicefs_blockcache_writes{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 23389.0,
+  "juicefs_compact_size_histogram_bytes_count{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 251.0,
+  "juicefs_compact_size_histogram_bytes_sum{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 13073702912.0,
+  "juicefs_compaction_gc_events_total{event=\"local_error\",instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 82.0,
+  "juicefs_compaction_gc_events_total{event=\"local_retire_success\",instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 14438.0,
+  "juicefs_compaction_gc_events_total{event=\"remote_enqueued\",instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 14438.0,
+  "juicefs_cpu_usage{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 320.56289800000013,
+  "juicefs_fuse_ops_durations_histogram_seconds_count{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 354549.0,
+  "juicefs_fuse_ops_durations_histogram_seconds_sum{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 1525.437063471828,
+  "juicefs_fuse_ops_durations_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"flush\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 0.17864672999999964,
+  "juicefs_fuse_ops_durations_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"getattr\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 47.678721709999834,
+  "juicefs_fuse_ops_durations_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"getlk\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 0.034196810999999994,
+  "juicefs_fuse_ops_durations_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"lookup\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 28.620326534999904,
+  "juicefs_fuse_ops_durations_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"open\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 5.375542565000195,
+  "juicefs_fuse_ops_durations_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"read\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 1034.6282598499201,
+  "juicefs_fuse_ops_durations_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"release\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 0.3494690909999949,
+  "juicefs_fuse_ops_durations_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"setattr\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 0.06413847400000006,
+  "juicefs_fuse_ops_durations_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"setlk\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 0.5316164460000001,
+  "juicefs_fuse_ops_durations_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"statfs\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 236.58569243500392,
+  "juicefs_fuse_ops_durations_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"write\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 171.39045282400275,
+  "juicefs_fuse_ops_io_errors{errno=\"ENOENT\",instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 2531.0,
+  "juicefs_fuse_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"flush\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 13143.0,
+  "juicefs_fuse_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"getattr\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 5953.0,
+  "juicefs_fuse_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"getlk\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 3.0,
+  "juicefs_fuse_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"lookup\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 13222.0,
+  "juicefs_fuse_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"open\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 13871.0,
+  "juicefs_fuse_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"read\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 57205.0,
+  "juicefs_fuse_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"release\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 13871.0,
+  "juicefs_fuse_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"setattr\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 2.0,
+  "juicefs_fuse_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"setlk\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 12.0,
+  "juicefs_fuse_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"statfs\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 10641.0,
+  "juicefs_fuse_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"write\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 226626.0,
+  "juicefs_fuse_read_size_bytes_count{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 32235.0,
+  "juicefs_fuse_read_size_bytes_sum{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 1295163392.0,
+  "juicefs_fuse_written_size_bytes_count{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 226626.0,
+  "juicefs_fuse_written_size_bytes_sum{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 18554503168.0,
+  "juicefs_memory{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 635981824.0,
+  "juicefs_meta_ops_duration_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"GetAttr\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 49.38572494700084,
+  "juicefs_meta_ops_duration_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"Lookup\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 28.495877611999532,
+  "juicefs_meta_ops_duration_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"Read\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 59.26740555299999,
+  "juicefs_meta_ops_duration_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"SetAttr\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 0.06408255899999998,
+  "juicefs_meta_ops_duration_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"StatFS\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 241.48677188999875,
+  "juicefs_meta_ops_duration_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"Write\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 3491.1705828219965,
+  "juicefs_meta_ops_durations_histogram_seconds_count{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 74029.0,
+  "juicefs_meta_ops_durations_histogram_seconds_sum{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 3869.8704453829014,
+  "juicefs_meta_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"GetAttr\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 28395.0,
+  "juicefs_meta_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"Lookup\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 13222.0,
+  "juicefs_meta_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"Read\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 4229.0,
+  "juicefs_meta_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"SetAttr\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 2.0,
+  "juicefs_meta_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"StatFS\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 10869.0,
+  "juicefs_meta_ops_total{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"Write\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 17312.0,
+  "juicefs_object_request_data_bytes{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"PUT\",mp=\"/home/kwatanabe/mnt_juicefs\",storage_class=\"STANDARD\",vol_name=\"juicefs-data\"}": 9410234841.0,
+  "juicefs_object_request_durations_histogram_seconds_count{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"DELETE\",mp=\"/home/kwatanabe/mnt_juicefs\",storage_class=\"\",vol_name=\"juicefs-data\"}": 16724.0,
+  "juicefs_object_request_durations_histogram_seconds_count{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"PUT\",mp=\"/home/kwatanabe/mnt_juicefs\",storage_class=\"STANDARD\",vol_name=\"juicefs-data\"}": 11249.0,
+  "juicefs_object_request_durations_histogram_seconds_sum{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"DELETE\",mp=\"/home/kwatanabe/mnt_juicefs\",storage_class=\"\",vol_name=\"juicefs-data\"}": 6032.31388092606,
+  "juicefs_object_request_durations_histogram_seconds_sum{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"PUT\",mp=\"/home/kwatanabe/mnt_juicefs\",storage_class=\"STANDARD\",vol_name=\"juicefs-data\"}": 35263.62506737358,
+  "juicefs_object_request_errors{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 2.0,
+  "juicefs_object_request_uploading{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 18.0,
+  "juicefs_staging_block_bytes{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 891027456.0,
+  "juicefs_staging_block_delay_seconds{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 2037540.5360814622,
+  "juicefs_staging_blocks{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 567.0,
+  "juicefs_staging_write_bytes{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 18532855808.0,
+  "juicefs_transaction_durations_histogram_seconds_count{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 18210.0,
+  "juicefs_transaction_durations_histogram_seconds_sum{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 757.6874318570017,
+  "juicefs_transaction_restart{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"cleanupZeroRef\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 17.0,
+  "juicefs_transaction_restart{instance=\"ODPC240501\",juicefs_version=\"1.4.1+2026-10-06.9268beb4-kaz.2\",method=\"doCompactChunk\",mp=\"/home/kwatanabe/mnt_juicefs\",vol_name=\"juicefs-data\"}": 5.0
+ }
+}

@@ -12,6 +12,19 @@
 
 ## 次の優先作業
 
+- [ ] **metadata path 最適化（2026-10-07、計画段階）:** [調査結果と実装計画](docs/superpowers/specs/2026-10-07-metadata-random-io-optimization-plan.md)。主指標は qcow2 への Ubuntu Desktop 26.04 インストール時間（現状 約1時間）。ユーザーの計画承認後に着手する。
+  - [x] 2026-10-07 ユーザー実施の計測（unsafe、debug付き、12:52〜14:16）を解析した: [報告](metadata_random_io/2026-10-07/install-report-ja.md)。最大の待ちは fallocate(ZERO_RANGE) の全 inode flush（3,330s／173ms が flush 待ち）。commit は 43ms×62,317件。
+  - [x] 同日 raw でも計測した: 約36分（qcow2 約84分）、fallocate 0回、最大の待ちは Read 前 flush 799s。
+  - [x] 計画書を実測に合わせて改訂（§7 の順番、C4 の詳細設計・テスト・見込み）。
+  - [ ] **最優先（実測で変更、Phase 1）:** Read 前と Fallocate 前の writer flush を、対象範囲と重なる chunk の pending に限定する（計画書 C4、ユーザーの承認待ち）。その後 group commit。writeback（QEMU）条件での計測は未実施。
+  - [ ] 実機で client-cache が有効なので、stale attr の再現テストを先に行う。statfs を約1秒周期で呼ぶ uid0 の pid 565/567/569 の正体（WSL 側？）は未確認。compaction GC local_error 487件も別途確認。
+  - [ ] Phase 0: metadata metrics（op 別 p95/p99、open-file／txn lock 待ち、Redis cmd RTT、flush 時 pending 数、slices/chunk、compaction 回数）と、Redis RTT・インストール時の baseline 計測。
+  - [ ] Phase 1: 同期 compaction（≥2500）を open-file lock の外へ。実機 meta URL の `client-cache` 有無を確認し、doWrite の stale attr（ファイル長後退）の可能性を再現テストで確認。
+  - [ ] Phase 2: per-inode group commit（2a: meta 層、2b: 同 chunk 複数 slice）。`--meta-write-batch`、`--large-file-mode`。
+  - [ ] Phase 3: Read 前 flush の範囲限定、自分の commit 結果で chunk cache 更新、空 chunk の cache。
+  - [ ] Phase 4: Redis txn の RTT 削減（WATCH+GET pipeline、Lua）を実測次第で判断。
+  - 前提: fio・redis-server は未導入、RTT 注入（netem／toxiproxy／docker image）はユーザーの承認が必要。
+
 - [ ] **staging fsync（2026-10-06）:** `--writeback-fsync` は e6ab89b8 として commit 済み、`release-1.4.1-kaz.2`（9268beb4）へ merge 済み（未 push）。実 VM 負荷での書き込みレイテンシ・PUT への影響を計測し、必要なら次の配布版（v1.4.1-kaz.2 など）に含める。
 
 - [ ] **Read EIO:** shared retry counter／singleflight先頭ctx取消fanout→sticky EIOを隔離再現し、3bed baselineと比較する。実エラーは隠さず、再現回帰を先行させる。
@@ -106,7 +119,7 @@
 
 - [ ] 保存済みdataとmetadata commitからobsolete GCのRAMqueue待ちを分離するdurablecleanup設計を比較。参照数/再試行/crash/全metadata engine parityを前提にする。
 - [ ] 同chunk背景compactionのactive状態がcleanup待ちで長く残ることを改善し、hotchunk優先schedulerとrawlist高低watermarkを検討。
-- [ ] 【保留・今回対象外】inodewideLock構造変更。ユーザーは複雑性/リスクに対して効果が不明瞭として案2を今回選択せず。
+- [ ] 【保留・今回対象外】inodewideLock構造変更。ユーザーは複雑性/リスクに対して効果が不明瞭として案2を今回選択せず。→ 2026-10-07 の依頼で再び対象。計画では lock 分割ではなく group commit を推奨（上記 metadata path 最適化）。
 - [ ] 新slice発生数低減案とdeletedata実throughput案を比較。threshold/queuecap引上げだけを解決としない。
 
 ユーザーの追加要件: VM用filesystemとして、データ整合性と待機方針を維持しつつ通常使用時の数十分のinode全体停止を減らす。方法の比較段階、個別案の実装は未合意。
