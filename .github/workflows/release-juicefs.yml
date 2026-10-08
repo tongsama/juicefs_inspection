@@ -1,16 +1,17 @@
 # 改修版 JuiceFS のバイナリをビルドし、draft Release を作る。
-# - タグ v<base>-kaz.<n> の push：検証 → ビルド → install.ps1 の確認 → draft Release
-# - 手動実行（workflow_dispatch）：Release は作らず、検証・ビルド・確認だけを行う
-# 本体 repo（versions.json の juicefs_repo）は読み取るだけで、書き込まない。
-name: release
+# - タグ juicefs-v<base>-kaz.<n> の push：検証 → ビルド → install.ps1 の確認 → draft Release（latest にはしない）
+# - 手動実行（workflow_dispatch）：Release は作らず、検証・ビルド・確認だけを行う。
+#   古い形のタグ v<base>-kaz.<n> は手動実行だけで受け付ける。
+# 本体 repo（release/juicefs/versions.json の repo）は読み取るだけで、書き込まない。
+name: release-juicefs
 
 on:
   push:
-    tags: ['v*-kaz.*']
+    tags: ['juicefs-v*']
   workflow_dispatch:
     inputs:
       tag:
-        description: 'versions.json に登録済みのタグ（例: v1.4.1-kaz.1）'
+        description: 'release/juicefs/versions.json に登録済みのタグ（例: juicefs-v1.4.1-kaz.4。手動実行では古い形 v1.4.1-kaz.3 も可）'
         required: true
 
 permissions:
@@ -37,20 +38,27 @@ jobs:
       - id: r
         env:
           TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+          EVENT: ${{ github.event_name }}
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           fail() { echo "::error::$*"; exit 1; }
-          [[ "$TAG" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)-(kaz\.[0-9]+)$ ]] || fail "タグの形式が不正です: $TAG"
+          if [[ "$TAG" =~ ^juicefs-v([0-9]+\.[0-9]+\.[0-9]+)-(kaz\.[0-9]+)$ ]]; then
+            :
+          elif [[ "$EVENT" == workflow_dispatch && "$TAG" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)-(kaz\.[0-9]+)$ ]]; then
+            :  # 古い形は手動実行（Release を作らない）だけで受け付ける
+          else
+            fail "タグの形式が不正です: $TAG"
+          fi
           base=${BASH_REMATCH[1]}
           kaz=${BASH_REMATCH[2]}
-          entry=$(jq -e --arg t "$TAG" '.[$t]' release/versions.json) || fail "release/versions.json に $TAG がありません"
-          repo=$(jq -r '.juicefs_repo // ""' <<<"$entry")
-          commit=$(jq -r '.juicefs_commit // ""' <<<"$entry")
+          entry=$(jq -e --arg t "$TAG" '.[$t]' release/juicefs/versions.json) || fail "release/juicefs/versions.json に $TAG がありません"
+          repo=$(jq -r '.repo // ""' <<<"$entry")
+          commit=$(jq -r '.commit // ""' <<<"$entry")
           go_version=$(jq -r '.go_version // ""' <<<"$entry")
           notes=$(jq -r '.notes // ""' <<<"$entry")
-          [[ "$repo" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || fail "juicefs_repo が不正です: $repo"
-          [[ "$commit" =~ ^[0-9a-f]{40}$ ]] || fail "juicefs_commit は 40 桁の SHA にしてください: $commit"
+          [[ "$repo" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || fail "repo が不正です: $repo"
+          [[ "$commit" =~ ^[0-9a-f]{40}$ ]] || fail "commit は 40 桁の SHA にしてください: $commit"
           [[ "$go_version" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]] || fail "go_version が不正です: $go_version"
           [ -n "$notes" ] && [ -f "$notes" ] || fail "リリースノートがありません: $notes"
           if ! got=$(gh api "repos/$repo/commits/$commit" --jq .sha 2>/dev/null) || [ "$got" != "$commit" ]; then
@@ -179,9 +187,10 @@ jobs:
       - name: install.ps1 (success and checksum mismatch)
         env:
           TAG: ${{ needs.resolve.outputs.tag }}
-          JFS_VERSION: ${{ needs.resolve.outputs.tag }}
-          JFS_DOWNLOAD_BASE: http://127.0.0.1:8765
-          JFS_INSTALL_DIR: ${{ runner.temp }}\jfs
+          KAZ_PRODUCT: juicefs
+          KAZ_VERSION: ${{ needs.resolve.outputs.tag }}
+          KAZ_DOWNLOAD_BASE: http://127.0.0.1:8765
+          KAZ_INSTALL_DIR: ${{ runner.temp }}\jfs
           EXPECTED: ${{ needs.build-windows.outputs.expected }}
         run: |
           $dir = "srv/download/$env:TAG"
@@ -194,15 +203,15 @@ jobs:
             }
             # 1. 正常にインストールでき、期待した版が表示される
             Get-Content release/install.ps1 -Raw | Invoke-Expression
-            $got = & "$env:JFS_INSTALL_DIR\juicefs.exe" version | Select-Object -First 1
+            $got = & "$env:KAZ_INSTALL_DIR\juicefs.exe" version | Select-Object -First 1
             if ($got -ne $env:EXPECTED) { throw "version mismatch: got '$got' want '$env:EXPECTED'" }
             # 2. sha256 が合わなければ失敗し、既存の exe は変わらない
-            $before = (Get-FileHash "$env:JFS_INSTALL_DIR\juicefs.exe").Hash
+            $before = (Get-FileHash "$env:KAZ_INSTALL_DIR\juicefs.exe").Hash
             ('0' * 64) + '  juicefs-windows-amd64.zip' | Set-Content -Encoding ascii "$dir/checksums.txt"
             $failed = $false
             try { Get-Content release/install.ps1 -Raw | Invoke-Expression } catch { $failed = $true; Write-Host "expected failure: $_" }
             if (-not $failed) { throw 'checksum mismatch was not detected' }
-            if ((Get-FileHash "$env:JFS_INSTALL_DIR\juicefs.exe").Hash -ne $before) { throw 'existing juicefs.exe was modified' }
+            if ((Get-FileHash "$env:KAZ_INSTALL_DIR\juicefs.exe").Hash -ne $before) { throw 'existing juicefs.exe was modified' }
             Write-Host 'install.ps1 checks passed'
           } finally {
             Stop-Process -Id $srv.Id -Force -ErrorAction SilentlyContinue
@@ -240,10 +249,12 @@ jobs:
           JREPO: ${{ needs.resolve.outputs.repo }}
           COMMIT: ${{ needs.resolve.outputs.commit }}
           GOV: ${{ needs.resolve.outputs.go_version }}
+          BASE: ${{ needs.resolve.outputs.base }}
+          KAZ: ${{ needs.resolve.outputs.kaz }}
         run: |
           set -euo pipefail
           if gh release list --repo "$GITHUB_REPOSITORY" --limit 1000 --json tagName --jq '.[].tagName' | grep -qxF "$TAG"; then
             echo "::error::$TAG の Release はすでにあります（draft を含む）。上書きしません"; exit 1
           fi
           { cat "$NOTES"; printf '\n\n---\nビルド元: https://github.com/%s/commit/%s（Go %s）\n' "$JREPO" "$COMMIT" "$GOV"; } > notes.md
-          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --verify-tag --title "$TAG" --notes-file notes.md dist/*
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --verify-tag --latest=false --title "JuiceFS v${BASE}-${KAZ}" --notes-file notes.md dist/*
