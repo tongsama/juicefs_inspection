@@ -1,5 +1,7 @@
 # 改修版 JuiceFS バイナリ配布の仕様 — inspection repo からの Release と install スクリプト
 
+> 2026-10-08 の [2製品対応の設計](2026-10-08-release-multi-product-design.md) で、配置・タグ・install スクリプトの使い方を置き換えた。以下は当時の記録である。
+
 > 対象は調査ルート repo（`tongsama/juicefs_inspection`）です。本体（`tongsama/juicefs`）はソースを読み取るだけで、ファイルもタグも追加しません。
 
 ## 目的と前提

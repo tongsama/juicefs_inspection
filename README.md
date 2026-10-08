@@ -16,50 +16,69 @@
 
 本体の改修は `tongsama/juicefs` の `1.4.1-improve-kaz` ブランチ（既定ブランチ）で管理しています（2026-10-08 時点の HEAD は `78acd63d235db5f275068d3ff75b45baa4b2f616`、v1.4.1-kaz.3 のビルド元）。v1.4.1-kaz.2 のビルド元は `release-1.4.1-kaz.2` ブランチ（`9268beb4`）に残っています。以前の `fix/vm-io-wait-policy`（`84f19ca4`、v1.4.1-kaz.1）はこのブランチに含まれ、2026-10-06 に削除しました。このルートの文書を commit しても本体の差分は保存されないため、本体は別途 commit・push します。2026-10-03 の整理時点の HEAD `3bed0d82` は、author の書き換えにより `2ae17f94` になっています（内容は同一）。
 
-rclone の改修は `tongsama/rclone`（リモート名 `kaz`、upstream は `origin`）の `1.75.1-improve-kaz` ブランチ（既定ブランチ、v1.75.1 から分岐）で管理しています（2026-10-08 時点の HEAD は `dab33da31`。`feat/kaz-vfs-lookup`（Phase 1）と `feat/kaz-s3-persist-metadata`（Phase 2）を `--no-ff` で merge）。`.gitignore` の `/rclone` により、このルートの commit には含めません。改修の内容は [rclone の dir cache の知見](docs/findings.md#rclone-serve-s3-の-dir-cache-と複数ホスト2026-10-08) と [本番適用の手順書](rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) を参照してください。rclone の配布（release）はまだありません（TODO の Phase 3）。
+rclone の改修は `tongsama/rclone`（リモート名 `kaz`、upstream は `origin`）の `1.75.1-improve-kaz` ブランチ（既定ブランチ、v1.75.1 から分岐）で管理しています（2026-10-08 時点の HEAD は `dab33da31`。`feat/kaz-vfs-lookup`（Phase 1）と `feat/kaz-s3-persist-metadata`（Phase 2）を `--no-ff` で merge）。`.gitignore` の `/rclone` により、このルートの commit には含めません。改修の内容は [rclone の dir cache の知見](docs/findings.md#rclone-serve-s3-の-dir-cache-と複数ホスト2026-10-08) と [本番適用の手順書](rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) を参照してください。rclone の配布は [改修版バイナリの配布とインストール](#改修版バイナリの配布とインストール) を参照してください（最初の版 `rclone-v1.75.1-kaz.1` は公開前です）。
 
 ## 改修版バイナリの配布とインストール
 
-このリポジトリは、改修版 JuiceFS のビルド済みバイナリの配布元も兼ねています。本体のリポジトリは公式の構成に近いまま保ち、配布に必要なもの（インストールスクリプト、ビルド用 workflow、版の対応表、リリースノート）はすべてこちらに置いています。
+このリポジトリは、改修版 JuiceFS と改修版 rclone のビルド済みバイナリの配布元も兼ねています。本体のリポジトリは公式の構成に近いまま保ち、配布に必要なもの（インストールスクリプト、ビルド用 workflow、版の対応表、リリースノート）はすべてこちらに置いています。
 
-- 配布先: [GitHub Releases](https://github.com/tongsama/juicefs_inspection/releases)（最新は [v1.4.1-kaz.3](https://github.com/tongsama/juicefs_inspection/releases/tag/v1.4.1-kaz.3)、最初の版は [v1.4.1-kaz.1](https://github.com/tongsama/juicefs_inspection/releases/tag/v1.4.1-kaz.1)）
+- 配布先: [GitHub Releases](https://github.com/tongsama/juicefs_inspection/releases)。1つの Release に1製品・1版を置きます。
+- 製品ごとの絞り込み: [JuiceFS](https://github.com/tongsama/juicefs_inspection/releases?q=juicefs)、[rclone](https://github.com/tongsama/juicefs_inspection/releases?q=rclone)。
+- タグは `juicefs-v<版>-kaz.<n>`（次は `juicefs-v1.4.1-kaz.4`）と `rclone-v<版>-kaz.<n>`（最初は `rclone-v1.75.1-kaz.1`、公開後に Releases に並びます）です。
+- 古い形のタグ `v1.4.1-kaz.1`〜`.3` はそのまま残し、JuiceFS として扱います。最新の版を探すときも JuiceFS の候補に入ります。
+- 「Latest」の印は、既存の `v1.4.1-kaz.3` に残っています。新しい Release は印を付けない指定で作るため、`releases/latest` は使いません。install スクリプトは製品ごとに GitHub API で最新の版を探します。
 - 対象: `linux-amd64`、`linux-arm64`（aarch64）、`windows-amd64`。32bit ARM（armv7）と macOS は対象外です。
-- 各版のビルド元となる本体の commit は [`release/versions.json`](release/versions.json) に、変更内容は [`docs/release-notes/`](docs/release-notes/) にあります。
+- 各版のビルド元となる commit は [`release/juicefs/versions.json`](release/juicefs/versions.json) と [`release/rclone/versions.json`](release/rclone/versions.json) に、変更内容は各 `notes/` にあります。
+
+製品名（`juicefs` か `rclone`）は必須です。省略や不明な名前はエラーになります。スクリプトはリポジトリの `main` から直接取得します。
 
 ### Linux
 
 ```bash
-curl -fsSL https://github.com/tongsama/juicefs_inspection/releases/latest/download/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/tongsama/juicefs_inspection/main/release/install.sh | sh -s -- juicefs
+curl -fsSL https://raw.githubusercontent.com/tongsama/juicefs_inspection/main/release/install.sh | sh -s -- rclone
 ```
 
-- 既定では `/usr/local/bin/juicefs` に置きます。書き込めない場合は sudo を使います。
-- インストール先は第1引数で変えられます: `curl -fsSL …/install.sh | sh -s /opt/bin`
-- 版を固定する場合（本番ホストではこちらを推奨）: `curl -fsSL …/install.sh | JFS_VERSION=v1.4.1-kaz.3 sh`
-- 公式版と並べて置く場合: `JFS_INSTALL_NAME=juicefs-kaz` を指定します。
+- 既定では `/usr/local/bin/<製品名>` に置きます。書き込めない場合は sudo を使います。
+- インストール先は製品名の次の引数で変えられます: `… | sh -s -- juicefs /opt/bin`
+- 版を固定する場合（本番ホストではこちらを推奨）: `… | KAZ_VERSION=rclone-v1.75.1-kaz.1 sh -s -- rclone`。タグ名をそのまま指定します。固定すると GitHub API を使いません。
+- 公式版と並べて置く場合: `KAZ_INSTALL_NAME=juicefs-kaz`（rclone なら `rclone-kaz` など）を指定します。
+- API の回数制限（認証なしで1時間60回）や失敗のときは、その旨を表示して止まります。`KAZ_VERSION` で版を指定すれば回避できます。
 - `checksums.txt` の SHA-256 と照合し、一致した場合だけ既存のファイルを1回の `mv` で置き換えます。途中で失敗したときは既存のファイルに触れません。
+- rclone を入れたあと、PATH 上で先に見つかる別の `rclone`（例: `/usr/bin/rclone`）があると警告します。置き換えたい場所は引数で指定してください。
 
-**稼働中の mount についての注意:** 置き換えても、稼働中の mount は再起動されません。ただし、mount の子プロセスが異常終了して supervisor が自動で再起動した場合は、置き換え後の新しい版で動き始めます（`juicefs/cmd/mount_unix.go` は起動時に取得した実行ファイルのパスで子プロセスを起動し直すため）。本番ホストで置き換えるときは、この点を踏まえて計画してください。
+**稼働中の mount・rclone についての注意:**
+
+- JuiceFS: 置き換えても、稼働中の mount は再起動されません。ただし、mount の子プロセスが異常終了して supervisor が自動で再起動した場合は、置き換え後の新しい版で動き始めます（`juicefs/cmd/mount_unix.go` は起動時に取得した実行ファイルのパスで子プロセスを起動し直すため）。本番ホストで置き換えるときは、この点を踏まえて計画してください。
+- rclone: 稼働中の rclone は止めずに置き換えるため、新しい版は再起動するまで反映されません。スクリプトもその旨を表示します。
 
 ### Windows（PowerShell）
 
 ```powershell
-irm https://github.com/tongsama/juicefs_inspection/releases/latest/download/install.ps1 | iex
+$env:KAZ_PRODUCT='rclone'; irm https://raw.githubusercontent.com/tongsama/juicefs_inspection/main/release/install.ps1 | iex
 ```
 
-- 既定では `%LOCALAPPDATA%\Programs\juicefs\juicefs.exe` に置きます。PATH には追加しません。
-- 環境変数 `JFS_INSTALL_DIR`（インストール先）と `JFS_VERSION`（版の固定）で変えられます。
-- mount には別途 [WinFsp](https://winfsp.dev/rel/) が必要です。スクリプトは WinFsp を自動では入れず、見つからない場合に警告だけを出します。
-- Windows 版は、ビルドと起動（`juicefs version`）までしか確認していません。改修したコードの Windows での mount 動作は未検証です。
+JuiceFS は `$env:KAZ_PRODUCT='juicefs'` にします。
+
+- 既定では `%LOCALAPPDATA%\Programs\<製品名>\<製品名>.exe` に置きます。PATH には追加しません。
+- 環境変数 `KAZ_INSTALL_DIR`（インストール先）と `KAZ_VERSION`（版の固定。タグ名そのまま）で変えられます。
+- mount には別途 [WinFsp](https://winfsp.dev/rel/) が必要です。rclone の Windows 版も `rclone mount` を含むため、同じです。スクリプトは WinFsp を自動では入れず、見つからない場合に警告だけを出します。
+- JuiceFS の Windows 版は、ビルドと起動（`juicefs version`）までしか確認していません。改修したコードの Windows での mount 動作は未検証です。
 
 ### 新しい版を出す手順
 
-1. 本体（`tongsama/juicefs`）で修正し、`kaz` リモートへ push する。
-2. このリポジトリの `release/versions.json` に、新しいタグ（例: `v1.4.1-kaz.2`）と本体の 40 桁の commit SHA を追加し、`docs/release-notes/<タグ>.md` を書いて commit・push する。
-3. 必要なら、Release を作らずにビルドだけ試す: `gh workflow run release.yml --repo tongsama/juicefs_inspection -f tag=<タグ>`
-4. タグを push する（`git tag <タグ> && git push original <タグ>`）。workflow が3種類をビルド・確認し、draft の Release を作る。
+1. 本体（`tongsama/juicefs` または `tongsama/rclone`）で修正し、`kaz` リモートへ push する。
+2. このリポジトリの `release/<製品>/versions.json` に、新しいタグ（例: `juicefs-v1.4.1-kaz.4`、`rclone-v1.75.1-kaz.2`）と本体の 40 桁の commit SHA を追加し、`release/<製品>/notes/<タグ>.md` を書いて commit・push する。
+3. 必要なら、Release を作らずにビルドだけ試す: `gh workflow run release-<製品>.yml --repo tongsama/juicefs_inspection -f tag=<タグ>`
+4. タグを push する（`git tag <タグ> && git push original <タグ>`）。タグの接頭辞（`juicefs-v*`、`rclone-v*`）で、その製品の workflow が起動する。workflow が3種類をビルド・確認し、draft の Release を作る。同じタグの Release がすでにあるときは止まる。
 5. draft の中身を確認して、GitHub の画面で公開する。
 
-`juicefs version` は `1.4.1+<本体commitの日付>.<SHAの先頭8桁>-kaz.<n>` と表示されます。仕組みの詳細は [配布の仕様](docs/superpowers/specs/2026-10-04-release-distribution.md) を参照してください。
+バイナリの表示は次の形です。
+
+- `juicefs version`: `1.4.1+<本体commitの日付>.<SHAの先頭8桁>-kaz.<n>`
+- `rclone version` の1行目: `rclone v1.75.1-kaz.<n>`
+
+`install-tests.yml` は、`release/` や workflow が変わったときに install スクリプトのテスト（`release/tests/test_install.sh`）を流します。仕組みの詳細は [2製品対応の設計](docs/superpowers/specs/2026-10-08-release-multi-product-design.md) を参照してください（前の [配布の仕様](docs/superpowers/specs/2026-10-04-release-distribution.md) は、配置・タグ・install スクリプトの使い方をこの設計が置き換えています）。
 
 ## 最初に読む資料
 
@@ -92,11 +111,17 @@ juicefs_inspection/
 ├── AGENTS.md
 ├── agent_memo.md
 ├── TODO.md
-├── .github/workflows/release.yml  # バイナリのビルドと draft Release の作成
-├── release/                  # install.sh / install.ps1、versions.json、テスト
+├── .github/workflows/
+│   ├── release-juicefs.yml   # JuiceFS のビルドと draft Release の作成
+│   ├── release-rclone.yml    # rclone のビルドと draft Release の作成
+│   └── install-tests.yml     # install スクリプトのテスト
+├── release/
+│   ├── install.sh / install.ps1   # 2製品共通のインストールスクリプト
+│   ├── tests/                # install.sh のテスト
+│   ├── juicefs/              # versions.json と notes/（リリースノート）
+│   └── rclone/               # versions.json と notes/
 ├── docs/
 │   ├── findings.md
-│   ├── release-notes/        # 配布版ごとのリリースノート
 │   ├── development/vm_io_diagnostics.md
 │   └── superpowers/
 │       ├── specs/
