@@ -16,7 +16,7 @@
 
 本体の改修は `tongsama/juicefs` の `1.4.1-improve-kaz` ブランチ（既定ブランチ）で管理しています（2026-10-08 時点の HEAD は `78acd63d235db5f275068d3ff75b45baa4b2f616`、v1.4.1-kaz.3 のビルド元）。v1.4.1-kaz.2 のビルド元は `release-1.4.1-kaz.2` ブランチ（`9268beb4`）に残っています。以前の `fix/vm-io-wait-policy`（`84f19ca4`、v1.4.1-kaz.1）はこのブランチに含まれ、2026-10-06 に削除しました。このルートの文書を commit しても本体の差分は保存されないため、本体は別途 commit・push します。2026-10-03 の整理時点の HEAD `3bed0d82` は、author の書き換えにより `2ae17f94` になっています（内容は同一）。
 
-rclone の改修は `tongsama/rclone`（リモート名 `kaz`、upstream は `origin`）の `1.75.1-improve-kaz` ブランチ（既定ブランチ、v1.75.1 から分岐）で管理しています（2026-10-08 時点の HEAD は `dd03d0243`。`feat/kaz-vfs-lookup` を `--no-ff` で merge）。`.gitignore` の `/rclone` により、このルートの commit には含めません。改修の内容は [rclone の dir cache の知見](docs/findings.md#rclone-serve-s3-の-dir-cache-と複数ホスト2026-10-08) と [本番適用の手順書](rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) を参照してください。rclone の配布（release）はまだありません（TODO の Phase 3）。
+rclone の改修は `tongsama/rclone`（リモート名 `kaz`、upstream は `origin`）の `1.75.1-improve-kaz` ブランチ（既定ブランチ、v1.75.1 から分岐）で管理しています（2026-10-08 時点の HEAD は `dab33da31`。`feat/kaz-vfs-lookup`（Phase 1）と `feat/kaz-s3-persist-metadata`（Phase 2）を `--no-ff` で merge）。`.gitignore` の `/rclone` により、このルートの commit には含めません。改修の内容は [rclone の dir cache の知見](docs/findings.md#rclone-serve-s3-の-dir-cache-と複数ホスト2026-10-08) と [本番適用の手順書](rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) を参照してください。rclone の配布（release）はまだありません（TODO の Phase 3）。
 
 ## 改修版バイナリの配布とインストール
 

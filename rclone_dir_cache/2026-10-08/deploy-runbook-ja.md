@@ -61,3 +61,19 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -o /tmp/rclone-kaz .
 - 他のホストが消した object は、最大で `--dir-cache-time` の2倍（1h なら2時間）まで「有る」と答えることがある。JuiceFS は消えた object を読まないので問題にならない。読んだ場合はエラーになり、古いデータは返らない。
 - Drive の同名フォルダの重複（複数ホストが同時に新しいフォルダを作る場合）は、今回の変更の範囲外（TODO、Phase 1b）。
 - S3 のユーザーメタデータ（JuiceFS のチェックサム）は、PUT したホストのメモリにしか無い。他のホストが読むときは、JuiceFS のチェックサム検証が省略される（Phase 2）。
+
+## Phase 2: ユーザーメタデータの Drive 保存（`--kaz-s3-persist-metadata`）
+
+- 改修版: rclone `feat/kaz-s3-persist-metadata`（merge 後は `1.75.1-improve-kaz`）。仕様は [設計](../../docs/superpowers/specs/2026-10-08-rclone-s3-persist-metadata-design.md)、実機の確認は [記録](phase2-drive-verification-ja.md)。
+- **2つを必ず一緒に指定する。**
+  - serve s3 の起動オプションに `--kaz-s3-persist-metadata` を追加する。
+  - Drive 側は `rclone.conf` の `[gdrive_kwatan]` に `kaz_properties = true` を書く（または起動オプションに `--drive-kaz-properties`）。
+  - Drive 側を忘れると、PUT したホスト自身でメタデータが返らず、JuiceFS のチェックサム検証が黙って省略され、上書き時に古いメタデータも消えない。serve s3 からは検出できないので、各ホストで設定を確認すること。
+- `--vfs-cache-mode` は `off` のまま（`off` 以外では起動しない）。
+- `kaz_properties = true` を `rclone.conf` に書くと、同じリモートに対する他のコマンドにも効く。特に `rclone copy -M` などメタデータ付きで上書きすると、Drive の properties がコピー元のメタデータで置き換わる（コピー元に無いものは消える）。
+- 1台ずつ入れ替えてよい。新旧の版が混ざっても、古い版は properties を読み書きしないだけで、新しい版は古い版が書いた object を「メタデータ無し」として扱う（JuiceFS は検証を省略する）。
+- 適用後に見るもの:
+  - JuiceFS で書いたファイルの object に、Drive の properties `s3m-crc32c` が付いていること（`rclone lsjson -M gdrive_kwatan:/rclone-s3/<bucket>/chunks/...` で確認）。
+  - rclone の RSS が、PUT の件数に応じて増え続けないこと（`b.meta` を使わなくなる）。
+  - JuiceFS のログに `verify checksum failed` が出ないこと。出た場合は、該当の object の properties と中身を確認する。
+- 元に戻す: `--kaz-s3-persist-metadata` を外して起動し直すと、メモリの方式に戻る。Drive に付いた properties は残るが、古い版は読まないので害は無い。ただし、戻した状態で同じ key を上書きすると古い `s3m-crc32c` が残り、もう一度有効にしたときに読み出しが失敗し得る（JuiceFS は同じ key を上書きしないので、実際にはほぼ起きない）。

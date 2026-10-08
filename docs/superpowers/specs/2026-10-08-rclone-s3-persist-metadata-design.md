@@ -39,7 +39,7 @@
 
 命名規則の補足（ユーザー承認）: backend のオプションは rclone が backend 名を先頭に付けるので、`--<backend>-kaz-<内容>` とする。
 
-本番では両方を指定する。`--drive-kaz-properties` が無くても動くが、HEAD・GET で object ごとに API が1回増える。
+Drive では両方を必ず一緒に指定する（2026-10-08 最終レビューを受けて訂正）。`--drive-kaz-properties` が無いと、アップロードの応答に properties が含まれないため、PUT したホスト自身ではメタデータが返らない状態がキャッシュされ（JuiceFS の検証が黙って省略される）、上書き時に古い properties も消えない。serve s3 から Drive のオプションは調べられないので、ヘルプと手順書で必須と明記する。
 
 ## 3. 保存するものとキーの対応づけ（第1節）
 
