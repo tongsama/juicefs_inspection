@@ -151,11 +151,12 @@ force=true slowログ3,649件は再帰callframeの完了数で、独立した手
 - **構成**: 各ホストがそれぞれ `rclone serve s3` を動かし、同じ Drive フォルダを共有する。
 - **原因（ソースと再現で確認）**: serve s3 の操作はすべて VFS のパスの walk を通る。VFS は一覧済みのディレクトリに名前が無ければ、期限内は Drive に問い合わせずに「無い」を返す。`--poll-interval 0` では他のホストの PUT が反映されないので、他のホストが作った object を最大 `--dir-cache-time` の間「無い」（404）と返し、JuiceFS の Read が EIO になる。期限を短くすると、key 指定の操作でも各階層のディレクトリを全件一覧する。
 - **付随していた問題**: Stat のどのエラーも 404 になる（rate limit も「無い」に見える）。DELETE が自ホストのキャッシュに無い object を消さずに成功を返す。`--no-cleanup` が配線されていない。S3 のユーザーメタデータ（JuiceFS の crc32c）はプロセスのメモリにしか無く、DELETE でも消えない。
-- **対策（改修版 rclone、`feat/kaz-vfs-lookup` 9b75066b4、未適用）**: `--kaz-vfs-lookup-by-path` で、キャッシュに無い名前を Drive に1件だけ問い合わせ、「無い」をキャッシュしない。404 は「無い」ときだけにし、他は 500。DELETE は他ホストの object も実際に消し、すでに無ければ成功。`--no-cleanup` を配線。PUT（`O_CREATE|O_TRUNC`、cache-mode off）では存在を問い合わせないので、PUT の API 回数は改修前と同じ。
-- **実機で確認したこと**: 他のホストが作った object がすぐ読める。DELETE で Drive から消える。key 指定の操作で一覧の取り直しが0回。既存 object の上書きで同名ファイルが増えない。
+- **対策（改修版 rclone、`rclone-v1.75.1-kaz.1` に含めて公開し、本番に適用済み）**: `--kaz-vfs-lookup-by-path` で、キャッシュに無い名前を Drive に1件だけ問い合わせ、「無い」をキャッシュしない。404 は「無い」ときだけにし、他は 500。DELETE は他ホストの object も実際に消し、すでに無ければ成功。`--no-cleanup` を配線。PUT（`O_CREATE|O_TRUNC`、cache-mode off）では存在を問い合わせないので、PUT の API 回数は改修前と同じ。
+- **実機で確認したこと**: 2026-10-08、ユーザーが公開版 `rclone-v1.75.1-kaz.1` で2台構成を試し、公式 v1.75.1 で起きていた問題が解消したことを確認。テスト用フォルダでは、他のホストが作った object がすぐ読める。DELETE で Drive から消える。key 指定の操作で一覧の取り直しが0回。既存 object の上書きで同名ファイルが増えない。
 - **JuiceFS 側**: GET・PUT では 404・500・503 を区別せずに再試行する。404 を特別に扱うのは Head と Delete だけ（[記録](../rclone_dir_cache/2026-10-08/juicefs-error-handling-ja.md)）。
-- **Phase 2（2026-10-08、`feat/kaz-s3-persist-metadata`、未適用）**: `--kaz-s3-persist-metadata` と `--drive-kaz-properties`（必ず一緒に使う）で、`X-Amz-Meta-*` を Drive の properties `s3m-*` に PUT と同時に保存し、どのホストからでも・再起動後も返す。`b.meta` は使わない（メモリが増え続ける問題も解消）。API の回数は増えない。上書きはメタデータを丸ごと置き換える。上限（1件124バイト、30個）を超えると PUT は失敗し、object は作られない。改修前に書かれた object は「メタデータ無し」として扱われ、JuiceFS は検証を省略する（[実機の確認](../rclone_dir_cache/2026-10-08/phase2-drive-verification-ja.md)）。
-- **残る制約**: Phase 2 を適用するまでは、`b.meta` が増え続け、他のホストが PUT した object の検証が省略される。適用後も、改修前に書かれた object は検証されない。Drive の同名フォルダの重複は範囲外（2026-10-08 時点で0件）。
+- **Phase 2（2026-10-08、`rclone-v1.75.1-kaz.1` に含めて公開し、本番に適用済み）**: `--kaz-s3-persist-metadata` と `--drive-kaz-properties`（必ず一緒に使う）で、`X-Amz-Meta-*` を Drive の properties `s3m-*` に PUT と同時に保存し、どのホストからでも・再起動後も返す。`b.meta` は使わない（メモリが増え続ける問題も解消）。API の回数は増えない。上書きはメタデータを丸ごと置き換える。上限（1件124バイト、30個）を超えると PUT は失敗し、object は作られない。改修前に書かれた object は「メタデータ無し」として扱われ、JuiceFS は検証を省略する（[実機の確認](../rclone_dir_cache/2026-10-08/phase2-drive-verification-ja.md)）。
+- **本番への適用**: 2026-10-08、まず単体で適用し（新しい chunk に `s3m-crc32c` が付くことを確認）、続いて公開版 `rclone-v1.75.1-kaz.1` を2台構成に入れて、公式 v1.75.1 で起きていた問題が解消したことをユーザーが確認した。起動オプションは [手順書](../rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) のとおり（`--kaz-vfs-lookup-by-path --no-cleanup --kaz-s3-persist-metadata --drive-kaz-properties`）。
+- **残る制約**: 改修前に書かれた object にはチェックサムが無く、検証されない。他のホストが同じ key を上書きした後は、キャッシュの期限まで古い情報が返ることがある（JuiceFS は同じ key を書き直さない）。Drive の同名フォルダの重複は範囲外（2026-10-08 時点で0件）。
 
 ## 巨大ファイル random I/O の metadata path（2026-10-07、ソース調査）
 

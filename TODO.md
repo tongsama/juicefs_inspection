@@ -54,7 +54,10 @@
       - [ ] 任意: JuiceFS を動かして、他のホストで書いた chunk のチェックサム検証が効くことを確かめる。
     - 独自オプションの命名（ユーザー承認、2026-10-08）: 接頭辞 `--kaz-<対象>-<内容>`。ただし backend のオプションは rclone が backend 名を先頭に付けるので `--<backend>-kaz-<内容>`（例 `--drive-kaz-properties`）（例 `--kaz-vfs-lookup-by-path`）、ヘルプ先頭に `[kaz]`、可能なら flag グループ「Kaz」。既存オプションの不具合修正（`--no-cleanup` 等）は upstream の名前のまま。
     - [ ] 範囲外の既知のリスク: Drive の同名フォルダの重複（複数ホストが同時に新しい chunks フォルダへ最初の PUT をすると、それぞれ作成し得る。lib/dircache の FindLeaf→CreateDir に、ホスト間の排他が無い）。今も同じリスクがある。2026-10-08 に読み取りのみの問い合わせで確認し、`rclone-s3` 配下（1,442 フォルダ）に重複は 0（[記録](rclone_dir_cache/2026-10-08/dup-folders-ja.md)）。回避策の候補（全ホストで同じ規則で正のフォルダを選び、作成直後に検索し直して寄せる、Drive backend の opt-in オプション）は Phase 1b として別の仕様にする。object の key は metadata DB の slice ID で一意だが、フォルダ（ID 1000 ごと）は 4096 個単位の払い出しの境界で2ホストが共有し得る。発生の幅は狭いので、ユーザー判断で優先度を下げ、TODO に残すだけにする（2026-10-08）。
-    - [ ] Phase 3: release 構成を JuiceFS と rclone の2成果物に対応させる（別の spec）。
+    - [x] Phase 3（2026-10-08 完了）: release 構成を JuiceFS と rclone の2成果物に対応させる（別の spec）。
+      - 2026-10-08 実装（subagent-driven、`feat/release-multi-product` を main へ ff、000c7eb）。タスクごとのレビューと最終レビューを通過、install テスト20件、actionlint ok。手動実行（JuiceFS は古い形 `v1.4.1-kaz.3`、rclone は `rclone-v1.75.1-kaz.1`）で全 job 成功。
+      - 2026-10-08 `rclone-v1.75.1-kaz.1` を公開（タグは 000c7eb、run 37752233096、ユーザーが Latest を外して公開。Latest は `v1.4.1-kaz.3` のまま）。このホストで install.sh による rclone・juicefs の実インストールを確認、Windows はユーザーが install.ps1 で確認し動作も OK。
+      - 2026-10-08 ユーザーが `rclone-v1.75.1-kaz.1` で2台構成を試し、v1.75.1 の公式版でうまくいかなかったところ（他ホストが作った object が見えない等）が期待どおり動作することを確認。
       - 2026-10-08 着手（brainstorming、architectural）。ユーザー判断: 既存の install URL は捨ててよい（整理を優先）。製品ごとに分ける（更新は可分）。方式 (1): タグを製品ごとに分け（`juicefs-v…-kaz.N`、`rclone-v1.75.1-kaz.N`）、install スクリプトが GitHub API で製品ごとの最新を探す（GitHub の latest はリポジトリで1つのため）。rclone は linux-amd64・linux-arm64・windows-amd64、公式と同じ full（`bin/cross-compile.go -tags cmount`、Windows の mount を含む、CGO 不要）。既存の JuiceFS の Release（`v1.4.1-kaz.1`〜`.3`）は残し、install スクリプトが古い形のタグも JuiceFS として扱う（a）。install の既定先は両製品とも `/usr/local/bin`。[仕様](docs/superpowers/specs/2026-10-08-release-multi-product-design.md)（ユーザー承認済み）。[実装計画](docs/superpowers/plans/2026-10-08-release-multi-product.md)（Task 0〜9、ユーザー承認、subagent-driven で実装中）。
   - 2026-10-08 rclone v1.75.1 を `rclone/`（Git ignore、独立リポジトリ、ブランチ `1.75.1-improve-kaz`）に clone した。fork `tongsama/rclone` は未作成。
 

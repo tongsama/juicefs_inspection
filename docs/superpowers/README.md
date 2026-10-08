@@ -12,6 +12,6 @@
 | 同 chunk の slice commit をまとめる（Phase 2、`--meta-write-batch`、実装済み・計測待ち） | [設計](specs/2026-10-07-meta-write-batch-design.md) | [実装計画](plans/2026-10-07-meta-write-batch.md) |
 | rclone serve s3 のパス指定 lookup（rclone Phase 1、`--kaz-vfs-lookup-by-path`、実装・実機確認済み、merge 済み） | [設計](specs/2026-10-08-rclone-lookup-by-path-design.md) | [実装計画](plans/2026-10-08-rclone-lookup-by-path.md) |
 | rclone serve s3 のユーザーメタデータを Drive に保存（rclone Phase 2、`--kaz-s3-persist-metadata`・`--drive-kaz-properties`、実装・実機確認済み、merge 済み） | [設計](specs/2026-10-08-rclone-s3-persist-metadata-design.md) | [実装計画](plans/2026-10-08-rclone-s3-persist-metadata.md) |
-| 配布を JuiceFS と rclone の2製品に対応（Phase 3、製品別タグ・共通 install スクリプト、実装中） | [設計](specs/2026-10-08-release-multi-product-design.md) | [実装計画](plans/2026-10-08-release-multi-product.md) |
+| 配布を JuiceFS と rclone の2製品に対応（Phase 3、製品別タグ・共通 install スクリプト、完了。rclone-v1.75.1-kaz.1 公開） | [設計](specs/2026-10-08-release-multi-product-design.md) | [実装計画](plans/2026-10-08-release-multi-product.md) |
 
 文書中の `pkg/`・`cmd/` と Go コマンドは、本体の `juicefs/` を基準にします。ソースを本体から移したものではなく、調査文書の管理先だけを分離しています。

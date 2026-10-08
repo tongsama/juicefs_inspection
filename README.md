@@ -16,7 +16,7 @@
 
 本体の改修は `tongsama/juicefs` の `1.4.1-improve-kaz` ブランチ（既定ブランチ）で管理しています（2026-10-08 時点の HEAD は `78acd63d235db5f275068d3ff75b45baa4b2f616`、v1.4.1-kaz.3 のビルド元）。v1.4.1-kaz.2 のビルド元は `release-1.4.1-kaz.2` ブランチ（`9268beb4`）に残っています。以前の `fix/vm-io-wait-policy`（`84f19ca4`、v1.4.1-kaz.1）はこのブランチに含まれ、2026-10-06 に削除しました。このルートの文書を commit しても本体の差分は保存されないため、本体は別途 commit・push します。2026-10-03 の整理時点の HEAD `3bed0d82` は、author の書き換えにより `2ae17f94` になっています（内容は同一）。
 
-rclone の改修は `tongsama/rclone`（リモート名 `kaz`、upstream は `origin`）の `1.75.1-improve-kaz` ブランチ（既定ブランチ、v1.75.1 から分岐）で管理しています（2026-10-08 時点の HEAD は `dab33da31`。`feat/kaz-vfs-lookup`（Phase 1）と `feat/kaz-s3-persist-metadata`（Phase 2）を `--no-ff` で merge）。`.gitignore` の `/rclone` により、このルートの commit には含めません。改修の内容は [rclone の dir cache の知見](docs/findings.md#rclone-serve-s3-の-dir-cache-と複数ホスト2026-10-08) と [本番適用の手順書](rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) を参照してください。rclone の配布は [改修版バイナリの配布とインストール](#改修版バイナリの配布とインストール) を参照してください（最初の版 `rclone-v1.75.1-kaz.1` は公開前です）。
+rclone の改修は `tongsama/rclone`（リモート名 `kaz`、upstream は `origin`）の `1.75.1-improve-kaz` ブランチ（既定ブランチ、v1.75.1 から分岐）で管理しています（2026-10-08 時点の HEAD は `dab33da31`。`feat/kaz-vfs-lookup`（Phase 1）と `feat/kaz-s3-persist-metadata`（Phase 2）を `--no-ff` で merge）。`.gitignore` の `/rclone` により、このルートの commit には含めません。改修の内容は [rclone の dir cache の知見](docs/findings.md#rclone-serve-s3-の-dir-cache-と複数ホスト2026-10-08) と [本番適用の手順書](rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) を参照してください。rclone の配布は [改修版バイナリの配布とインストール](#改修版バイナリの配布とインストール) を参照してください（最新は 2026-10-08 に公開した `rclone-v1.75.1-kaz.1` で、本番の2台構成に適用済みです）。
 
 ## 改修版バイナリの配布とインストール
 
@@ -24,7 +24,7 @@ rclone の改修は `tongsama/rclone`（リモート名 `kaz`、upstream は `or
 
 - 配布先: [GitHub Releases](https://github.com/tongsama/juicefs_inspection/releases)。1つの Release に1製品・1版を置きます。
 - 製品ごとの絞り込み: [JuiceFS](https://github.com/tongsama/juicefs_inspection/releases?q=juicefs)、[rclone](https://github.com/tongsama/juicefs_inspection/releases?q=rclone)。
-- タグは `juicefs-v<版>-kaz.<n>`（次は `juicefs-v1.4.1-kaz.4`）と `rclone-v<版>-kaz.<n>`（最初は `rclone-v1.75.1-kaz.1`、公開後に Releases に並びます）です。
+- タグは `juicefs-v<版>-kaz.<n>`（次は `juicefs-v1.4.1-kaz.4`）と `rclone-v<版>-kaz.<n>`（最初の版は `rclone-v1.75.1-kaz.1`、2026-10-08 公開）です。
 - 古い形のタグ `v1.4.1-kaz.1`〜`.3` はそのまま残し、JuiceFS として扱います。最新の版を探すときも JuiceFS の候補に入ります。
 - 「Latest」の印は、既存の `v1.4.1-kaz.3` に残っています。新しい Release は印を付けない指定で作るため、`releases/latest` は使いません。install スクリプトは製品ごとに GitHub API で最新の版を探します。
 - 対象: `linux-amd64`、`linux-arm64`（aarch64）、`windows-amd64`。32bit ARM（armv7）と macOS は対象外です。
