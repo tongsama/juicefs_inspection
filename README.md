@@ -45,7 +45,7 @@ curl -fsSL https://raw.githubusercontent.com/tongsama/juicefs_inspection/main/re
 - 公式版と並べて置く場合: `KAZ_INSTALL_NAME=juicefs-kaz`（rclone なら `rclone-kaz` など）を指定します。
 - API の回数制限（認証なしで1時間60回）や失敗のときは、その旨を表示して止まります。`KAZ_VERSION` で版を指定すれば回避できます。
 - `checksums.txt` の SHA-256 と照合し、一致した場合だけ既存のファイルを1回の `mv` で置き換えます。途中で失敗したときは既存のファイルに触れません。
-- rclone を入れたあと、PATH 上で先に見つかる別の `rclone`（例: `/usr/bin/rclone`）があると警告します。置き換えたい場所は引数で指定してください。
+- インストール後、PATH 上で先に見つかる同名の別ファイル（例: `/usr/bin/rclone`）があると、juicefs・rclone のどちらでも警告します（同じファイルを別名や symlink で指すものは警告しません）。置き換えたい場所は引数で指定してください。
 
 **稼働中の mount・rclone についての注意:**
 
@@ -61,6 +61,7 @@ $env:KAZ_PRODUCT='rclone'; irm https://raw.githubusercontent.com/tongsama/juicef
 JuiceFS は `$env:KAZ_PRODUCT='juicefs'` にします。
 
 - 既定では `%LOCALAPPDATA%\Programs\<製品名>\<製品名>.exe` に置きます。PATH には追加しません。
+- インストール後、PATH 上に同名の別ファイルがあると警告します。稼働中の `<製品名>.exe` は置き換えられないため、先に止めてください。
 - 環境変数 `KAZ_INSTALL_DIR`（インストール先）と `KAZ_VERSION`（版の固定。タグ名そのまま）で変えられます。
 - mount には別途 [WinFsp](https://winfsp.dev/rel/) が必要です。rclone の Windows 版も `rclone mount` を含むため、同じです。スクリプトは WinFsp を自動では入れず、見つからない場合に警告だけを出します。
 - JuiceFS の Windows 版は、ビルドと起動（`juicefs version`）までしか確認していません。改修したコードの Windows での mount 動作は未検証です。
