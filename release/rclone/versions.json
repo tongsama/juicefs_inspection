@@ -1,0 +1,8 @@
+{
+  "rclone-v1.75.1-kaz.1": {
+    "repo": "tongsama/rclone",
+    "commit": "dab33da31190b350cf75214080b362e0a50584d0",
+    "go_version": "1.26.0",
+    "notes": "release/rclone/notes/rclone-v1.75.1-kaz.1.md"
+  }
+}
