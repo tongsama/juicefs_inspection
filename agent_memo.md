@@ -693,3 +693,34 @@ README.mdに主題/scope/別Git管理/資料入口/成果と留保/配置/検証
 - 2026-10-08 ユーザーの指示で、release-1.4.1-kaz.3 ブランチ（versions.json・リリースノート・README・memo）を commit し、original へ push した。
 - 2026-10-08 ユーザーの指示で、ビルドだけの試行（workflow_dispatch、ref release-1.4.1-kaz.3、tag v1.4.1-kaz.3）を実行した: run 37651898463 は全 job 成功（resolve、build-linux amd64/arm64、build-windows、verify-windows。release は skip）。本体は 78acd63d を checkout し、REV は 78acd63d-kaz.3。
 - 2026-10-08 ユーザーの指示で、memo を commit した commit にタグ v1.4.1-kaz.3（軽量タグ、kaz.1・kaz.2 と同じ形式）を付けて push し、その後 main へ fast-forward で merge して push した。
+- 2026-10-08 タグ v1.4.1-kaz.3 の run 37653097241 が全 job 成功し、draft Release（6ファイル）ができた。手元にダウンロードして確認した: checksums は全 OK、配布されたスクリプトは repo と一致、amd64 は静的リンクで version `1.4.1+2026-10-07.78acd63d-kaz.3`、mount --help に --writer-flush-scope・--meta-write-batch・--writeback-fsync が出る。公開はユーザーが行う（公開後に、実 URL からのインストールを確認する）。この記録は未コミット。
+- 2026-10-08 ユーザーが v1.4.1-kaz.3 を公開し、ユーザーの環境で install が正しく動くことまで確認した（agent による実 URL からの確認は不要になった）。
+
+## 引き継ぎ（2026-10-08、次の会話へ）: rclone serve s3 の dir cache 問題
+
+- ユーザーの判断: TODO の「rclone serve s3 の修正の検討」を進める（client-cache などより優先）。ディレクトリ構成の変更もあり、複数台から mount するので dir cache の問題はそこそこ深刻。
+- 症状（ユーザーの観察）:
+  - dir cache が有効だと、他の client が新しく作った object は metadata DB では見えるのに、rclone が「無い」をキャッシュしていて、JuiceFS の Read が input/output error になる。
+  - dir cache を無効にすると、JuiceFS はパスを直接指定して object を取りに行くのに、rclone が毎回ディレクトリのリストを取る。
+- 進め方: brainstorming の architectural として扱う（設計の相談 → 仕様 → 計画 → 実装）。今は**理解の確認と調査の途中**で、設計の承認はまだ。
+- 確認済みの事実: 実機の rclone は v1.75.1（/usr/bin/rclone）。実行オプションは `rclone serve s3 gdrive_kwatan:/rclone-s3 --addr 0.0.0.0:9090 --poll-interval 0 --dir-cache-time 1h --vfs-cache-mode off --tpslimit 20 --contimeout 10s --timeout 2m --low-level-retries 1 --server-read-timeout 3m`（auth-key は伏せた。起動スクリプトには OAuth の秘密情報が平文で入っているので、読むときは伏せること）。
+- 推測（未確認）: object のパスを直接取得するとき（HEAD・GET）は、ディレクトリのリストも「無い」のキャッシュも使わず、backend（Drive の NewObject）に1件だけ問い合わせればよい。JuiceFS の object は書き込み後に変わらないので、この方法が安全に使えるはず。
+- **未回答の質問（次の会話で最初に確認する）**: 複数台の構成は (A) 各ホストがそれぞれ自分の rclone serve s3 を動かし、同じ Drive フォルダを見ている のか、(B) rclone serve s3 は1台で、各ホストの JuiceFS がネットワーク越しにそこへ接続している のか。
+- rclone のソース調査（serve s3 → VFS → Drive の経路、ディレクトリのリストと「無い」のキャッシュの条件、NewObject の API 回数、既存オプションや upstream の対処、修正案と副作用）は、agent に依頼したが**引き継ぎのため途中で止めた。結果は無い**ので、やり直す。clone 先は scratchpad（調査用）。本格的な作業では、ユーザー方針どおり、このリポジトリの中の Git ignore したディレクトリ（例: `/rclone`）に置く。
+- 実装する場合の方針（ユーザー）: JuiceFS と同様に、このリポジトリで rclone の release も作る。release の構成（`release/`、`versions.json`、workflow、install スクリプト）を、2つの成果物に対応する形へ変える。
+- 関連する記録: `rclone_put_timeout/2026-10-06/report-ja.md`、docs/findings.md の「rclone serve s3 の PUT 詰まり」。
+- この時点の状態: 調査リポジトリ main = 852b8f5（v1.4.1-kaz.3 のタグ、公開済み）。本体 1.4.1-improve-kaz = 78acd63d（kaz の既定ブランチ、push 済み）。
+
+### 継続（2026-10-08、rclone）
+- ユーザー回答: 複数台の構成は **(A)** 各ホストがそれぞれ rclone serve s3 を動かし、同じ Drive フォルダ `/rclone-s3` を見ている。したがって、他ホストの PUT は自ホストの VFS キャッシュに反映されない（`--poll-interval 0` のため変更通知も来ない）。
+- rclone 本体は `rclone/`（`.gitignore` に `/rclone` を追記、未 commit）。公式 v1.75.1（687d264b6）から `1.75.1-improve-kaz` ブランチを作成。fork `tongsama/rclone` は未作成（作成・push は事前確認）。
+- brainstorming は architectural として進行中（質問 → 方式案 → 設計 → spec → plan）。
+- ソース調査の報告: `rclone_dir_cache/2026-10-08/source-investigation-ja.md`（再現テストも同じ場所）。ユーザーが方式 (b') lookup モードを軸に、404 化の修正・`--no-cleanup` の配線を含めることを承認。
+- 追加で判明（ソース）: serve s3 は S3 のユーザーメタデータをプロセスのメモリ `b.meta`（backend.go:42, 425）にだけ置き、DELETE でも消さない。JuiceFS は PUT で `x-amz-meta-crc32c` を送り、全体 GET（off=0, limit=-1）のときだけ検証する（juicefs/pkg/object/s3.go:145-149, 179-181）。他ホストの PUT や再起動後は検証が黙って省略される。DELETE で消すだけ（i）では破損は起きないが、検出の弱さは残る、とユーザーに説明した。
+- ユーザー判断: (ii) Drive の properties への保存もやる。Phase 1 = lookup・404・no-cleanup・(i)、Phase 2 = (ii)、Phase 3 = release 構成（別 spec）。Drive backend は未知のメタデータキーを properties に保存する（backend/drive/metadata.go:329, 618-622）。
+- 独自オプションの命名規則をユーザーが承認: `--kaz-<対象>-<内容>`、ヘルプ先頭 `[kaz]`、可能なら flag グループ「Kaz」。既存オプションの修正は upstream 名のまま。JuiceFS 側もいずれ揃える（TODO に追加）。
+- Phase 1 第1節（lookup モード、`--kaz-vfs-lookup-by-path`）をユーザーが承認。
+- Phase 1 第2節をユーザーが承認: HEAD/GET/DELETE/BucketExists は ENOENT のときだけ 404、他は 500 InternalError（ログに残す）。DELETE で Drive が「無い」なら成功、成功時に `b.meta` も削除。`--no-cleanup` を配線し運用で指定。503 SlowDown は JuiceFS が区別する場合のみ検討（実装時に確認）。Drive の `use_trash = false` は rclone.conf に設定済み（ユーザー指摘、手元で確認）。現行 `--low-level-retries 1` のため rclone 内の再試行は無い。
+- Phase 1 第3節（テストと検証）をユーザーが承認。仕様を `docs/superpowers/specs/2026-10-08-rclone-lookup-by-path-design.md` に書いた（未 commit、ユーザーのレビュー待ち）。仕様を書く際に、範囲外の既知のリスク（Drive の同名フォルダの重複）を追加し TODO に記録した。
+- §7 の同名フォルダ重複: JuiceFS は slice ID を 4096 個ずつ確保し（pkg/meta/base.go:51）、フォルダは ID 1000 ごと（cached_store.go:79）なので、境界のフォルダを2ホストが共有し得る。`root_folder_id` では防げない。回避策の推奨は「全ホストで同じ規則（作成日時→ID）で正のフォルダを選び、作成直後に検索し直して寄せ、GET/HEAD の miss 時だけ同名フォルダも探す」（Phase 1b、Drive backend、別 spec）。ユーザー承認のうえ読み取り専用の folder query を実行し、重複 0 を確認（`rclone_dir_cache/2026-10-08/dup-folders-ja.md`）。
+- ユーザー確認: 「chunk の割当は metadata DB で一貫しているので重複しないのでは」→ key は一意だがフォルダの作成は各ホストの rclone が独自に行うので、境界フォルダは重複し得る、と説明。ユーザー判断で Phase 1b は優先度を下げ TODO に残すだけ。Phase 1 仕様をユーザーが承認し、文書の commit を許可した。次は writing-plans で Phase 1 の実装計画。

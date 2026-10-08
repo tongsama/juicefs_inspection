@@ -10,3 +10,6 @@
 # Generated Python analysis caches.
 __pycache__/
 *.py[cod]
+
+# rclone 本体（独立リポジトリ。juicefs と同様に別管理）
+/rclone

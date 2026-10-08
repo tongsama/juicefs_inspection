@@ -1,0 +1,42 @@
+package repro
+
+import (
+	"context"
+	"os"
+	"path/filepath"
+	"testing"
+	"time"
+
+	_ "github.com/rclone/rclone/backend/local"
+	"github.com/rclone/rclone/fs"
+	"github.com/rclone/rclone/fs/accounting"
+	"github.com/rclone/rclone/vfs"
+	"github.com/rclone/rclone/vfs/vfscommon"
+)
+
+// TestStaleNegative は他クライアントが作成したファイルが dir cache 期間中に ENOENT になることを確認する
+func TestStaleNegative(t *testing.T) {
+	ctx := context.Background()
+	root := t.TempDir()
+	_ = os.MkdirAll(filepath.Join(root, "b", "chunks"), 0755)
+	_ = os.WriteFile(filepath.Join(root, "b", "chunks", "a"), []byte("x"), 0644)
+	f, err := fs.NewFs(ctx, root)
+	if err != nil { t.Fatal(err) }
+	for _, dct := range []time.Duration{time.Hour, 0} {
+		opt := vfscommon.Opt
+		opt.DirCacheTime = fs.Duration(dct)
+		opt.PollInterval = 0
+		v := vfs.New(ctx, f, &opt)
+		if _, err := v.Stat("b/chunks/a"); err != nil { t.Fatal(err) }
+		name := "new" + dct.String()
+		_ = os.WriteFile(filepath.Join(root, "b", "chunks", name), []byte("y"), 0644)
+		_, err := v.Stat("b/chunks/" + name)
+		t.Logf("dir-cache-time=%v: stat of externally created file -> err=%v", dct, err)
+		st := accounting.GlobalStats()
+		before, _ := st.RemoteStats(false)
+		for i := 0; i < 3; i++ { _, _ = v.Stat("b/chunks/a") }
+		after, _ := st.RemoteStats(false)
+		t.Logf("dir-cache-time=%v: listed before=%v after=%v", dct, before["listed"], after["listed"])
+		v.Shutdown()
+	}
+}

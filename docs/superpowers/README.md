@@ -10,5 +10,6 @@
 | 改修版バイナリの配布（Releases・install スクリプト） | [配布仕様](specs/2026-10-04-release-distribution.md) | [配布計画](plans/2026-10-04-release-distribution.md) |
 | 巨大ファイル random I/O の metadata path 最適化（調査・計画。Phase 1 は実装済み） | [調査結果と実装計画](specs/2026-10-07-metadata-random-io-optimization-plan.md) | 同左（Phase 0〜4） |
 | 同 chunk の slice commit をまとめる（Phase 2、`--meta-write-batch`、実装済み・計測待ち） | [設計](specs/2026-10-07-meta-write-batch-design.md) | [実装計画](plans/2026-10-07-meta-write-batch.md) |
+| rclone serve s3 のパス指定 lookup（rclone Phase 1、`--kaz-vfs-lookup-by-path`、設計承認済み） | [設計](specs/2026-10-08-rclone-lookup-by-path-design.md) | 未作成 |
 
 文書中の `pkg/`・`cmd/` と Go コマンドは、本体の `juicefs/` を基準にします。ソースを本体から移したものではなく、調査文書の管理先だけを分離しています。
