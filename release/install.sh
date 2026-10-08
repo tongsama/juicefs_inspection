@@ -24,6 +24,11 @@ set -eu
 REPO="tongsama/juicefs_inspection"
 PRODUCT="${1:-}"
 INSTALL_DIR="${2:-/usr/local/bin}"
+# Drop a trailing slash (but keep a lone "/").
+case "$INSTALL_DIR" in
+    /) ;;
+    */) INSTALL_DIR="${INSTALL_DIR%/}" ;;
+esac
 VERSION="${KAZ_VERSION:-}"
 BASE="${KAZ_DOWNLOAD_BASE:-https://github.com/$REPO/releases}"
 BASE="${BASE%/}"
@@ -148,13 +153,20 @@ need tr
 need sort
 need tail
 
+# Detect the host first so an unsupported host fails without an API call.
+TARGET=$(detect_target)
+if [ -n "$VERSION" ] && [ -z "$(version_key "$VERSION")" ]; then
+    hint=""
+    if [ "$PRODUCT" = "juicefs" ]; then hint=" or the older v<x.y.z>-kaz.<n>"; fi
+    die "KAZ_VERSION=$VERSION is not a $PRODUCT release tag (expected $PRODUCT-v<x.y.z>-kaz.<n>$hint)"
+fi
+
 WORK=$(mktemp -d)
 if [ -z "$VERSION" ]; then
     # latest_tag runs in a subshell, so its die cannot stop this script.
     if ! VERSION=$(latest_tag); then exit 1; fi
     log "newest $PRODUCT release: $VERSION"
 fi
-TARGET=$(detect_target)
 ASSET="$PRODUCT-$TARGET.tar.gz"
 URL="$BASE/download/$VERSION"
 log "downloading $ASSET ($VERSION) from $URL"
@@ -194,11 +206,17 @@ new=$("$DEST" version 2>/dev/null | head -n 1 || true)
 log "installed: $DEST"
 log "version:   ${new:-unknown}"
 # Another copy of the same name elsewhere keeps being used by scripts
-# calling it by full path, or by PATH lookups that find it first.
+# calling it by full path, or by PATH lookups that find it first. Files are
+# compared by identity (-ef), so symlinks and duplicates are not reported.
 seen=""
 for other in $(command -v "$NAME" 2>/dev/null || true) /usr/bin/"$NAME" /usr/local/bin/"$NAME" /bin/"$NAME"; do
-    [ -x "$other" ] && [ "$other" != "$DEST" ] || continue
-    case " $seen " in *" $other "*) continue ;; esac
+    [ -x "$other" ] || continue
+    [ "$other" -ef "$DEST" ] && continue
+    dup=""
+    for s in $seen; do
+        if [ "$other" -ef "$s" ]; then dup=1; break; fi
+    done
+    [ -z "$dup" ] || continue
     seen="$seen $other"
     log "warning: another $NAME exists at $other and is not replaced; scripts or PATH lookups using it keep the old binary"
 done

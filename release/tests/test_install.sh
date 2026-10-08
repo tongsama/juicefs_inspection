@@ -81,10 +81,10 @@ chmod 0755 "$FAKEBIN/uname"
 # 配信する偽の Release と API の応答。
 for t in rclone-v1.75.1-kaz.2 rclone-v1.75.1-kaz.10; do make_release "$SRV/download/$t" rclone "$t"; done
 for t in juicefs-v1.4.1-kaz.4 v1.4.1-kaz.3; do make_release "$SRV/download/$t" juicefs "$t"; done
-make_release "$SRV/download/rclone-v1.75.1-kaz.bad" rclone rclone-v1.75.1-kaz.bad
-sed -i '1s/^[0-9a-f]\{64\}/0000000000000000000000000000000000000000000000000000000000000000/' "$SRV/download/rclone-v1.75.1-kaz.bad/checksums.txt"
-make_release "$SRV/download/rclone-v1.75.1-kaz.nosum" rclone rclone-v1.75.1-kaz.nosum
-: > "$SRV/download/rclone-v1.75.1-kaz.nosum/checksums.txt"
+make_release "$SRV/download/rclone-v1.75.1-kaz.91" rclone rclone-v1.75.1-kaz.91
+sed -i '1s/^[0-9a-f]\{64\}/0000000000000000000000000000000000000000000000000000000000000000/' "$SRV/download/rclone-v1.75.1-kaz.91/checksums.txt"
+make_release "$SRV/download/rclone-v1.75.1-kaz.92" rclone rclone-v1.75.1-kaz.92
+: > "$SRV/download/rclone-v1.75.1-kaz.92/checksums.txt"
 # 新旧が混ざった一覧（API の並びは新しい順とは限らない）
 make_api api/releases rclone-v1.75.1-kaz.2 juicefs-v1.4.1-kaz.4 v1.4.1-kaz.3 rclone-v1.75.1-kaz.10 v1.4.1-kaz.1
 # 古い形だけの一覧
@@ -135,7 +135,7 @@ if run_install "$T/c9.log" FAKE_UNAME_M=aarch64 -- rclone "$d" && "$d/rclone" | 
 
 # 10. sha256 の不一致で中止し、既存のファイルを変えない。
 d="$T/c10"; mkdir -p "$d"; printf 'old\n' > "$d/rclone"; cp "$d/rclone" "$T/c10.orig"
-if ! run_install "$T/c10.log" KAZ_VERSION=rclone-v1.75.1-kaz.bad -- rclone "$d" && grep -q 'checksum mismatch' "$T/c10.log" && cmp -s "$d/rclone" "$T/c10.orig"; then ok "checksum mismatch keeps existing"; else ng "checksum mismatch keeps existing"; cat "$T/c10.log"; fi
+if ! run_install "$T/c10.log" KAZ_VERSION=rclone-v1.75.1-kaz.91 -- rclone "$d" && grep -q 'checksum mismatch' "$T/c10.log" && cmp -s "$d/rclone" "$T/c10.orig"; then ok "checksum mismatch keeps existing"; else ng "checksum mismatch keeps existing"; cat "$T/c10.log"; fi
 
 # 11. 存在しない版は 404 として中止し、何も作らない。
 d="$T/c11"; mkdir -p "$d"
@@ -157,6 +157,14 @@ d="$T/c14"; mkdir -p "$d"
 printf '#!/bin/sh\necho other\n' > "$FAKEBIN2/rclone"; chmod 0755 "$FAKEBIN2/rclone"
 if run_install "$T/c14.log" PATH="$FAKEBIN2:$FAKEBIN:$PATH" -- rclone "$d" && grep -q 'another rclone' "$T/c14.log" && grep -q "$FAKEBIN2/rclone" "$T/c14.log"; then ok "warn about another copy"; else ng "warn about another copy"; cat "$T/c14.log"; fi
 
+# 14b. 同じディレクトリを別名（symlink）で PATH に置いても、同じファイルなので警告しない。
+mkdir -p "$T/real"; ln -s "$T/real" "$T/link"
+if run_install "$T/c14b.log" PATH="$T/link:$FAKEBIN:$PATH" -- rclone "$T/real" && ! grep -q "another rclone exists at $T/" "$T/c14b.log"; then ok "no warning for symlinked same file"; else ng "no warning for symlinked same file"; cat "$T/c14b.log"; fi
+
+# 14c. 他製品の版を KAZ_VERSION に指定したら、何も作らず中止する。
+d="$T/c14c"; mkdir -p "$d"
+if ! run_install "$T/c14c.log" KAZ_VERSION=v1.4.1-kaz.3 -- rclone "$d" && grep -q 'is not a rclone release tag' "$T/c14c.log" && [ ! -e "$d/rclone" ] && [ -z "$(ls -A "$d")" ]; then ok "pinned version of another product"; else ng "pinned version of another product"; cat "$T/c14c.log"; fi
+
 # 15. 書き込めず sudo も無ければ、既存のファイルに触れずに中止する。
 if [ "$(id -u)" -eq 0 ]; then
   echo "skip - not writable without sudo (running as root)"
@@ -171,7 +179,7 @@ fi
 
 # 16. checksums.txt に該当する行が無ければ中止する。
 d="$T/c16"; mkdir -p "$d"
-if ! run_install "$T/c16.log" KAZ_VERSION=rclone-v1.75.1-kaz.nosum -- rclone "$d" && grep -q 'no checksum entry' "$T/c16.log" && [ ! -e "$d/rclone" ]; then ok "missing checksum entry"; else ng "missing checksum entry"; cat "$T/c16.log"; fi
+if ! run_install "$T/c16.log" KAZ_VERSION=rclone-v1.75.1-kaz.92 -- rclone "$d" && grep -q 'no checksum entry' "$T/c16.log" && [ ! -e "$d/rclone" ]; then ok "missing checksum entry"; else ng "missing checksum entry"; cat "$T/c16.log"; fi
 
 # 17. 再起動の案内（rclone は restart、juicefs は supervisor の auto-restart）。
 if grep -q 'restart' "$T/c1.log" && grep -q 'auto-restart' "$T/c2.log"; then ok "restart notice"; else ng "restart notice"; cat "$T/c1.log" "$T/c2.log"; fi

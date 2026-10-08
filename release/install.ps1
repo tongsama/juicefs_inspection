@@ -24,6 +24,7 @@
     $repo = 'tongsama/juicefs_inspection'
     $product = $env:KAZ_PRODUCT
     if (-not $product) { throw "set `$env:KAZ_PRODUCT to juicefs or rclone before running install.ps1" }
+    $product = $product.ToLowerInvariant()
     if (@('juicefs', 'rclone') -notcontains $product) { throw "unknown product: $product (expected juicefs or rclone)" }
     $base = "https://github.com/$repo/releases"
     if ($env:KAZ_DOWNLOAD_BASE) { $base = $env:KAZ_DOWNLOAD_BASE.TrimEnd('/') }
@@ -57,6 +58,11 @@
         return 0
     }
 
+    if ($version -and $null -eq (Get-VersionKey $version)) {
+        $hint = ''
+        if ($product -eq 'juicefs') { $hint = ' or the older v<x.y.z>-kaz.<n>' }
+        throw "KAZ_VERSION=$version is not a $product release tag (expected $product-v<x.y.z>-kaz.<n>$hint)"
+    }
     if (-not $version) {
         try {
             $releases = Invoke-RestMethod -Uri "$api/releases?per_page=100" -UseBasicParsing
@@ -135,7 +141,7 @@
             Move-Item -Force -Path $staged -Destination $dest
         } catch {
             Remove-Item -Force -ErrorAction SilentlyContinue -Path $staged
-            throw "cannot replace $dest (is $product running? stop it and retry): $($_.Exception.Message)"
+            throw "cannot replace $dest (is $product running? a running $exeName cannot be replaced; stop it, retry, then start it again to use the new version): $($_.Exception.Message)"
         }
 
         $new = (& $dest version | Select-Object -First 1)
@@ -143,7 +149,17 @@
         Write-Host "version:   $new"
         Write-Host "PATH was not modified; run it by full path or add $installDir to PATH yourself."
 
-        if ($product -eq 'rclone') { Write-Host 'a running rclone keeps using the old binary until it is restarted' }
+
+        # Another copy found on PATH keeps being run by services and shells.
+        $others = @(Get-Command $product -CommandType Application -ErrorAction SilentlyContinue |
+            Where-Object {
+                $same = $false
+                try { $same = ((Resolve-Path $_.Source -ErrorAction Stop).Path -ieq (Resolve-Path $dest -ErrorAction Stop).Path) } catch { }
+                $_.Source -and -not $same
+            })
+        foreach ($o in $others) {
+            Write-Warning "another $product exists at $($o.Source) and is not replaced; services or shells using it keep the old binary"
+        }
         $winfsp = @(
             "${env:ProgramFiles(x86)}\WinFsp\bin\winfsp-x64.dll",
             "$env:ProgramFiles\WinFsp\bin\winfsp-x64.dll"
