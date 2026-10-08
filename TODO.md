@@ -50,11 +50,12 @@
       - [x] 実際の Drive での確認（[記録](rclone_dir_cache/2026-10-08/phase2-drive-verification-ja.md)）: ホストをまたぐ往復、上書きでの置き換え（一括・分割の両経路）、上限超えで PUT 失敗・object 作られず、multipart、既存データとの互換（取得・上書き・削除・再取得）、API の回数が Phase 1 と同じ。テスト用フォルダは削除済み。
       - [x] 手順書に Phase 2 を追記（[手順書](rclone_dir_cache/2026-10-08/deploy-runbook-ja.md)）。
       - [x] 2026-10-08 ユーザーの指示で `1.75.1-improve-kaz` へ `--no-ff` で merge（dab33da31、merge 後もテスト ok）し、`kaz`（tongsama/rclone）へ push。`feat/kaz-s3-persist-metadata` はローカルに残す。
-      - [ ] 本番適用（ユーザー、[手順書](rclone_dir_cache/2026-10-08/deploy-runbook-ja.md)）。
+      - [ ] 本番適用（ユーザー、[手順書](rclone_dir_cache/2026-10-08/deploy-runbook-ja.md)）。2026-10-08 単体（1台）での試行を開始（ユーザーが `/usr/bin/rclone` を改修版で上書き、動作 OK。新しい chunk の `s3m-crc32c` も本番で確認済み）。観測: 新しい chunk の `s3m-crc32c`、RSS、`InternalError`・`verify checksum failed`。バイナリ `~/tmp_local/rclone-kaz-build/rclone-kaz`（v1.75.1-kaz-dev.dab33da3、sha256 c81a4ac0…59fdc）。2台での構成はリリースの後。
       - [ ] 任意: JuiceFS を動かして、他のホストで書いた chunk のチェックサム検証が効くことを確かめる。
     - 独自オプションの命名（ユーザー承認、2026-10-08）: 接頭辞 `--kaz-<対象>-<内容>`。ただし backend のオプションは rclone が backend 名を先頭に付けるので `--<backend>-kaz-<内容>`（例 `--drive-kaz-properties`）（例 `--kaz-vfs-lookup-by-path`）、ヘルプ先頭に `[kaz]`、可能なら flag グループ「Kaz」。既存オプションの不具合修正（`--no-cleanup` 等）は upstream の名前のまま。
     - [ ] 範囲外の既知のリスク: Drive の同名フォルダの重複（複数ホストが同時に新しい chunks フォルダへ最初の PUT をすると、それぞれ作成し得る。lib/dircache の FindLeaf→CreateDir に、ホスト間の排他が無い）。今も同じリスクがある。2026-10-08 に読み取りのみの問い合わせで確認し、`rclone-s3` 配下（1,442 フォルダ）に重複は 0（[記録](rclone_dir_cache/2026-10-08/dup-folders-ja.md)）。回避策の候補（全ホストで同じ規則で正のフォルダを選び、作成直後に検索し直して寄せる、Drive backend の opt-in オプション）は Phase 1b として別の仕様にする。object の key は metadata DB の slice ID で一意だが、フォルダ（ID 1000 ごと）は 4096 個単位の払い出しの境界で2ホストが共有し得る。発生の幅は狭いので、ユーザー判断で優先度を下げ、TODO に残すだけにする（2026-10-08）。
     - [ ] Phase 3: release 構成を JuiceFS と rclone の2成果物に対応させる（別の spec）。
+      - 2026-10-08 着手（brainstorming、architectural）。ユーザー判断: 既存の install URL は捨ててよい（整理を優先）。製品ごとに分ける（更新は可分）。方式 (1): タグを製品ごとに分け（`juicefs-v…-kaz.N`、`rclone-v1.75.1-kaz.N`）、install スクリプトが GitHub API で製品ごとの最新を探す（GitHub の latest はリポジトリで1つのため）。rclone は linux-amd64・linux-arm64・windows-amd64、公式と同じ full（`bin/cross-compile.go -tags cmount`、Windows の mount を含む、CGO 不要）。既存の JuiceFS の Release（`v1.4.1-kaz.1`〜`.3`）は残し、install スクリプトが古い形のタグも JuiceFS として扱う（a）。install の既定先は両製品とも `/usr/local/bin`。[仕様](docs/superpowers/specs/2026-10-08-release-multi-product-design.md)（ユーザー承認済み）。
   - 2026-10-08 rclone v1.75.1 を `rclone/`（Git ignore、独立リポジトリ、ブランチ `1.75.1-improve-kaz`）に clone した。fork `tongsama/rclone` は未作成。
 
 - [ ] **JuiceFS 改修版の独自オプションに `kaz` 名前空間を付ける（2026-10-08、ユーザー要望、いずれ）:** rclone と同じ規則（`--kaz-...`、ヘルプ先頭 `[kaz]`）に揃える。対象例 `--writer-flush-scope`、`--meta-write-batch`、`--writeback-fsync` など。既存の設定・起動スクリプトとの互換（旧名を別名として残すか）を検討する。
