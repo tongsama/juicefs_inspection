@@ -1,7 +1,7 @@
 # rclone serve s3 のパス指定 lookup（`--kaz-vfs-lookup-by-path`、Phase 1）設計
 
 - 日付: 2026-10-08
-- 状態: 設計（2026-10-08 ユーザー承認済み）。実装済み（rclone `feat/kaz-vfs-lookup` 078531045、push なし）。
+- 状態: 設計（2026-10-08 ユーザー承認済み）。実装済み（rclone `feat/kaz-vfs-lookup` 9b75066b4、push なし）。
 - 根拠: [ソース調査](../../../rclone_dir_cache/2026-10-08/source-investigation-ja.md)（file:line と再現テスト）
 - 対象: rclone v1.75.1（`rclone/`、687d264b6）。ブランチ `1.75.1-improve-kaz`。fork `tongsama/rclone` は未作成。
 - 後続: Phase 2（S3 ユーザーメタデータを Drive の properties に保存）、Phase 3（release 構成を JuiceFS と rclone の2成果物に対応）。どちらも別の仕様にする。
@@ -79,6 +79,13 @@ flowchart TD
 - List（`ReadDirAll` → `_readDir`）は従来どおり全件取得する。一覧の結果で items を置き換える（`_readDirFromEntries` が一覧に無い non-virtual のノードを消す）。
 - 自ホストの PUT は、従来どおり `addObject` で即座に items に入る。
 - Last-Modified・サイズ・ETag は、ノードが持つ Drive の `fs.Object` から取るので、一覧で得たときと同じ値になる。
+
+### 3.5 `O_CREATE|O_TRUNC` で開くとき（2026-10-08 実機検証を受けて追加、ユーザー承認）
+
+- 実機検証で、lookup モードでは新しい key の PUT ごとに名前の検索が1回から3回に増えると分かった（`vfs.OpenFile` の `Stat` と `Dir.Create` の `stat` が、どちらも「無い」をキャッシュしないため Drive に問い合わせる）。
+- lookup モードかつ `--vfs-cache-mode off` で、`O_CREATE|O_TRUNC`（`O_EXCL` なし）で開くときは、ファイル自体の存在を Drive に問い合わせない。キャッシュにあるノード（大文字小文字・Unicode の正規化による一致を含む）があればそれを使い、無ければ新しいファイルのノードを作る。
+- 安全な理由: `O_TRUNC` は中身を捨てるので、既にあるかどうかで結果が変わらない。既にある場合は、Drive backend の Put が `NewObject` で見つけて更新する（同名ファイルは増えない。実機で確認）。
+- キャッシュモードが `off` 以外では使わない（同名のフォルダがあったときに、保存の失敗が Close の後の書き戻しで起き、クライアントに伝わらないため）。メタデータ用のファイル名（`--vfs-metadata-extension`）でも使わない。
 
 ## 4. エラーの扱い（`cmd/serve/s3/backend.go`）
 

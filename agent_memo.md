@@ -730,3 +730,7 @@ README.mdに主題/scope/別Git管理/資料入口/成果と留保/配置/検証
   - 最終レビューの指摘で仕様を訂正: `b.meta` は同じホストの DELETE でしか消えない（複数ホストでは残る、Phase 2 まで再起動で抑える）。他ホストが消した object の GET は 500 ではなく、200 の後に本文の読み出しが失敗する。
   - JuiceFS は Get/Put で 404・500・503 を区別しない（`rclone_dir_cache/2026-10-08/juicefs-error-handling-ja.md`）。
   - 検証用バイナリ: scratchpad/rclone-kaz（rclone v1.75.1-DEV、sha256 3c6e9fb2…60eb）。次は Task 8（実 Drive 検証、ユーザー確認が必要）と Task 9（手順書）。
+- 2026-10-08 Task 8（実 Drive 検証）をユーザー承認のうえ実施。`gdrive_kwatan:/rclone-s3-test` を作り、改修版 serve s3 を3つ（lookup あり2、なし1）立てて確認し、purge で削除した。目的の動作は確認できた。新しい key の PUT で名前の検索が1→3回に増える（vfs.go:578 の Stat と dir.go:1043 の Dir.Create の stat）。記録は `rclone_dir_cache/2026-10-08/drive-verification-ja.md`。本番適用の前に、この増加を減らす案をユーザーに相談する。
+- 2026-10-08 ユーザー承認の追加修正（Task 8b）: lookup モードかつ cache-mode off の `O_CREATE|O_TRUNC`（`O_EXCL` なし）では、VFS がファイルの存在を Drive に問い合わせない（`Dir.kazCreateNoLookup`）。レビューの指摘で、正規化による一致の共有（`Dir.statCachedNormalized`）、cache-mode off 限定、メタデータ用ファイル名の除外を加えた（0e050fab1・9b75066b4）。実機で PUT の名前検索が1回に戻ったこと、既存 object の上書きで同名ファイルが増えないことを確認。検証用バイナリ sha256 5f43b032…7e9f。
+- 2026-10-08 ユーザーの指示で、rclone `feat/kaz-vfs-lookup` を `1.75.1-improve-kaz` へ `--no-ff` で merge（dd03d0243）。ユーザーが作成した空の public リポジトリ `tongsama/rclone` を `kaz` リモート（git@github.com:tongsama/rclone.git）として追加し、`1.75.1-improve-kaz` を push した（既定ブランチになった）。`feat/kaz-vfs-lookup` はユーザーの指示でローカルに残す（push していない）。調査リポジトリの文書の commit・push もユーザーが許可した。
+- 次の候補: 本番適用（ユーザー、手順書あり）、Phase 2（S3 ユーザーメタデータを Drive の properties へ）、Phase 3（release 構成を JuiceFS と rclone の2成果物に）、Phase 1b（同名フォルダの重複、優先度低）、JuiceFS の独自オプションの kaz 名前空間。

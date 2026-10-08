@@ -1,6 +1,6 @@
 # JuiceFS 改善版の知見と評価
 
-更新: 2026-10-07（metadata path の節を追加）。2026-10-06（rclone serve s3 の PUT 詰まりの節を追加）。2026-10-03。対象は Google Drive をバックエンドとする rclone S3 上の JuiceFS CE v1.4.1 系で、VM 仮想ディスク等の巨大ファイルの部分更新です。この文書は現在の入口として、確定した事実と未検証事項をまとめます。詳細な時系列は [agent_memo](../agent_memo.md)、測定値は [ログ解析報告](../option_effects/2026-10-03/report-ja.txt) を参照してください。
+更新: 2026-10-08（rclone serve s3 の dir cache の節を追加）。2026-10-07（metadata path の節を追加）。2026-10-06（rclone serve s3 の PUT 詰まりの節を追加）。2026-10-03。対象は Google Drive をバックエンドとする rclone S3 上の JuiceFS CE v1.4.1 系で、VM 仮想ディスク等の巨大ファイルの部分更新です。この文書は現在の入口として、確定した事実と未検証事項をまとめます。詳細な時系列は [agent_memo](../agent_memo.md)、測定値は [ログ解析報告](../option_effects/2026-10-03/report-ja.txt) を参照してください。
 
 ## 方針
 
@@ -143,6 +143,18 @@ force=true slowログ3,649件は再帰callframeの完了数で、独立した手
 - **compaction の書き込み**: writeback を無効にした同期アップロードで、上限は `--io-retries`＋1（既定11回）。超えたら中断して、後でやり直す。
 - **キャッシュに入る書き込み**: writeback では、書き込みも staging のハードリンクとして読み取りキャッシュに入る。アップロードが終わるまでは LRU の追い出し対象外で、`--cache-size` にも数えない。完了したら LRU に加わり、最終アクセス時刻はアップロード完了時刻になる。`--cache-large-write` が効くのは、staging を通らない経路（compaction の出力と、staging に失敗したブロック）だけ。`--cache-expire` は、LRU の追い出しでは使われない。
 - **圧縮の扱い**: キャッシュも staging も展開済み（生）のデータで、圧縮はアップロードのたびに行う。`--cache-size` や staging の容量は、生のサイズで消費される。zstd のレベルは `ZSTD_LEVEL = 1`（"fastest"）で固定。オプションにしない理由はソースにも履歴にもない。レベルは展開の互換性に影響しない。
+
+## rclone serve s3 の dir cache と複数ホスト（2026-10-08）
+
+詳細は [ソース調査](../rclone_dir_cache/2026-10-08/source-investigation-ja.md)、[実機検証](../rclone_dir_cache/2026-10-08/drive-verification-ja.md)、[設計](superpowers/specs/2026-10-08-rclone-lookup-by-path-design.md)、[手順書](../rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) にある。
+
+- **構成**: 各ホストがそれぞれ `rclone serve s3` を動かし、同じ Drive フォルダを共有する。
+- **原因（ソースと再現で確認）**: serve s3 の操作はすべて VFS のパスの walk を通る。VFS は一覧済みのディレクトリに名前が無ければ、期限内は Drive に問い合わせずに「無い」を返す。`--poll-interval 0` では他のホストの PUT が反映されないので、他のホストが作った object を最大 `--dir-cache-time` の間「無い」（404）と返し、JuiceFS の Read が EIO になる。期限を短くすると、key 指定の操作でも各階層のディレクトリを全件一覧する。
+- **付随していた問題**: Stat のどのエラーも 404 になる（rate limit も「無い」に見える）。DELETE が自ホストのキャッシュに無い object を消さずに成功を返す。`--no-cleanup` が配線されていない。S3 のユーザーメタデータ（JuiceFS の crc32c）はプロセスのメモリにしか無く、DELETE でも消えない。
+- **対策（改修版 rclone、`feat/kaz-vfs-lookup` 9b75066b4、未適用）**: `--kaz-vfs-lookup-by-path` で、キャッシュに無い名前を Drive に1件だけ問い合わせ、「無い」をキャッシュしない。404 は「無い」ときだけにし、他は 500。DELETE は他ホストの object も実際に消し、すでに無ければ成功。`--no-cleanup` を配線。PUT（`O_CREATE|O_TRUNC`、cache-mode off）では存在を問い合わせないので、PUT の API 回数は改修前と同じ。
+- **実機で確認したこと**: 他のホストが作った object がすぐ読める。DELETE で Drive から消える。key 指定の操作で一覧の取り直しが0回。既存 object の上書きで同名ファイルが増えない。
+- **JuiceFS 側**: GET・PUT では 404・500・503 を区別せずに再試行する。404 を特別に扱うのは Head と Delete だけ（[記録](../rclone_dir_cache/2026-10-08/juicefs-error-handling-ja.md)）。
+- **残る制約**: `b.meta` は他のホストが消した key の分が残り、メモリが少しずつ増える（Phase 2 で Drive の properties に保存するまで、再起動で抑える）。他のホストが PUT した object は、JuiceFS のチェックサム検証が省略される（Phase 2）。Drive の同名フォルダの重複は範囲外（2026-10-08 時点で0件）。
 
 ## 巨大ファイル random I/O の metadata path（2026-10-07、ソース調査）
 

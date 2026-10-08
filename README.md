@@ -6,14 +6,17 @@
 
 ## 管理範囲
 
-このルートと `juicefs/` は、**別々の Git リポジトリ**として管理します。
+このルートと `juicefs/`・`rclone/` は、**別々の Git リポジトリ**として管理します。
 
 - **このルート:** 調査ドキュメント、計画・仕様、解析スクリプト、解析結果、検証証跡。
 - **`juicefs/`:** JuiceFS 本体のソース、実装、回帰テスト、CLI に付随する製品ドキュメント。
+- **`rclone/`:** rclone 本体のソース（`rclone serve s3` の改修）、実装、回帰テスト。
 
 `.gitignore` の `/juicefs` により、本体のリポジトリをこのルートの commit に含めません。submodule ではありません。本体は後から配置する構成でも、このプロジェクトの文書を読めます。公式リポジトリを取得しただけでは、この個人改善版の差分は含まれません。
 
 本体の改修は `tongsama/juicefs` の `1.4.1-improve-kaz` ブランチ（既定ブランチ）で管理しています（2026-10-08 時点の HEAD は `78acd63d235db5f275068d3ff75b45baa4b2f616`、v1.4.1-kaz.3 のビルド元）。v1.4.1-kaz.2 のビルド元は `release-1.4.1-kaz.2` ブランチ（`9268beb4`）に残っています。以前の `fix/vm-io-wait-policy`（`84f19ca4`、v1.4.1-kaz.1）はこのブランチに含まれ、2026-10-06 に削除しました。このルートの文書を commit しても本体の差分は保存されないため、本体は別途 commit・push します。2026-10-03 の整理時点の HEAD `3bed0d82` は、author の書き換えにより `2ae17f94` になっています（内容は同一）。
+
+rclone の改修は `tongsama/rclone`（リモート名 `kaz`、upstream は `origin`）の `1.75.1-improve-kaz` ブランチ（既定ブランチ、v1.75.1 から分岐）で管理しています（2026-10-08 時点の HEAD は `dd03d0243`。`feat/kaz-vfs-lookup` を `--no-ff` で merge）。`.gitignore` の `/rclone` により、このルートの commit には含めません。改修の内容は [rclone の dir cache の知見](docs/findings.md#rclone-serve-s3-の-dir-cache-と複数ホスト2026-10-08) と [本番適用の手順書](rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) を参照してください。rclone の配布（release）はまだありません（TODO の Phase 3）。
 
 ## 改修版バイナリの配布とインストール
 
@@ -104,7 +107,10 @@ juicefs_inspection/
 ├── restart_check/            # ゲスト再起動と I/O 遅延の調査
 ├── gc_backlog/               # staging 滞留・local retirement・回帰検証
 ├── option_effects/           # 導入効果、明示 flush、健全性、ログ容量
-└── juicefs/                  # 独立管理する本体リポジトリ（Git ignore）
+├── rclone_put_timeout/       # rclone serve s3 の PUT 詰まり（2026-10-06）
+├── rclone_dir_cache/         # rclone serve s3 の dir cache と複数ホスト（2026-10-08）
+├── juicefs/                  # 独立管理する本体リポジトリ（Git ignore）
+└── rclone/                   # 独立管理する rclone 本体リポジトリ（Git ignore）
 ```
 
 解析結果は日付別に保存しています。CSV／JSON は集計値、TXT／MD は所見、LOG は検証出力、Python は再現用の解析手順です。外部にある実機の元 DEBUG ログそのものは、このリポジトリにコピーしていません。固定 prefix のサイズと SHA を記録しており、末尾に追記があっても分析対象を区別できます。
