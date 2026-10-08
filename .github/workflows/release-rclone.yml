@@ -77,8 +77,11 @@ jobs:
           VERSION: ${{ needs.resolve.outputs.version }}
         run: |
           set -euo pipefail
-          go run bin/cross-compile.go -compile-only -tags cmount -include '^(linux/(amd64|arm64)|windows/amd64)$' "$VERSION"
-          ls -R build
+          go run bin/cross-compile.go -compile-only -tags cmount -include '^(linux/(amd64|arm64)|windows/amd64)$' "$VERSION" 2>&1 | tee build.log
+          # Windows のリソース（版情報・アイコン）が作れないと警告だけで続行されるため、ここで止める。
+          if grep -q "Couldn't generate Windows\|Couldn't find generated Windows" build.log; then
+            echo "::error::Windows のリソース（版情報・アイコン）を生成できませんでした"; exit 1
+          fi
       - name: verify and package
         working-directory: rclone/build
         env:
