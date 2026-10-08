@@ -33,7 +33,14 @@
   - 構成（ユーザー回答、2026-10-08）: (A) 各ホストがそれぞれ rclone serve s3 を動かし、同じ Drive フォルダ（`/rclone-s3`）を見ている。
   - 2026-10-08 ソース調査: [報告](rclone_dir_cache/2026-10-08/source-investigation-ja.md)。方式 (b') VFS の lookup モードを軸にすることをユーザーが承認。
   - Phase 分け（ユーザー承認、2026-10-08）:
-    - [ ] Phase 1: (b') lookup モード（`--vfs-lookup-by-path`）、HEAD/GET のエラーを 404 にしない、`--no-cleanup` の配線、DELETE 時に `b.meta` を消す（メモリが増え続ける問題）。[仕様](docs/superpowers/specs/2026-10-08-rclone-lookup-by-path-design.md) はユーザー承認済み（2026-10-08）。次は writing-plans で実装計画。
+    - [ ] Phase 1（コード実装済み、実機検証と本番適用が残り）: (b') lookup モード（`--vfs-lookup-by-path`）、HEAD/GET のエラーを 404 にしない、`--no-cleanup` の配線、DELETE 時に `b.meta` を消す（メモリが増え続ける問題）。[仕様](docs/superpowers/specs/2026-10-08-rclone-lookup-by-path-design.md) はユーザー承認済み（2026-10-08）。[実装計画](docs/superpowers/plans/2026-10-08-rclone-lookup-by-path.md) を作成（ユーザーのレビュー待ち）。
+      - 2026-10-08 実装: rclone `feat/kaz-vfs-lookup`（1.75.1-improve-kaz から分岐、c27d12d03..078531045 の9 commit、push なし、未 merge）。タスクごとのレビューと最終レビューを通過。race つきテスト ok（`cmd/serve/s3` は docker が要る TestS3Minio を除く。変更前から失敗）。
+      - 追加の変更（レビューでの判断）: ListBucket・PutObject・DeleteBucket の bucket 確認も「無い」ときだけ 404 にした。lookup 中にディレクトリ名が変わった場合は1回やり直す。
+      - JuiceFS は Get/Put で 404・500・503 を区別せず再試行する → 500 で十分（[記録](rclone_dir_cache/2026-10-08/juicefs-error-handling-ja.md)）。
+      - 残る注意: `b.meta` は他ホストが消した key の分が残る（Phase 2 まで定期再起動で抑える）。key 指定の新規 PUT ごとに Drive API が1回増える（実機で測る）。
+      - [ ] 実際の Drive での検証（計画 Task 8。テスト用フォルダ `/rclone-s3-test` の作成・削除はユーザー確認）
+      - [ ] 本番適用の手順書（計画 Task 9）と適用（ユーザー）。全ホストで `--no-cleanup` を指定すること。
+      - [ ] `feat/kaz-vfs-lookup` を `1.75.1-improve-kaz` へ merge（ユーザー承認後）、fork `tongsama/rclone` の作成と push（ユーザー確認）
     - [ ] Phase 2: S3 のユーザーメタデータ（JuiceFS の `x-amz-meta-crc32c`）を Drive の properties に保存し、どのホストからも・再起動後も返す。現状はプロセスのメモリ（`b.meta`）にだけあり、他ホストの PUT や再起動後は JuiceFS のチェックサム検証が黙って省略される。
     - 独自オプションの命名（ユーザー承認、2026-10-08）: 接頭辞 `--kaz-<対象>-<内容>`（例 `--kaz-vfs-lookup-by-path`）、ヘルプ先頭に `[kaz]`、可能なら flag グループ「Kaz」。既存オプションの不具合修正（`--no-cleanup` 等）は upstream の名前のまま。
     - [ ] 範囲外の既知のリスク: Drive の同名フォルダの重複（複数ホストが同時に新しい chunks フォルダへ最初の PUT をすると、それぞれ作成し得る。lib/dircache の FindLeaf→CreateDir に、ホスト間の排他が無い）。今も同じリスクがある。2026-10-08 に読み取りのみの問い合わせで確認し、`rclone-s3` 配下（1,442 フォルダ）に重複は 0（[記録](rclone_dir_cache/2026-10-08/dup-folders-ja.md)）。回避策の候補（全ホストで同じ規則で正のフォルダを選び、作成直後に検索し直して寄せる、Drive backend の opt-in オプション）は Phase 1b として別の仕様にする。object の key は metadata DB の slice ID で一意だが、フォルダ（ID 1000 ごと）は 4096 個単位の払い出しの境界で2ホストが共有し得る。発生の幅は狭いので、ユーザー判断で優先度を下げ、TODO に残すだけにする（2026-10-08）。

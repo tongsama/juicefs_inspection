@@ -1,7 +1,7 @@
 # rclone serve s3 のパス指定 lookup（`--kaz-vfs-lookup-by-path`、Phase 1）設計
 
 - 日付: 2026-10-08
-- 状態: 設計（2026-10-08 ユーザー承認済み）。
+- 状態: 設計（2026-10-08 ユーザー承認済み）。実装済み（rclone `feat/kaz-vfs-lookup` 078531045、push なし）。
 - 根拠: [ソース調査](../../../rclone_dir_cache/2026-10-08/source-investigation-ja.md)（file:line と再現テスト）
 - 対象: rclone v1.75.1（`rclone/`、687d264b6）。ブランチ `1.75.1-improve-kaz`。fork `tongsama/rclone` は未作成。
 - 後続: Phase 2（S3 ユーザーメタデータを Drive の properties に保存）、Phase 3（release 構成を JuiceFS と rclone の2成果物に対応）。どちらも別の仕様にする。
@@ -19,6 +19,7 @@
 - DELETE が、自ホストの cache に無い object を消さずに成功を返す。
 - `--no-cleanup` が定義だけで効かない。
 - S3 ユーザーメタデータの保管場所（`b.meta`）が DELETE で消えず、メモリが増え続ける。
+  - 注意（2026-10-08 最終レビュー）: DELETE で消えるのは、同じホストが PUT と DELETE をした key だけ。複数ホストの構成では、他のホストが消した key や、消されない key の分は、rclone を再起動するまで残る（1件あたり約 0.5〜1KB の見積もり、未測定）。根本的な対策は Phase 2（Drive の properties への保存）。それまでは定期的な再起動で抑える。
 
 **前提**: JuiceFS の object は書き込み後に変わらない。JuiceFS は object を key で直接扱い、一覧は `gc` などでしか使わない。同じ key を使い回さない。
 
@@ -61,14 +62,17 @@ flowchart TD
 - 追加するノードは **non-virtual** にする。virtual にすると、一覧での置き換えや `ForgetAll` で消えなくなるため。
 - Drive の `NewObject` は、親フォルダの ID が lib/dircache にあれば API 1回（`'<親ID>' in parents and name='<leaf>' and trashed=false`）。親の ID が未登録なら、未登録の階層ごとに1回ずつ増える。
 - 中間のディレクトリは、Drive・local では `NewObject` が `ErrorIsDir` を返すので、それで判定する。`ErrorIsDir` を返さない backend（バケット型など）では、中間ディレクトリが ENOENT になる。この制約をヘルプに書く。
-- `ErrorIsDir` のときのディレクトリの modTime は Drive の値が分からない。VFS が Mkdir でディレクトリを作るときと同じ扱いにする（実装時に確認して決める）。object の Last-Modified には影響しない。
+- `ErrorIsDir` のときのディレクトリの modTime は Drive の値が分からないので、現在時刻にする（`VFS.New` が root を作るときと同じ、vfs.go:209）。object の Last-Modified には影響しない。
 
 ### 3.3 キャッシュの寿命
 
 - 見つかったノードは、ディレクトリの既存の掃除タイマー（`cleanupTimer`、`DirCacheTime × 2`、dir.go:72-92）で捨てる。
-- 今のタイマーは `_readDir` のときにしか再設定されない。lookup モードでは一覧をしないので、1回発火した後に止まる。そこで、lookup モードでは `cacheCleanup` の中でタイマーを再設定し、`DirCacheTime × 2` ごとに `ForgetAll` する。
+- 今のタイマーは `_readDir` のときにしか再設定されない。lookup モードでは一覧をしないので、1回発火した後に止まる。そこで、**掃除の後、最初に lookup でエントリを追加したときに1回だけタイマーを仕掛ける**（`Dir.lookupArmed`）。`cacheCleanup` と `ForgetAll`（タイマーを止める分岐）でこの印を外す。
+  - 毎回の lookup で再設定すると、使われ続けるディレクトリの掃除が永久に先送りされるため、1回だけにする。
+  - `cacheCleanup` の中で無条件に再設定すると、`ForgetAll` で親から外れた古い `Dir` のタイマーが動き続け、掃除のたびに増えるため、そうしない。
+  - （2026-10-08 実装計画の作成時に、ソースを読んで変更した。）
 - 目的は2つある。何十万個の object を読んでもメモリが際限なく増えないようにすること。他のホストが消した object を、いつまでも「有る」と答え続けないようにすること。
-- 期限内に、他のホストが消した object を「有る」と答えることはある。JuiceFS は metadata で消えた object を読まないので、問題にしない。読んだ場合は Drive が「無い」と返し、§4 により 500 になる。
+- 期限内に、他のホストが消した object を「有る」と答えることはある。JuiceFS は metadata で消えた object を読まないので、問題にしない。読んだ場合、`--vfs-cache-mode off` では Drive を開くのが本文の読み出し時なので、GET は 200 を返した後に本文の読み出しが失敗する（途中で切れる）。JuiceFS はこれもエラーとして再試行するので安全性は変わらないが、期限が来るまで再試行は失敗し続ける（2026-10-08 最終レビューで記述を訂正）。
 
 ### 3.4 変えないもの
 
@@ -86,7 +90,8 @@ flowchart TD
 ## 5. DELETE（`deleteObject`）
 
 - lookup モードなら、Stat が他ホストの object も見つけるので、Drive 上で削除される。
-- `Remove` が `ENOENT` 以外で失敗したら、`Fs.NewObject` で存在を確かめ直す。「無い」なら（他のホストが先に消した）、成功とし、VFS からそのパスを忘れさせる（`ForgetPath` 相当）。backend のエラー型に依存しない判定にするため。
+- lookup モードでは、VFS の `File.Remove` で backend の削除が失敗したら、`Fs.NewObject` で存在を確かめ直す。`ErrorObjectNotFound` なら（他のホストが先に消した）、成功とし、キャッシュからエントリを消す。backend のエラー型に依存しない判定にするため。
+  - serve s3 の側で行う案は、`ForgetPath` が親ディレクトリの読み込み時刻を消すだけで、lookup モードではエントリが残るので採らない（2026-10-08 実装計画の作成時に変更）。
 - 成功したら `b.meta` からも削除する。PUT 以外に `b.meta` に登録する経路（`TouchObject`、Copy、multipart）を実装時に洗い出し、DELETE で同じように消えることを確かめる。
 
 ## 6. `--no-cleanup`
