@@ -1,0 +1,19 @@
+# install.sh のテストを、release/ や workflow の変更時に流す。
+name: install-tests
+
+on:
+  push:
+    paths: ['release/**', '.github/workflows/install-tests.yml']
+  pull_request:
+    paths: ['release/**', '.github/workflows/install-tests.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash release/tests/test_install.sh
