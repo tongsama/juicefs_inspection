@@ -11,5 +11,6 @@
 | 巨大ファイル random I/O の metadata path 最適化（調査・計画。Phase 1 は実装済み） | [調査結果と実装計画](specs/2026-10-07-metadata-random-io-optimization-plan.md) | 同左（Phase 0〜4） |
 | 同 chunk の slice commit をまとめる（Phase 2、`--meta-write-batch`、実装済み・計測待ち） | [設計](specs/2026-10-07-meta-write-batch-design.md) | [実装計画](plans/2026-10-07-meta-write-batch.md) |
 | rclone serve s3 のパス指定 lookup（rclone Phase 1、`--kaz-vfs-lookup-by-path`、実装済み・実機検証待ち） | [設計](specs/2026-10-08-rclone-lookup-by-path-design.md) | [実装計画](plans/2026-10-08-rclone-lookup-by-path.md) |
+| rclone serve s3 のユーザーメタデータを Drive に保存（rclone Phase 2、`--kaz-s3-persist-metadata`・`--drive-kaz-properties`、設計承認済み） | [設計](specs/2026-10-08-rclone-s3-persist-metadata-design.md) | 未作成 |
 
 文書中の `pkg/`・`cmd/` と Go コマンドは、本体の `juicefs/` を基準にします。ソースを本体から移したものではなく、調査文書の管理先だけを分離しています。
