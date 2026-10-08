@@ -1,13 +1,16 @@
-# install.ps1 - download, verify and install the patched JuiceFS build
-# (windows-amd64) published on the tongsama/juicefs_inspection GitHub Releases.
+# install.ps1 - download, verify and install a patched build (juicefs or
+# rclone, windows-amd64) published on the tongsama/juicefs_inspection
+# GitHub Releases.
 #
 # Usage:
-#   irm https://github.com/tongsama/juicefs_inspection/releases/latest/download/install.ps1 | iex
+#   $env:KAZ_PRODUCT='rclone'; irm https://raw.githubusercontent.com/tongsama/juicefs_inspection/main/release/install.ps1 | iex
 #
 # Environment:
-#   JFS_VERSION        release tag to install (default: latest release)
-#   JFS_INSTALL_DIR    install directory (default: %LOCALAPPDATA%\Programs\juicefs)
-#   JFS_DOWNLOAD_BASE  releases base URL (default: this repository; used by tests)
+#   KAZ_PRODUCT        juicefs or rclone (required)
+#   KAZ_VERSION        release tag to install (default: the newest release of the product)
+#   KAZ_INSTALL_DIR    install directory (default: %LOCALAPPDATA%\Programs\<product>)
+#   KAZ_DOWNLOAD_BASE  releases base URL (default: this repository; used by tests)
+#   KAZ_API_BASE       GitHub API URL of this repository (default; used by tests)
 #
 # This script is run through Invoke-Expression, so it reports failures with
 # `throw` and never calls `exit` (which would close the caller's session).
@@ -18,20 +21,64 @@
     $ProgressPreference = 'SilentlyContinue'
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
-    $base = 'https://github.com/tongsama/juicefs_inspection/releases'
-    if ($env:JFS_DOWNLOAD_BASE) { $base = $env:JFS_DOWNLOAD_BASE.TrimEnd('/') }
-    $version = $env:JFS_VERSION
-    $installDir = Join-Path $env:LOCALAPPDATA 'Programs\juicefs'
-    if ($env:JFS_INSTALL_DIR) { $installDir = $env:JFS_INSTALL_DIR }
-    $asset = 'juicefs-windows-amd64.zip'
+    $repo = 'tongsama/juicefs_inspection'
+    $product = $env:KAZ_PRODUCT
+    if (-not $product) { throw "set `$env:KAZ_PRODUCT to juicefs or rclone before running install.ps1" }
+    if (@('juicefs', 'rclone') -notcontains $product) { throw "unknown product: $product (expected juicefs or rclone)" }
+    $base = "https://github.com/$repo/releases"
+    if ($env:KAZ_DOWNLOAD_BASE) { $base = $env:KAZ_DOWNLOAD_BASE.TrimEnd('/') }
+    $api = "https://api.github.com/repos/$repo"
+    if ($env:KAZ_API_BASE) { $api = $env:KAZ_API_BASE.TrimEnd('/') }
+    $version = $env:KAZ_VERSION
+    $installDir = Join-Path $env:LOCALAPPDATA "Programs\$product"
+    if ($env:KAZ_INSTALL_DIR) { $installDir = $env:KAZ_INSTALL_DIR }
+    $exeName = "$product.exe"
+    $asset = "$product-windows-amd64.zip"
 
     $arch = $env:PROCESSOR_ARCHITECTURE
     if ($env:PROCESSOR_ARCHITEW6432) { $arch = $env:PROCESSOR_ARCHITEW6432 }
     if ($arch -ne 'AMD64') { throw "unsupported architecture: $arch (supported: windows-amd64)" }
 
-    $label = 'latest'
-    $url = "$base/latest/download"
-    if ($version) { $label = $version; $url = "$base/download/$version" }
+    # Get-VersionKey returns @(major, minor, patch, kaz) for a release tag of
+    # the product, or $null for any other tag. JuiceFS also accepts the older
+    # form v<x.y.z>-kaz.<n>.
+    function Get-VersionKey([string]$tag) {
+        $t = $tag
+        if ($t.StartsWith("${product}-v")) { $t = $t.Substring($product.Length + 2) }
+        elseif ($product -eq 'juicefs' -and $t -match '^v\d') { $t = $t.Substring(1) }
+        else { return $null }
+        if ($t -notmatch '^(\d+)\.(\d+)\.(\d+)-kaz\.(\d+)$') { return $null }
+        return , @([int]$Matches[1], [int]$Matches[2], [int]$Matches[3], [int]$Matches[4])
+    }
+
+    # Compare-VersionKey returns a positive number when key $a is newer than $b.
+    function Compare-VersionKey($a, $b) {
+        for ($i = 0; $i -lt 4; $i++) { if ($a[$i] -ne $b[$i]) { return $a[$i] - $b[$i] } }
+        return 0
+    }
+
+    if (-not $version) {
+        try {
+            $releases = Invoke-RestMethod -Uri "$api/releases?per_page=100" -UseBasicParsing
+        } catch {
+            $resp = $_.Exception.Response
+            $code = if ($resp) { [int]$resp.StatusCode } else { 0 }
+            if ($code -eq 403 -or $code -eq 429) {
+                throw "GitHub API rate limit reached. Set `$env:KAZ_VERSION to a release tag to install it without the API"
+            }
+            throw "GitHub API request failed: $($_.Exception.Message). Set `$env:KAZ_VERSION to a release tag to install it without the API"
+        }
+        $bestKey = $null
+        foreach ($r in $releases) {
+            $k = Get-VersionKey $r.tag_name
+            if ($null -eq $k) { continue }
+            if ($null -eq $bestKey -or (Compare-VersionKey $k $bestKey) -gt 0) { $bestKey = $k; $version = $r.tag_name }
+        }
+        if (-not $version) { throw "no $product release found ($api/releases)" }
+        Write-Host "newest $product release: $version"
+    }
+    $label = $version
+    $url = "$base/download/$version"
 
     # Save-Asset downloads one release asset into $dir and tells a 404 apart
     # from other failures.
@@ -49,7 +96,7 @@
         return $out
     }
 
-    $tmp = Join-Path ([IO.Path]::GetTempPath()) ('jfs-install-' + [Guid]::NewGuid().ToString('N'))
+    $tmp = Join-Path ([IO.Path]::GetTempPath()) ('kaz-install-' + [Guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $tmp | Out-Null
     try {
         Write-Host "downloading $asset ($label) from $url"
@@ -71,11 +118,11 @@
 
         $x = Join-Path $tmp 'x'
         Expand-Archive -Path $zip -DestinationPath $x
-        $exe = Join-Path $x 'juicefs.exe'
-        if (-not (Test-Path $exe)) { throw 'archive does not contain juicefs.exe' }
+        $exe = Join-Path $x $exeName
+        if (-not (Test-Path $exe)) { throw "archive does not contain $exeName" }
 
         New-Item -ItemType Directory -Force -Path $installDir | Out-Null
-        $dest = Join-Path $installDir 'juicefs.exe'
+        $dest = Join-Path $installDir $exeName
         if (Test-Path $dest) {
             $old = 'unknown'
             try { $old = (& $dest version | Select-Object -First 1) } catch { }
@@ -88,7 +135,7 @@
             Move-Item -Force -Path $staged -Destination $dest
         } catch {
             Remove-Item -Force -ErrorAction SilentlyContinue -Path $staged
-            throw "cannot replace $dest (is juicefs running? stop it and retry): $($_.Exception.Message)"
+            throw "cannot replace $dest (is $product running? stop it and retry): $($_.Exception.Message)"
         }
 
         $new = (& $dest version | Select-Object -First 1)
@@ -96,12 +143,13 @@
         Write-Host "version:   $new"
         Write-Host "PATH was not modified; run it by full path or add $installDir to PATH yourself."
 
+        if ($product -eq 'rclone') { Write-Host 'a running rclone keeps using the old binary until it is restarted' }
         $winfsp = @(
             "${env:ProgramFiles(x86)}\WinFsp\bin\winfsp-x64.dll",
             "$env:ProgramFiles\WinFsp\bin\winfsp-x64.dll"
         ) | Where-Object { Test-Path $_ }
         if (-not $winfsp) {
-            Write-Warning 'WinFsp was not found. It is required to mount JuiceFS on Windows: https://winfsp.dev/rel/'
+            Write-Warning "WinFsp was not found. It is required for '$product mount' on Windows: https://winfsp.dev/rel/"
         }
     } finally {
         Remove-Item -Recurse -Force -ErrorAction SilentlyContinue -Path $tmp
