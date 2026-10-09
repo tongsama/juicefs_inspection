@@ -1,0 +1,4 @@
+<5/s     lookup(GETのうちlookupあり) n=384 mean=0.56s | dlopen(<5s) n=431 mean=1.14s
+5-12/s   lookup(GETのうちlookupあり) n=514 mean=0.54s | dlopen(<5s) n=705 mean=1.25s
+12-18/s  lookup(GETのうちlookupあり) n=390 mean=0.69s | dlopen(<5s) n=606 mean=1.33s
+>=18/s   lookup(GETのうちlookupあり) n=295 mean=0.95s | dlopen(<5s) n=395 mean=1.80s

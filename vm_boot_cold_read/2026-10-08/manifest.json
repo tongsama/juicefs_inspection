@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-08",
+  "purpose": "キャッシュ cold の VM 起動で読み込みが遅い理由と、ゲストの SATA タイムアウトとの対応の解析",
+  "vm": {"name": "ubuntu26-test", "disk": "/home/kwatanabe/var/virt-manager/storage-pool/ubuntu-install-test.qcow2", "juicefs_inode": 614590, "bus": "sata", "cache": "unsafe"},
+  "juicefs_mount": {"pid": 3333, "cache_size": 16106127360, "eviction": "lru", "compress": "zstd", "block_size": 4194304, "prefetch": 0, "buffer_size": 1073741824, "max_downloads": 60},
+  "sources": {
+    "accesslog": {"how": "~/gnu/bin/cat <mount>/.accesslog を 21:21:16 から 40 分記録（既定の cat は uutils 0.10.0 で、サイズ 0 のため即 EOF になり記録できなかった）",
+                  "saved": "accesslog-614590-window.txt.gz（全 inode、21:48:13.475079 以前の 55,343 行に切り出し）",
+                  "sha256_uncompressed": "1a74090576ebf39b4a046a5cc0619676be15692a86456fb9195943dd0a968dd6",
+                  "sha256_gz": "e68f2b962e842425d226de429fd1cf9432b619d3bbaef4e16ccb79eb146b953a"},
+    "debug_log": {"path": "/home/kwatanabe/.juicefs/diagnostics/vm-io-20261008-185307.log", "lines": "1238693-1843297（604,605 行、2026/10/08 21:21:08.600961〜21:48:13.475079）",
+                  "sha256_of_extracted_lines": "8d8c4f41c04f1f7d531cf2d231e4a4acf268e87275634ee52802ac474f8f21b3", "note": "元ログは変更していない。リポジトリには保存していない"},
+    "guest_dmesg": "guest-dmesg-excerpt.txt（ユーザー提示の抜粋）"
+  },
+  "scripts": ["analyze_accesslog.py <accesslog> 614590", "analyze_debug_get.py <debug 抜粋>", "analyze_get_concurrency.py <debug 抜粋>.pkl", "analyze_overlap_prefetch.py <accesslog>.pkl <debug 抜粋>.pkl"]
+}

@@ -1,0 +1,19 @@
+# 2026-10-08 ユーザー提示のゲスト（ubuntu26-test）dmesg 抜粋。時刻はゲスト起動からの秒数。
+# 原文から ata／sd の I/O エラーと ext4 の read-only 化の行のみを残した要約抜粋（apparmor/journald の繰り返しは省略）。
+[ 1011.580015] ata2.00: exception Emask 0x0 SAct 0x200000 SErr 0x0 action 0x6 frozen
+[ 1011.580669] ata2.00: failed command: READ FPDMA QUEUED
+[ 1011.580813] ata2.00: cmd 60/20:a8:28:bf:62/00:00:02:00:00/40 tag 21 ncq dma 16384 in
+                        res 40/00:00:00:00:00/00:00:00:00:00/00 Emask 0x4 (timeout)
+[ 1011.581231] ata2: hard resetting link
+[ 1011.902648] sd 2:0:0:0: [sda] tag#9 FAILED Result: hostbyte=DID_TIME_OUT driverbyte=DRIVER_OK cmd_age=32s
+[ 1011.902661] I/O error, dev sda, sector 11324928 op 0x0:(READ) flags 0x80700 phys_seg 57 prio class 2
+[ 1011.903810] I/O error, dev sda, sector 22073464 op 0x1:(WRITE) flags 0x0 phys_seg 1 prio class 2
+[ 1011.903858] EXT4-fs error (device sda2): ext4_wait_block_bitmap:582: comm systemd: Cannot read block bitmap - block_group = 80, block_bitmap = 2621440
+[ 1011.904383] EXT4-fs (sda2): failed to convert unwritten extents to written extents -- potential data loss!  (inode 264135, error -5)
+[ 1011.905133] EXT4-fs (sda2): failed to convert unwritten extents to written extents -- potential data loss!  (inode 264107, error -5)
+[ 1186.259694] sd 2:0:0:0: [sda] tag#8 FAILED Result: hostbyte=DID_TIME_OUT driverbyte=DRIVER_OK cmd_age=33s
+[ 1186.259858] I/O error, dev sda, sector 207593968 op 0x1:(WRITE) flags 0x809800 phys_seg 31 prio class 2
+[ 1186.260136] EXT4-fs error (device sda2): __ext4_find_entry:1613: inode #656549: comm snapd: reading directory lblock 0
+[ 1186.262247] Aborting journal on device sda2-8.
+[ 1191.295937] EXT4-fs (sda2): Remounting filesystem read-only
+[ 1230.922404] sd 2:0:0:0: [sda] tag#16 FAILED Result: hostbyte=DID_TIME_OUT driverbyte=DRIVER_OK cmd_age=31s

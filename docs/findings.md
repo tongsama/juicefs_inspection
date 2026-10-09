@@ -1,6 +1,6 @@
 # JuiceFS 改善版の知見と評価
 
-更新: 2026-10-08（rclone serve s3 の dir cache の節を追加）。2026-10-07（metadata path の節を追加）。2026-10-06（rclone serve s3 の PUT 詰まりの節を追加）。2026-10-03。対象は Google Drive をバックエンドとする rclone S3 上の JuiceFS CE v1.4.1 系で、VM 仮想ディスク等の巨大ファイルの部分更新です。この文書は現在の入口として、確定した事実と未検証事項をまとめます。詳細な時系列は [agent_memo](../agent_memo.md)、測定値は [ログ解析報告](../option_effects/2026-10-03/report-ja.txt) を参照してください。
+更新: 2026-10-08（キャッシュ cold の VM 起動の節、rclone serve s3 の dir cache の節を追加）。2026-10-07（metadata path の節を追加）。2026-10-06（rclone serve s3 の PUT 詰まりの節を追加）。2026-10-03。対象は Google Drive をバックエンドとする rclone S3 上の JuiceFS CE v1.4.1 系で、VM 仮想ディスク等の巨大ファイルの部分更新です。この文書は現在の入口として、確定した事実と未検証事項をまとめます。詳細な時系列は [agent_memo](../agent_memo.md)、測定値は [ログ解析報告](../option_effects/2026-10-03/report-ja.txt) を参照してください。
 
 ## 方針
 
@@ -157,6 +157,17 @@ force=true slowログ3,649件は再帰callframeの完了数で、独立した手
 - **Phase 2（2026-10-08、`rclone-v1.75.1-kaz.1` に含めて公開し、本番に適用済み）**: `--kaz-s3-persist-metadata` と `--drive-kaz-properties`（必ず一緒に使う）で、`X-Amz-Meta-*` を Drive の properties `s3m-*` に PUT と同時に保存し、どのホストからでも・再起動後も返す。`b.meta` は使わない（メモリが増え続ける問題も解消）。API の回数は増えない。上書きはメタデータを丸ごと置き換える。上限（1件124バイト、30個）を超えると PUT は失敗し、object は作られない。改修前に書かれた object は「メタデータ無し」として扱われ、JuiceFS は検証を省略する（[実機の確認](../rclone_dir_cache/2026-10-08/phase2-drive-verification-ja.md)）。
 - **本番への適用**: 2026-10-08、まず単体で適用し（新しい chunk に `s3m-crc32c` が付くことを確認）、続いて公開版 `rclone-v1.75.1-kaz.1` を2台構成に入れて、公式 v1.75.1 で起きていた問題が解消したことをユーザーが確認した。起動オプションは [手順書](../rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) のとおり（`--kaz-vfs-lookup-by-path --no-cleanup --kaz-s3-persist-metadata --drive-kaz-properties`）。
 - **残る制約**: 改修前に書かれた object にはチェックサムが無く、検証されない。他のホストが同じ key を上書きした後は、キャッシュの期限まで古い情報が返ることがある（JuiceFS は同じ key を書き直さない）。Drive の同名フォルダの重複は範囲外（2026-10-08 時点で0件）。
+
+## キャッシュ cold の VM 起動（2026-10-08）
+
+[解析報告](../vm_boot_cold_read/2026-10-08/report-ja.md)。VM `ubuntu26-test`、qcow2、約26分。
+
+- **律速は GET の往復の遅延**: 4MiB の GET 1回が中央値1.9s で、同時数が1本でも8本でも変わらない。同時数は1〜2本が時間の72%。GET は1,351回、約5.3GiB で、QEMU の read（約1.6GiB）の約3.5倍。compaction と Read 前の flush（合計21s）は主因ではない。
+- **`--prefetch` は zstd の volume では効かない**: prefetch のキューへの登録は Range GET（`loadRange`）の成功時だけ（cached_store.go:768）。Range GET は圧縮なしのときだけ使う（`seekable`、:867・:155）。ファイルの readahead は、順番に読むときだけ（reader.go:419-435）。
+- **ゲストの I/O エラーと read-only 化の原因は、30秒前後かかった read／write**: ゲストの SATA コマンドタイムアウト（既定30s）の3回が、ホストの約27〜32s の操作と時刻で一致した。ホストの JuiceFS はすべて OK を返していた（EIO なし）。VM の disk は virtio のつもりが `bus='sata'` だった。virtio-blk ならゲスト側のコマンドタイムアウトは基本的に無い。ゲストの ext4 は不整合の可能性があり、fsck が必要。
+- **`--get-timeout` と `--kaz-get-header-timeout` の違い（2026-10-09）**: `--get-timeout`（既定 60s）は GET 全体（応答を待つ時間と本体の受け取りの合計）の上限。`--kaz-get-header-timeout`（改修版、既定 0＝無効）は、ブロックの GET で応答ヘッダが返るまでの待ちだけの上限。遅いが流れている本体は切らない。共通の HTTP client の `ResponseHeaderTimeout: 30s` は、PUT・DELETE・LIST と全部の object storage に効くので、そのまま残す。
+- **LRU の優先度**: 稼働中はメモリ上にある。再起動したときは block ファイルの atime を初期値にする（disk_cache.go:1060）。JuiceFS は atime を書き戻さず、キャッシュディレクトリは relatime なので粗い。
+- **GET が25〜30s かかるのは、Drive のダウンロードの応答待ち**: 同じ時刻の他の GET は約1s で終わっており、tpslimit の待ちではないと推測。30s で切れるのは JuiceFS の `ResponseHeaderTimeout: 30s`（restful.go:157）で、`--get-timeout` より先に効く。再試行は1.2〜8.7s で成功した。tpslimit の上限（20/s）には21:33〜21:40 に張り付き、主に PUT と DELETE の分だった。
 
 ## 巨大ファイル random I/O の metadata path（2026-10-07、ソース調査）
 
