@@ -4,5 +4,11 @@
     "commit": "dab33da31190b350cf75214080b362e0a50584d0",
     "go_version": "1.26.0",
     "notes": "release/rclone/notes/rclone-v1.75.1-kaz.1.md"
+  },
+  "rclone-v1.75.1-kaz.2": {
+    "repo": "tongsama/rclone",
+    "commit": "fe05727492551ec2019857f677f0e36c62f5d437",
+    "go_version": "1.26.0",
+    "notes": "release/rclone/notes/rclone-v1.75.1-kaz.2.md"
   }
 }
