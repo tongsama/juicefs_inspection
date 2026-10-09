@@ -166,6 +166,7 @@ force=true slowログ3,649件は再帰callframeの完了数で、独立した手
 - **`--prefetch` は zstd の volume では効かない**: prefetch のキューへの登録は Range GET（`loadRange`）の成功時だけ（cached_store.go:768）。Range GET は圧縮なしのときだけ使う（`seekable`、:867・:155）。ファイルの readahead は、順番に読むときだけ（reader.go:419-435）。
 - **ゲストの I/O エラーと read-only 化の原因は、30秒前後かかった read／write**: ゲストの SATA コマンドタイムアウト（既定30s）の3回が、ホストの約27〜32s の操作と時刻で一致した。ホストの JuiceFS はすべて OK を返していた（EIO なし）。VM の disk は virtio のつもりが `bus='sata'` だった。virtio-blk ならゲスト側のコマンドタイムアウトは基本的に無い。ゲストの ext4 は不整合の可能性があり、fsck が必要。
 - **`--get-timeout` と `--kaz-get-header-timeout` の違い（2026-10-09）**: `--get-timeout`（既定 60s）は GET 全体（応答を待つ時間と本体の受け取りの合計）の上限。`--kaz-get-header-timeout`（改修版、既定 0＝無効）は、ブロックの GET で応答ヘッダが返るまでの待ちだけの上限。遅いが流れている本体は切らない。共通の HTTP client の `ResponseHeaderTimeout: 30s` は、PUT・DELETE・LIST と全部の object storage に効くので、そのまま残す。
+- **Drive の応答の遅さの時間帯（2026-10-09 集計）**: 中央値はどの時間帯も約 1.5〜3s。違うのは「たまに止まる object」の多さで、夜から未明（21〜02 時）は 1,000 個あたり 27〜74 個が 8s 以上止まった（p99 22〜29s）。朝から昼過ぎは 1〜21 個。観測は約 1.5 日分。[集計](../vm_boot_cold_read/2026-10-09/drive-latency-by-hour-ja.md)
 - **LRU の優先度**: 稼働中はメモリ上にある。再起動したときは block ファイルの atime を初期値にする（disk_cache.go:1060）。JuiceFS は atime を書き戻さず、キャッシュディレクトリは relatime なので粗い。
 - **GET が25〜30s かかるのは、Drive のダウンロードの応答待ち**: 同じ時刻の他の GET は約1s で終わっており、tpslimit の待ちではないと推測。30s で切れるのは JuiceFS の `ResponseHeaderTimeout: 30s`（restful.go:157）で、`--get-timeout` より先に効く。再試行は1.2〜8.7s で成功した。tpslimit の上限（20/s）には21:33〜21:40 に張り付き、主に PUT と DELETE の分だった。
 
