@@ -54,4 +54,4 @@ rclone serve s3 gdrive:/rclone-s3 --kaz-vfs-lookup-by-path --no-cleanup --kaz-s3
 ## 詳細
 
 - 仕様（一覧をキーの順に読む）: [2026-10-09-rclone-s3-list-by-key-order-design.md](https://github.com/tongsama/juicefs_inspection/blob/main/docs/superpowers/specs/2026-10-09-rclone-s3-list-by-key-order-design.md)
-- gc の一覧タイムアウトの調査: [gc-list-timeout-investigation-ja.md](https://github.com/tongsama/juicefs_inspection/blob/main/juicefs_gc/2026-10-08/gc-list-timeout-investigation-ja.md)
+- gc の一覧タイムアウトの調査: [gc-list-timeout-investigation-ja.md](https://github.com/tongsama/juicefs_inspection/blob/rclone-v1.75.1-kaz.2/juicefs_gc/2026-10-08/gc-list-timeout-investigation-ja.md)

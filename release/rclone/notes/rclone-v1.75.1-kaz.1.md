@@ -33,4 +33,4 @@ rclone serve s3 gdrive:/rclone-s3 --kaz-vfs-lookup-by-path --no-cleanup --kaz-s3
 
 - 仕様（lookup-by-path）: [2026-10-08-rclone-lookup-by-path-design.md](https://github.com/tongsama/juicefs_inspection/blob/main/docs/superpowers/specs/2026-10-08-rclone-lookup-by-path-design.md)
 - 仕様（metadata の永続化）: [2026-10-08-rclone-s3-persist-metadata-design.md](https://github.com/tongsama/juicefs_inspection/blob/main/docs/superpowers/specs/2026-10-08-rclone-s3-persist-metadata-design.md)
-- 本番適用の手順書: [deploy-runbook-ja.md](https://github.com/tongsama/juicefs_inspection/blob/main/rclone_dir_cache/2026-10-08/deploy-runbook-ja.md)
+- 本番適用の手順書: [deploy-runbook-ja.md](https://github.com/tongsama/juicefs_inspection/blob/rclone-v1.75.1-kaz.1/rclone_dir_cache/2026-10-08/deploy-runbook-ja.md)
