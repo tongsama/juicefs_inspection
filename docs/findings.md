@@ -1,6 +1,6 @@
 # JuiceFS 改善版の知見と評価
 
-更新: 2026-10-08（キャッシュ cold の VM 起動の節、rclone serve s3 の dir cache の節を追加）。2026-10-07（metadata path の節を追加）。2026-10-06（rclone serve s3 の PUT 詰まりの節を追加）。2026-10-03。対象は Google Drive をバックエンドとする rclone S3 上の JuiceFS CE v1.4.1 系で、VM 仮想ディスク等の巨大ファイルの部分更新です。この文書は現在の入口として、確定した事実と未検証事項をまとめます。詳細な時系列は [agent_memo](../agent_memo.md)、測定値は [ログ解析報告](../option_effects/2026-10-03/report-ja.txt) を参照してください。
+更新: 2026-10-08（キャッシュ cold の VM 起動の節、rclone serve s3 の dir cache の節を追加）。2026-10-07（metadata path の節を追加）。2026-10-06（rclone serve s3 の PUT 詰まりの節を追加）。2026-10-03。対象は Google Drive をバックエンドとする rclone S3 上の JuiceFS CE v1.4.1 系で、VM 仮想ディスク等の巨大ファイルの部分更新です。この文書は現在の入口として、確定した事実と未検証事項をまとめます。詳細な時系列は [agent_memo](../agent_memo.md)、測定値は [ログ解析報告](inspection/option_effects/2026-10-03/report-ja.txt) を参照してください。
 
 ## 方針
 
@@ -44,7 +44,7 @@ writer を期限なし待機にしても、外側の go-fuse watchdog に固定1
 
 ## オプションと時系列
 
-以下は実装の既定値と、10/03 の最終確認時点の設定を分けたもの。値は恒久的な現在状態を保証するものではなく、[選択 config](../option_effects/2026-10-03/current-config-selected.json) に基づく。
+以下は実装の既定値と、10/03 の最終確認時点の設定を分けたもの。値は恒久的な現在状態を保証するものではなく、[選択 config](inspection/option_effects/2026-10-03/current-config-selected.json) に基づく。
 
 | 設定 | 既定 | 最終確認時点 | 意味 |
 |---|---:|---:|---|
@@ -80,7 +80,7 @@ reuse16 は、同 chunk の pending slice list を作成順の新しい側から
 
 file writer flush は同 inode の全 pending chunk／slice を対象に、freeze、Finish の保存、作成順と依存関係を守った metadata Write、pending 除去を待つ。既存 file 全体を書き直すものではない。Read 前も読み取り範囲だけの flush ではない。writeback では cloud upload 全体の完了とは別。
 
-全3期間で age freeze は0、明示的／window freeze は全件 age10秒未満。idle freeze は8／16／14件と少ない。今回の負荷では fsync 等が主要制限で、wait30→15の直接効果は見えていない。window は全3runで16なので単独効果未分離。局所テストの window4→16で commit10→9は、実機 PUT 削減率ではない。[詳細集計](../option_effects/2026-10-03/writer_report.md)
+全3期間で age freeze は0、明示的／window freeze は全件 age10秒未満。idle freeze は8／16／14件と少ない。今回の負荷では fsync 等が主要制限で、wait30→15の直接効果は見えていない。window は全3runで16なので単独効果未分離。局所テストの window4→16で commit10→9は、実機 PUT 削減率ではない。[詳細集計](inspection/option_effects/2026-10-03/writer_report.md)
 
 ## GC 分離・scheduler と upload の修正
 
@@ -124,11 +124,11 @@ force=true slowログ3,649件は再帰callframeの完了数で、独立した手
 - 直近GET404は同exact keyが約3.63秒後に成功し、該当IDのDELETE／retirement記録がない。永久欠落とは評価しないが、原因は未特定。
 - GETheader timeout後に約96.82秒のRead成功もある。Read全体の遅延と、writer preflushの待ちは別。
 
-[Read EIO のソース経路と留保](../option_effects/2026-10-03/writer_read_error_findings.txt)。実保存失敗を隠す方向で直さず、安全な再現を先行する。
+[Read EIO のソース経路と留保](inspection/option_effects/2026-10-03/writer_read_error_findings.txt)。実保存失敗を隠す方向で直さず、安全な再現を先行する。
 
 ## rclone serve s3 の PUT 詰まり（2026-10-06）
 
-詳細と証跡は [報告](../rclone_put_timeout/2026-10-06/report-ja.md) にある。
+詳細と証跡は [報告](inspection/rclone_put_timeout/2026-10-06/report-ja.md) にある。
 
 - **症状**: JuiceFS で `slow request: PUT ... exceeded maximum number of attempts, 1 ... timeout awaiting response headers`（30.00秒）が続き、転送が大きく遅れる。
 - **文言の意味**: `attempts, 1` は JuiceFS 側の SDK 設定（`RetryMaxAttempts=1`。再試行は JuiceFS が自前で行う）。30秒は JuiceFS の固定値 `ResponseHeaderTimeout`（`pkg/object/restful.go`）で、`--put-timeout` では変えられない。rclone がエラーを返したわけではなく、rclone の `--low-level-retries` とも無関係。Drive のレート制限も観測されていない。
@@ -146,27 +146,27 @@ force=true slowログ3,649件は再帰callframeの完了数で、独立した手
 
 ## rclone serve s3 の dir cache と複数ホスト（2026-10-08）
 
-詳細は [ソース調査](../rclone_dir_cache/2026-10-08/source-investigation-ja.md)、[実機検証](../rclone_dir_cache/2026-10-08/drive-verification-ja.md)、[設計](superpowers/specs/2026-10-08-rclone-lookup-by-path-design.md)、[手順書](../rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) にある。
+詳細は [ソース調査](inspection/rclone_dir_cache/2026-10-08/source-investigation-ja.md)、[実機検証](inspection/rclone_dir_cache/2026-10-08/drive-verification-ja.md)、[設計](superpowers/specs/2026-10-08-rclone-lookup-by-path-design.md)、[手順書](inspection/rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) にある。
 
 - **構成**: 各ホストがそれぞれ `rclone serve s3` を動かし、同じ Drive フォルダを共有する。
 - **原因（ソースと再現で確認）**: serve s3 の操作はすべて VFS のパスの walk を通る。VFS は一覧済みのディレクトリに名前が無ければ、期限内は Drive に問い合わせずに「無い」を返す。`--poll-interval 0` では他のホストの PUT が反映されないので、他のホストが作った object を最大 `--dir-cache-time` の間「無い」（404）と返し、JuiceFS の Read が EIO になる。期限を短くすると、key 指定の操作でも各階層のディレクトリを全件一覧する。
 - **付随していた問題**: Stat のどのエラーも 404 になる（rate limit も「無い」に見える）。DELETE が自ホストのキャッシュに無い object を消さずに成功を返す。`--no-cleanup` が配線されていない。S3 のユーザーメタデータ（JuiceFS の crc32c）はプロセスのメモリにしか無く、DELETE でも消えない。
 - **対策（改修版 rclone、`rclone-v1.75.1-kaz.1` に含めて公開し、本番に適用済み）**: `--kaz-vfs-lookup-by-path` で、キャッシュに無い名前を Drive に1件だけ問い合わせ、「無い」をキャッシュしない。404 は「無い」ときだけにし、他は 500。DELETE は他ホストの object も実際に消し、すでに無ければ成功。`--no-cleanup` を配線。PUT（`O_CREATE|O_TRUNC`、cache-mode off）では存在を問い合わせないので、PUT の API 回数は改修前と同じ。
 - **実機で確認したこと**: 2026-10-08、ユーザーが公開版 `rclone-v1.75.1-kaz.1` で2台構成を試し、公式 v1.75.1 で起きていた問題が解消したことを確認。テスト用フォルダでは、他のホストが作った object がすぐ読める。DELETE で Drive から消える。key 指定の操作で一覧の取り直しが0回。既存 object の上書きで同名ファイルが増えない。
-- **JuiceFS 側**: GET・PUT では 404・500・503 を区別せずに再試行する。404 を特別に扱うのは Head と Delete だけ（[記録](../rclone_dir_cache/2026-10-08/juicefs-error-handling-ja.md)）。
-- **Phase 2（2026-10-08、`rclone-v1.75.1-kaz.1` に含めて公開し、本番に適用済み）**: `--kaz-s3-persist-metadata` と `--drive-kaz-properties`（必ず一緒に使う）で、`X-Amz-Meta-*` を Drive の properties `s3m-*` に PUT と同時に保存し、どのホストからでも・再起動後も返す。`b.meta` は使わない（メモリが増え続ける問題も解消）。API の回数は増えない。上書きはメタデータを丸ごと置き換える。上限（1件124バイト、30個）を超えると PUT は失敗し、object は作られない。改修前に書かれた object は「メタデータ無し」として扱われ、JuiceFS は検証を省略する（[実機の確認](../rclone_dir_cache/2026-10-08/phase2-drive-verification-ja.md)）。
-- **本番への適用**: 2026-10-08、まず単体で適用し（新しい chunk に `s3m-crc32c` が付くことを確認）、続いて公開版 `rclone-v1.75.1-kaz.1` を2台構成に入れて、公式 v1.75.1 で起きていた問題が解消したことをユーザーが確認した。起動オプションは [手順書](../rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) のとおり（`--kaz-vfs-lookup-by-path --no-cleanup --kaz-s3-persist-metadata --drive-kaz-properties`）。
+- **JuiceFS 側**: GET・PUT では 404・500・503 を区別せずに再試行する。404 を特別に扱うのは Head と Delete だけ（[記録](inspection/rclone_dir_cache/2026-10-08/juicefs-error-handling-ja.md)）。
+- **Phase 2（2026-10-08、`rclone-v1.75.1-kaz.1` に含めて公開し、本番に適用済み）**: `--kaz-s3-persist-metadata` と `--drive-kaz-properties`（必ず一緒に使う）で、`X-Amz-Meta-*` を Drive の properties `s3m-*` に PUT と同時に保存し、どのホストからでも・再起動後も返す。`b.meta` は使わない（メモリが増え続ける問題も解消）。API の回数は増えない。上書きはメタデータを丸ごと置き換える。上限（1件124バイト、30個）を超えると PUT は失敗し、object は作られない。改修前に書かれた object は「メタデータ無し」として扱われ、JuiceFS は検証を省略する（[実機の確認](inspection/rclone_dir_cache/2026-10-08/phase2-drive-verification-ja.md)）。
+- **本番への適用**: 2026-10-08、まず単体で適用し（新しい chunk に `s3m-crc32c` が付くことを確認）、続いて公開版 `rclone-v1.75.1-kaz.1` を2台構成に入れて、公式 v1.75.1 で起きていた問題が解消したことをユーザーが確認した。起動オプションは [手順書](inspection/rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) のとおり（`--kaz-vfs-lookup-by-path --no-cleanup --kaz-s3-persist-metadata --drive-kaz-properties`）。
 - **残る制約**: 改修前に書かれた object にはチェックサムが無く、検証されない。他のホストが同じ key を上書きした後は、キャッシュの期限まで古い情報が返ることがある（JuiceFS は同じ key を書き直さない）。Drive の同名フォルダの重複は範囲外（2026-10-08 時点で0件）。
 
 ## キャッシュ cold の VM 起動（2026-10-08）
 
-[解析報告](../vm_boot_cold_read/2026-10-08/report-ja.md)。VM `ubuntu26-test`、qcow2、約26分。
+[解析報告](inspection/vm_boot_cold_read/2026-10-08/report-ja.md)。VM `ubuntu26-test`、qcow2、約26分。
 
 - **律速は GET の往復の遅延**: 4MiB の GET 1回が中央値1.9s で、同時数が1本でも8本でも変わらない。同時数は1〜2本が時間の72%。GET は1,351回、約5.3GiB で、QEMU の read（約1.6GiB）の約3.5倍。compaction と Read 前の flush（合計21s）は主因ではない。
 - **`--prefetch` は zstd の volume では効かない**: prefetch のキューへの登録は Range GET（`loadRange`）の成功時だけ（cached_store.go:768）。Range GET は圧縮なしのときだけ使う（`seekable`、:867・:155）。ファイルの readahead は、順番に読むときだけ（reader.go:419-435）。
 - **ゲストの I/O エラーと read-only 化の原因は、30秒前後かかった read／write**: ゲストの SATA コマンドタイムアウト（既定30s）の3回が、ホストの約27〜32s の操作と時刻で一致した。ホストの JuiceFS はすべて OK を返していた（EIO なし）。VM の disk は virtio のつもりが `bus='sata'` だった。virtio-blk ならゲスト側のコマンドタイムアウトは基本的に無い。ゲストの ext4 は不整合の可能性があり、fsck が必要。
 - **`--get-timeout` と `--kaz-get-header-timeout` の違い（2026-10-09）**: `--get-timeout`（既定 60s）は GET 全体（応答を待つ時間と本体の受け取りの合計）の上限。`--kaz-get-header-timeout`（改修版、既定 0＝無効）は、ブロックの GET で応答ヘッダが返るまでの待ちだけの上限。遅いが流れている本体は切らない。共通の HTTP client の `ResponseHeaderTimeout: 30s` は、PUT・DELETE・LIST と全部の object storage に効くので、そのまま残す。
-- **Drive の応答の遅さの時間帯（2026-10-09 集計）**: 中央値はどの時間帯も約 1.5〜3s。違うのは「たまに止まる object」の多さで、夜から未明（21〜02 時）は 1,000 個あたり 27〜74 個が 8s 以上止まった（p99 22〜29s）。朝から昼過ぎは 1〜21 個。観測は約 1.5 日分。[集計](../vm_boot_cold_read/2026-10-09/drive-latency-by-hour-ja.md)
+- **Drive の応答の遅さの時間帯（2026-10-09 集計）**: 中央値はどの時間帯も約 1.5〜3s。違うのは「たまに止まる object」の多さで、夜から未明（21〜02 時）は 1,000 個あたり 27〜74 個が 8s 以上止まった（p99 22〜29s）。朝から昼過ぎは 1〜21 個。観測は約 1.5 日分。[集計](inspection/vm_boot_cold_read/2026-10-09/drive-latency-by-hour-ja.md)
 - **sticky EIO と仮想ディスクの破損（2026-10-11、ユーザーの観察）**: upstream 由来の sticky EIO（1 か所で read の取り直しを使い切ると、ファイルを全部閉じるまで、そのファイルへの read がすべて EIO を返す）を kaz.5 で直してから、仮想ディスクが壊れることがほとんど無くなった（ユーザー報告）。ユーザーは、以前からの「正常に終了しても次の起動で壊れている」の主な原因だったと見ている。個々の破損との因果関係は確かめていない。推測される経路は、QEMU が qcow2 のメタデータを読めずにゲストの書き込みが失敗すること。終了のときの書き出しがこれで失敗しても、ゲストは気付かないまま終了し得る。
 - **LRU の優先度**: 稼働中はメモリ上にある。再起動したときは block ファイルの atime を初期値にする（disk_cache.go:1060）。JuiceFS は atime を書き戻さず、キャッシュディレクトリは relatime なので粗い。
 - **GET が25〜30s かかるのは、Drive のダウンロードの応答待ち**: 同じ時刻の他の GET は約1s で終わっており、tpslimit の待ちではないと推測。30s で切れるのは JuiceFS の `ResponseHeaderTimeout: 30s`（restful.go:157）で、`--get-timeout` より先に効く。再試行は1.2〜8.7s で成功した。tpslimit の上限（20/s）には21:33〜21:40 に張り付き、主に PUT と DELETE の分だった。
@@ -180,16 +180,16 @@ force=true slowログ3,649件は再帰callframeの完了数で、独立した手
 - NewSlice は既に 4096 個単位で予約しており、RTT は 4096 回に 1 回。
 - 自分の commit 後は chunk cache を invalidate し、次の GetAttr の mtime 差で全 chunk cache も消える。Read 前 flush は読む範囲に関係なく全 pending が対象。
 - Redis client-cache（meta URL の `client-cache`）は attr と entry のみで、chunk は対象外。有効時に doWrite が古い attr を読む経路がソース上成立する（未再現）。
-- **実測（2026-10-07、unsafe、Ubuntu インストール）**: 最大の待ちは qcow2 の cluster 割り当てに伴う `fallocate(ZERO_RANGE)` で、15,343回・合計 3,330s・平均 217ms。うち 173ms は、範囲に関係なく同 inode の全 pending commit を待つ flush。強制 freeze の89%がこの flush によるもの。commit は平均 43ms（≒ 4 RTT、RTT 約10ms）で62,317件、計測時間の52%を占めた。[解析報告](../metadata_random_io/2026-10-07/install-report-ja.md)
+- **実測（2026-10-07、unsafe、Ubuntu インストール）**: 最大の待ちは qcow2 の cluster 割り当てに伴う `fallocate(ZERO_RANGE)` で、15,343回・合計 3,330s・平均 217ms。うち 173ms は、範囲に関係なく同 inode の全 pending commit を待つ flush。強制 freeze の89%がこの flush によるもの。commit は平均 43ms（≒ 4 RTT、RTT 約10ms）で62,317件、計測時間の52%を占めた。[解析報告](inspection/metadata_random_io/2026-10-07/install-report-ja.md)
 - **同条件の raw では約36分（qcow2 は約84分、どちらも debug 付き）**。fallocate は0回。raw で残る最大の待ちは Read 前 flush（合計799s、最大24.8s）で、flush 中は同 inode の Write も止まる。
-- **Phase 1（`--writer-flush-scope=range`、本体 18e641b8）の qcow2 計測（2026-10-07）: 約84分 → 約53分**。Read と Fallocate 前の flush を、触る chunk の pending と、その依存に限定した。待ちは handle のロックの外で行い、ロックの中でもう一度確認する。fallocate の合計は 3,330s → 1,887s、commit は −44%、write の合計は −80%。Read 前の待ちは変わらなかった。残る待ちは in-range の commit（約41ms/件）と Meta.Fallocate で、次は group commit。mtime が古い slice の commit で巻き戻る upstream 由来の問題も、同じ commit で修正した（scope に関係なく有効）。fsync・close は全体の flush のまま。[報告](../metadata_random_io/2026-10-07/install-range-report-ja.md)
-- **Phase 2（`--meta-write-batch=64`、本体 f9308391）の qcow2 計測（2026-10-07）: 約53分 → 約43分**（変更前の約84分からは −49%）。同じ chunk の連続した slice を1回の transaction でまとめ、transaction 数は 35,006 → 20,654（−41%）、batch は平均3.2件。batch 1回の時間は単発と同じ約41ms。Read 前の待ちは 352s → 66s（−81%）、Fallocate 前の待ちは 1,264s → 905s（−28%）。残る主な待ちは、Fallocate 前の commit 待ち、Meta.Fallocate（約44ms/回）、単発の commit で、どれも Redis の transaction 1回 ≒ 41ms の直列に起因する。[報告](../metadata_random_io/2026-10-07/install-batch-report-ja.md)
+- **Phase 1（`--writer-flush-scope=range`、本体 18e641b8）の qcow2 計測（2026-10-07）: 約84分 → 約53分**。Read と Fallocate 前の flush を、触る chunk の pending と、その依存に限定した。待ちは handle のロックの外で行い、ロックの中でもう一度確認する。fallocate の合計は 3,330s → 1,887s、commit は −44%、write の合計は −80%。Read 前の待ちは変わらなかった。残る待ちは in-range の commit（約41ms/件）と Meta.Fallocate で、次は group commit。mtime が古い slice の commit で巻き戻る upstream 由来の問題も、同じ commit で修正した（scope に関係なく有効）。fsync・close は全体の flush のまま。[報告](inspection/metadata_random_io/2026-10-07/install-range-report-ja.md)
+- **Phase 2（`--meta-write-batch=64`、本体 f9308391）の qcow2 計測（2026-10-07）: 約53分 → 約43分**（変更前の約84分からは −49%）。同じ chunk の連続した slice を1回の transaction でまとめ、transaction 数は 35,006 → 20,654（−41%）、batch は平均3.2件。batch 1回の時間は単発と同じ約41ms。Read 前の待ちは 352s → 66s（−81%）、Fallocate 前の待ちは 1,264s → 905s（−28%）。残る主な待ちは、Fallocate 前の commit 待ち、Meta.Fallocate（約44ms/回）、単発の commit で、どれも Redis の transaction 1回 ≒ 41ms の直列に起因する。[報告](inspection/metadata_random_io/2026-10-07/install-batch-report-ja.md)
 
 ## 検証範囲
 
 対象の Redis／SQLite／MemKV、queue飽和、共有reference、marker回復、upload取消、fsync／read-after-write、実kernel FUSE等を隔離して検証した。PostgreSQLはユーザー指示でsource reviewのみ、runtime未実施。他KV engineの全runtime atomicityまで保証しない。
 
-Go1.26では既存mockeyのruntime.duffcopy／duffzero link不整合がある。Go1.25.11では、`TMPDIR`をroot filesystem上に置いて `pkg/chunk` 通常49PASSの記録がある。全体raceは今回版11FAIL／44DATA RACE、未変更3bed archiveでも同じ11件等／48DATA RACEを再現した既存問題で、全suite race-cleanとはしない。今回追加のretire9testsはrace3回成功。[Go1.25検証記録](../gc_backlog/2026-10-02/improvement/go1.25_chunk/)
+Go1.26では既存mockeyのruntime.duffcopy／duffzero link不整合がある。Go1.25.11では、`TMPDIR`をroot filesystem上に置いて `pkg/chunk` 通常49PASSの記録がある。全体raceは今回版11FAIL／44DATA RACE、未変更3bed archiveでも同じ11件等／48DATA RACEを再現した既存問題で、全suite race-cleanとはしない。今回追加のretire9testsはrace3回成功。[Go1.25検証記録](inspection/gc_backlog/2026-10-02/improvement/go1.25_chunk/)
 
 writebackの既存stage処理はfile／directory fsyncによるhost power-loss耐久性を追加保証していない。プロセス・I/O遅延下の試験と、停電／host crash／全cloud保存の保証は分ける。
 
@@ -202,4 +202,4 @@ writebackの既存stage処理はfile／directory fsyncによるhost power-loss�
 
 DEBUGはログ容量の約99.7〜99.9%、正常checksum DEBUGだけで60〜72%を占めた。checksum検証維持と成功ログ出力抑制は別に判断する。元ログは変更せず、固定prefix合計7,038,915,328 bytesのSHA・集計・例外証跡を保存した。
 
-旧／新clientが採取時点でともにlogfdを持っていたため、古い名前だけでclosedと決めない。[ログ一覧](../option_effects/2026-10-03/log-inventory.json)は当時のsnapshotで、圧縮・移動・削除前にはproducer状態を再確認する。
+旧／新clientが採取時点でともにlogfdを持っていたため、古い名前だけでclosedと決めない。[ログ一覧](inspection/option_effects/2026-10-03/log-inventory.json)は当時のsnapshotで、圧縮・移動・削除前にはproducer状態を再確認する。

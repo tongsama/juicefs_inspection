@@ -23,7 +23,7 @@
   - 症状（ユーザーの観察）:
     - JuiceFS は object のパスを直接指定するので、ディレクトリのリストは要らない。それなのに、パスを直接取得しようとすると、rclone は毎回ディレクトリのリストを取りに行く。
     - dir cache を使うと、今度はファイルの有無までキャッシュしてしまい、存在するはずのファイルを「無い」と返す。
-    - 背景: 2026-10-06 の調査（`rclone_put_timeout/2026-10-06/report-ja.md`）。現在は `--poll-interval 0 --dir-cache-time 1h` で運用中。
+    - 背景: 2026-10-06 の調査（`docs/inspection/rclone_put_timeout/2026-10-06/report-ja.md`）。現在は `--poll-interval 0 --dir-cache-time 1h` で運用中。
   - 方針（やる場合）: JuiceFS と同じ形にする。
     - rclone のソースを、このリポジトリの中の Git ignore したディレクトリ（例: `/rclone`）に clone して修正する。
     - このリポジトリで release を作る。release のディレクトリ構成（`release/`、`versions.json`、workflow、install スクリプト）を、JuiceFS と rclone の2つの成果物に対応する形へ変える必要があるかもしれない。
@@ -33,29 +33,29 @@
     - 修正案と upstream への報告の要否を比較する。実装はユーザーの承認後。
   - 補足（ユーザー、2026-10-08）: 複数台から mount するので深刻。dir cache が有効だと、他の client が新しく作ったファイルは metadata では見えるのに、rclone が「無い」をキャッシュしていて input/output error になる。
   - 構成（ユーザー回答、2026-10-08）: (A) 各ホストがそれぞれ rclone serve s3 を動かし、同じ Drive フォルダ（`/rclone-s3`）を見ている。
-  - 2026-10-08 ソース調査: [報告](rclone_dir_cache/2026-10-08/source-investigation-ja.md)。方式 (b') VFS の lookup モードを軸にすることをユーザーが承認。
+  - 2026-10-08 ソース調査: [報告](docs/inspection/rclone_dir_cache/2026-10-08/source-investigation-ja.md)。方式 (b') VFS の lookup モードを軸にすることをユーザーが承認。
   - Phase 分け（ユーザー承認、2026-10-08）:
     - [ ] Phase 1（コード実装済み、実機検証と本番適用が残り）: (b') lookup モード（`--vfs-lookup-by-path`）、HEAD/GET のエラーを 404 にしない、`--no-cleanup` の配線、DELETE 時に `b.meta` を消す（メモリが増え続ける問題）。[仕様](docs/superpowers/specs/2026-10-08-rclone-lookup-by-path-design.md) はユーザー承認済み（2026-10-08）。[実装計画](docs/superpowers/plans/2026-10-08-rclone-lookup-by-path.md) を作成（ユーザーのレビュー待ち）。
       - 2026-10-08 実装: rclone `feat/kaz-vfs-lookup`（1.75.1-improve-kaz から分岐、c27d12d03..9b75066b4 の11 commit、push なし、未 merge）。タスクごとのレビューと最終レビューを通過。race つきテスト ok（`cmd/serve/s3` は docker が要る TestS3Minio を除く。変更前から失敗）。
       - 追加の変更（レビューでの判断）: ListBucket・PutObject・DeleteBucket の bucket 確認も「無い」ときだけ 404 にした。lookup 中にディレクトリ名が変わった場合は1回やり直す。
-      - JuiceFS は Get/Put で 404・500・503 を区別せず再試行する → 500 で十分（[記録](rclone_dir_cache/2026-10-08/juicefs-error-handling-ja.md)）。
+      - JuiceFS は Get/Put で 404・500・503 を区別せず再試行する → 500 で十分（[記録](docs/inspection/rclone_dir_cache/2026-10-08/juicefs-error-handling-ja.md)）。
       - 残る注意: `b.meta` は他ホストが消した key の分が残る（Phase 2 まで定期再起動で抑える）。key 指定の新規 PUT ごとに Drive API が1回増える（実機で測る）。
-      - [x] 実際の Drive での検証（2026-10-08、[記録](rclone_dir_cache/2026-10-08/drive-verification-ja.md)）: 他ホストの新規 object がすぐ読める、DELETE で実際に消える、一覧の取り直し0回を確認。テスト用フォルダは削除済み。
+      - [x] 実際の Drive での検証（2026-10-08、[記録](docs/inspection/rclone_dir_cache/2026-10-08/drive-verification-ja.md)）: 他ホストの新規 object がすぐ読める、DELETE で実際に消える、一覧の取り直し0回を確認。テスト用フォルダは削除済み。
       - [x] 新しい key の PUT で Drive API が2回増える問題（名前の検索が1→3回）: ユーザー承認の追加修正（lookup モードかつ cache-mode off の `O_CREATE|O_TRUNC` では VFS が存在を問い合わせない、0e050fab1・9b75066b4）で、lookup モードなしと同じ1回に戻した。実機で再計測済み。
-      - [x] 本番適用の手順書（2026-10-08、[手順書](rclone_dir_cache/2026-10-08/deploy-runbook-ja.md)）
+      - [x] 本番適用の手順書（2026-10-08、[手順書](docs/inspection/rclone_dir_cache/2026-10-08/deploy-runbook-ja.md)）
       - [ ] 本番への適用（ユーザー）。全ホストで `--no-cleanup` を指定すること。適用後は RSS（`b.meta`）と rate limit を観測する。
       - [x] 2026-10-08 ユーザーの指示で `feat/kaz-vfs-lookup` を `1.75.1-improve-kaz` へ `--no-ff` で merge（dd03d0243、merge 後もテスト ok）。ユーザーが作成した `tongsama/rclone` を `kaz` リモートとして追加し、`1.75.1-improve-kaz` を push（既定ブランチ）。`feat/kaz-vfs-lookup` はローカルに残してある。
     - [ ] Phase 2: S3 のユーザーメタデータ（JuiceFS の `x-amz-meta-crc32c`）を Drive の properties に保存し、どのホストからも・再起動後も返す。現状はプロセスのメモリ（`b.meta`）にだけあり、他ホストの PUT や再起動後は JuiceFS のチェックサム検証が黙って省略される。
       - 2026-10-08 着手（brainstorming、architectural）。ユーザー判断: 保存するのは `x-amz-meta-*` すべて（A）。既存の object への後付けは範囲外（前提、未確認）。
-      - 方式 A＋C2（PUT 時に properties を同梱、Drive に properties だけを取るオプション）をユーザーが承認。オプション名は `--kaz-s3-persist-metadata`（serve s3）と `--drive-kaz-properties`（Drive backend。backend のオプションは `--<backend>-kaz-<内容>` とする規則の補足をユーザーが承認）。[調査](rclone_dir_cache/2026-10-08/phase2-metadata-investigation-ja.md)、[仕様](docs/superpowers/specs/2026-10-08-rclone-s3-persist-metadata-design.md)（ユーザー承認済み）。既存データ（メタデータ無し）に対する取得・上書き・削除・再取得のテストをユーザーが要望し、仕様に入れた。[実装計画](docs/superpowers/plans/2026-10-08-rclone-s3-persist-metadata.md)（Task 0〜7）をユーザーが承認、subagent-driven で実装中（rclone `feat/kaz-s3-persist-metadata`）。
+      - 方式 A＋C2（PUT 時に properties を同梱、Drive に properties だけを取るオプション）をユーザーが承認。オプション名は `--kaz-s3-persist-metadata`（serve s3）と `--drive-kaz-properties`（Drive backend。backend のオプションは `--<backend>-kaz-<内容>` とする規則の補足をユーザーが承認）。[調査](docs/inspection/rclone_dir_cache/2026-10-08/phase2-metadata-investigation-ja.md)、[仕様](docs/superpowers/specs/2026-10-08-rclone-s3-persist-metadata-design.md)（ユーザー承認済み）。既存データ（メタデータ無し）に対する取得・上書き・削除・再取得のテストをユーザーが要望し、仕様に入れた。[実装計画](docs/superpowers/plans/2026-10-08-rclone-s3-persist-metadata.md)（Task 0〜7）をユーザーが承認、subagent-driven で実装中（rclone `feat/kaz-s3-persist-metadata`）。
       - 2026-10-08 実装完了（`feat/kaz-s3-persist-metadata` 875d6df78..e1509bad8 の7 commit、push・merge なし）。タスクごとのレビューと最終レビューを通過、race つきテスト ok。最終レビューを受けて、Drive では `--drive-kaz-properties` が必須と明記（仕様 §2 を訂正）。
-      - [x] 実際の Drive での確認（[記録](rclone_dir_cache/2026-10-08/phase2-drive-verification-ja.md)）: ホストをまたぐ往復、上書きでの置き換え（一括・分割の両経路）、上限超えで PUT 失敗・object 作られず、multipart、既存データとの互換（取得・上書き・削除・再取得）、API の回数が Phase 1 と同じ。テスト用フォルダは削除済み。
-      - [x] 手順書に Phase 2 を追記（[手順書](rclone_dir_cache/2026-10-08/deploy-runbook-ja.md)）。
+      - [x] 実際の Drive での確認（[記録](docs/inspection/rclone_dir_cache/2026-10-08/phase2-drive-verification-ja.md)）: ホストをまたぐ往復、上書きでの置き換え（一括・分割の両経路）、上限超えで PUT 失敗・object 作られず、multipart、既存データとの互換（取得・上書き・削除・再取得）、API の回数が Phase 1 と同じ。テスト用フォルダは削除済み。
+      - [x] 手順書に Phase 2 を追記（[手順書](docs/inspection/rclone_dir_cache/2026-10-08/deploy-runbook-ja.md)）。
       - [x] 2026-10-08 ユーザーの指示で `1.75.1-improve-kaz` へ `--no-ff` で merge（dab33da31、merge 後もテスト ok）し、`kaz`（tongsama/rclone）へ push。`feat/kaz-s3-persist-metadata` はローカルに残す。
-      - [ ] 本番適用（ユーザー、[手順書](rclone_dir_cache/2026-10-08/deploy-runbook-ja.md)）。2026-10-08 単体（1台）での試行を開始（ユーザーが `/usr/bin/rclone` を改修版で上書き、動作 OK。新しい chunk の `s3m-crc32c` も本番で確認済み）。観測: 新しい chunk の `s3m-crc32c`、RSS、`InternalError`・`verify checksum failed`。バイナリ `~/tmp_local/rclone-kaz-build/rclone-kaz`（v1.75.1-kaz-dev.dab33da3、sha256 c81a4ac0…59fdc）。2台での構成はリリースの後。
+      - [ ] 本番適用（ユーザー、[手順書](docs/inspection/rclone_dir_cache/2026-10-08/deploy-runbook-ja.md)）。2026-10-08 単体（1台）での試行を開始（ユーザーが `/usr/bin/rclone` を改修版で上書き、動作 OK。新しい chunk の `s3m-crc32c` も本番で確認済み）。観測: 新しい chunk の `s3m-crc32c`、RSS、`InternalError`・`verify checksum failed`。バイナリ `~/tmp_local/rclone-kaz-build/rclone-kaz`（v1.75.1-kaz-dev.dab33da3、sha256 c81a4ac0…59fdc）。2台での構成はリリースの後。
       - [ ] 任意: JuiceFS を動かして、他のホストで書いた chunk のチェックサム検証が効くことを確かめる。
     - 独自オプションの命名（ユーザー承認、2026-10-08）: 接頭辞 `--kaz-<対象>-<内容>`。ただし backend のオプションは rclone が backend 名を先頭に付けるので `--<backend>-kaz-<内容>`（例 `--drive-kaz-properties`）（例 `--kaz-vfs-lookup-by-path`）、ヘルプ先頭に `[kaz]`、可能なら flag グループ「Kaz」。既存オプションの不具合修正（`--no-cleanup` 等）は upstream の名前のまま。
-    - [ ] 範囲外の既知のリスク: Drive の同名フォルダの重複（複数ホストが同時に新しい chunks フォルダへ最初の PUT をすると、それぞれ作成し得る。lib/dircache の FindLeaf→CreateDir に、ホスト間の排他が無い）。今も同じリスクがある。2026-10-08 に読み取りのみの問い合わせで確認し、`rclone-s3` 配下（1,442 フォルダ）に重複は 0（[記録](rclone_dir_cache/2026-10-08/dup-folders-ja.md)）。回避策の候補（全ホストで同じ規則で正のフォルダを選び、作成直後に検索し直して寄せる、Drive backend の opt-in オプション）は Phase 1b として別の仕様にする。object の key は metadata DB の slice ID で一意だが、フォルダ（ID 1000 ごと）は 4096 個単位の払い出しの境界で2ホストが共有し得る。発生の幅は狭いので、ユーザー判断で優先度を下げ、TODO に残すだけにする（2026-10-08）。
+    - [ ] 範囲外の既知のリスク: Drive の同名フォルダの重複（複数ホストが同時に新しい chunks フォルダへ最初の PUT をすると、それぞれ作成し得る。lib/dircache の FindLeaf→CreateDir に、ホスト間の排他が無い）。今も同じリスクがある。2026-10-08 に読み取りのみの問い合わせで確認し、`rclone-s3` 配下（1,442 フォルダ）に重複は 0（[記録](docs/inspection/rclone_dir_cache/2026-10-08/dup-folders-ja.md)）。回避策の候補（全ホストで同じ規則で正のフォルダを選び、作成直後に検索し直して寄せる、Drive backend の opt-in オプション）は Phase 1b として別の仕様にする。object の key は metadata DB の slice ID で一意だが、フォルダ（ID 1000 ごと）は 4096 個単位の払い出しの境界で2ホストが共有し得る。発生の幅は狭いので、ユーザー判断で優先度を下げ、TODO に残すだけにする（2026-10-08）。
     - [x] Phase 3（2026-10-08 完了）: release 構成を JuiceFS と rclone の2成果物に対応させる（別の spec）。
       - 2026-10-08 実装（subagent-driven、`feat/release-multi-product` を main へ ff、000c7eb）。タスクごとのレビューと最終レビューを通過、install テスト20件、actionlint ok。手動実行（JuiceFS は古い形 `v1.4.1-kaz.3`、rclone は `rclone-v1.75.1-kaz.1`）で全 job 成功。
       - 2026-10-08 `rclone-v1.75.1-kaz.1` を公開（タグは 000c7eb、run 37752233096、ユーザーが Latest を外して公開。Latest は `v1.4.1-kaz.3` のまま）。このホストで install.sh による rclone・juicefs の実インストールを確認、Windows はユーザーが install.ps1 で確認し動作も OK。
@@ -63,13 +63,13 @@
       - 2026-10-08 着手（brainstorming、architectural）。ユーザー判断: 既存の install URL は捨ててよい（整理を優先）。製品ごとに分ける（更新は可分）。方式 (1): タグを製品ごとに分け（`juicefs-v…-kaz.N`、`rclone-v1.75.1-kaz.N`）、install スクリプトが GitHub API で製品ごとの最新を探す（GitHub の latest はリポジトリで1つのため）。rclone は linux-amd64・linux-arm64・windows-amd64、公式と同じ full（`bin/cross-compile.go -tags cmount`、Windows の mount を含む、CGO 不要）。既存の JuiceFS の Release（`v1.4.1-kaz.1`〜`.3`）は残し、install スクリプトが古い形のタグも JuiceFS として扱う（a）。install の既定先は両製品とも `/usr/local/bin`。[仕様](docs/superpowers/specs/2026-10-08-release-multi-product-design.md)（ユーザー承認済み）。[実装計画](docs/superpowers/plans/2026-10-08-release-multi-product.md)（Task 0〜9、ユーザー承認、subagent-driven で実装中）。
   - 2026-10-08 rclone v1.75.1 を `rclone/`（Git ignore、独立リポジトリ、ブランチ `1.75.1-improve-kaz`）に clone した。fork `tongsama/rclone` は未作成。
 
-- [ ] **`juicefs gc` が object の全件一覧で止まる（2026-10-08、ユーザー報告、調査中）:** 2026-10-08 19:57 の `juicefs gc` は dangling inode・leaked chunk の処理までは進むが、`ListObjectsV2`（`prefix=juicefs-data/chunks/`、再帰、`max-keys=1000`）の最初の応答を30秒待って `timeout awaiting response headers` → `list all blocks` で FATAL（gc.go:232、sharding.go:118）。仮説: rclone serve s3 が全件を集めてから最初のページを返し、chunks 全体（約1,400フォルダ）の Drive の一覧に30秒以上かかる。JuiceFS の ResponseHeaderTimeout は30秒固定。調査結果は `juicefs_gc/2026-10-08/` に保存。本番の Redis・rclone・gc には触れない。
-  - 2026-10-08 調査済み（[報告](juicefs_gc/2026-10-08/gc-list-timeout-investigation-ja.md)）。原因: rclone serve s3 の ListObjectsV2 が prefix 配下を全件再帰で集めて並べ替えてから最初のページを返す（cmd/serve/s3/list.go:16-65、pager.go:11-66。公式 v1.75.1 から同じ）。本番ログで 20:07:38 の LIST を JuiceFS が30秒で切った後も、rclone は走査を続け 20:22 時点で chunks/0/ の途中（約2.7秒/ディレクトリ、全体で1時間〜数時間の見込み）。付随の不具合: start-after がキーの完全一致でしか探さない（pager.go:24-37）。JuiceFS の30秒は restful.go:157 で固定、gc に一覧を絞るオプションは無い。gc は一覧の最初の要求で Fatalf し、漏れた object の削除は未着手（整合を壊す途中状態は無い）。
+- [ ] **`juicefs gc` が object の全件一覧で止まる（2026-10-08、ユーザー報告、調査中）:** 2026-10-08 19:57 の `juicefs gc` は dangling inode・leaked chunk の処理までは進むが、`ListObjectsV2`（`prefix=juicefs-data/chunks/`、再帰、`max-keys=1000`）の最初の応答を30秒待って `timeout awaiting response headers` → `list all blocks` で FATAL（gc.go:232、sharding.go:118）。仮説: rclone serve s3 が全件を集めてから最初のページを返し、chunks 全体（約1,400フォルダ）の Drive の一覧に30秒以上かかる。JuiceFS の ResponseHeaderTimeout は30秒固定。調査結果は `docs/inspection/juicefs_gc/2026-10-08/` に保存。本番の Redis・rclone・gc には触れない。
+  - 2026-10-08 調査済み（[報告](docs/inspection/juicefs_gc/2026-10-08/gc-list-timeout-investigation-ja.md)）。原因: rclone serve s3 の ListObjectsV2 が prefix 配下を全件再帰で集めて並べ替えてから最初のページを返す（cmd/serve/s3/list.go:16-65、pager.go:11-66。公式 v1.75.1 から同じ）。本番ログで 20:07:38 の LIST を JuiceFS が30秒で切った後も、rclone は走査を続け 20:22 時点で chunks/0/ の途中（約2.7秒/ディレクトリ、全体で1時間〜数時間の見込み）。付随の不具合: start-after がキーの完全一致でしか探さない（pager.go:24-37）。JuiceFS の30秒は restful.go:157 で固定、gc に一覧を絞るオプションは無い。gc は一覧の最初の要求で Fatalf し、漏れた object の削除は未着手（整合を壊す途中状態は無い）。
   - [ ] 修正案 (a)（ユーザーが選択）: rclone の一覧をキーの順にたどり、MaxKeys 件で返す（start-after の大小比較も直す）。2026-10-09 に設計を各節ユーザー承認。[仕様](docs/superpowers/specs/2026-10-09-rclone-s3-list-by-key-order-design.md)（レビュー待ち、未 commit）。要点: `--kaz-s3-list-by-key-order`（既定 off）、DFS で「名前 + `/`」の順、マーカー以下の部分木は読まない、ctx の取り消しで止める、旧方式の pager のマーカーも「より大きい」に直す。本番では最初 `juicefs gc` を `--delete` なしで確認する。2026-10-09 仕様書をユーザーが承認、[実装計画](docs/superpowers/plans/2026-10-09-rclone-s3-list-by-key-order.md) をユーザーが承認、Native で実装済み: rclone `feat/kaz-s3-list-by-key-order`（`1.75.1-improve-kaz` dab33da31 から、f8584af74..35b4fc36d の4 commit、push なし、未 merge）。race つきテスト ok、最終レビュー（opus）は merge 可（Critical・Important なし）。2026-10-09 `feat/kaz-s3-cancel-get` と合わせて `merge/kaz-s3-cancel-get-list`（`1.75.1-improve-kaz` から、853a5284b、push なし）に merge した（s3.go の衝突は両方の項目を残した。race つきテスト ok）。同日 `1.75.1-improve-kaz` に merge（fe0572749）し、`rclone-v1.75.1-kaz.2` を用意（調査リポジトリ 356c591、タグを push。draft の公開はユーザー）。2026-10-09 夜、本番で kaz.2 + `--kaz-s3-list-by-key-order` にして `juicefs gc`（`--delete` なし）を実行。最後まで完了（20:21:27〜21:09:48）。Redis の前半が約10分（cleanupLeakedInodes が 20:31 頃まで）、object の一覧が 38m21s。scanned 499,017、valid 491,669、leaked 3,416（4.4 GiB）、skipped 3,932（6.0 GiB、作成1時間以内）、dangling inode 2（i610491・i610498、2026-10-07 01:11・01:16 作成、parent 572598）、leaked chunk 1（c580896_0）。2ページ目以降で timeout awaiting response headers が3件（chunks/1/1717、5/5239、5/5347 の続き）→ ListAll は2ページ目以降を無制限に再試行するので完走（1ページ目だけは Fatal）。後半は object の多いディレクトリで遅くなった（ユーザー観察）。残り: `--delete` の実施（ユーザーが折を見て。Drive の use_trash は既定 true なので、消した object はゴミ箱に残るはず）、必要なら rclone 側で時間を区切った短いページ（`--delete` なし、`-vv` の `kaz list:` 行で1ページ目の dirs=/took= が30s に収まるか。1ページの時間の上限は入れていない）。 案 (d)（JuiceFS gc 側）は採らない。
   - 注意: 修正まで gc を再実行しない（走査が並行して増える）。切られた走査は rclone を再起動するまで Drive の API を使い続ける。
   - 本番の rclone（18:53 起動）は kaz のオプション（`--kaz-vfs-lookup-by-path --no-cleanup --kaz-s3-persist-metadata --drive-kaz-properties`）付きで動いている（agent が表示を400文字で切って見落としたため、一時「付いていない」と誤って伝えた。ユーザーの指摘で訂正）。
 
-- [ ] **キャッシュ cold の VM 起動が遅い（2026-10-08、ユーザー報告、調査中）:** [解析報告](vm_boot_cold_read/2026-10-08/report-ja.md)。律速は GET の往復の遅延（4MiB で中央値1.9s、同時数1〜2本）。`--prefetch` は zstd では効かない。
+- [ ] **キャッシュ cold の VM 起動が遅い（2026-10-08、ユーザー報告、調査中）:** [解析報告](docs/inspection/vm_boot_cold_read/2026-10-08/report-ja.md)。律速は GET の往復の遅延（4MiB で中央値1.9s、同時数1〜2本）。`--prefetch` は zstd では効かない。
   - [x] ゲストの I/O エラーと read-only 化は、約30s かかった read／write による SATA コマンドのタイムアウトと照合した（ホストは EIO なし）。VM の disk が virtio のつもりで `bus='sata'` だった（ユーザーが確認）。対処（virtio への変更、ゲストの fsck）はユーザーが行う。
   - [x] GET が25〜30s かかる原因（2026-10-08、報告の追記）: Drive のダウンロードの応答待ちが、ときどき15〜30s になる（tpslimit ではないと推測）。30s で切っているのは JuiceFS の `ResponseHeaderTimeout`（restful.go:157）。対策の候補は、ヘッダ待ちを短くして再試行するか hedge にすること（未実施、ユーザーの判断待ち）。
   - [ ] **キャンセルされた GET を最後まで取ってキャッシュに入れる `--kaz-finish-canceled-get`（2026-10-08 実装、本体 `feat/kaz-finish-canceled-get` 117dfafe、push・merge なし、既定 off）:** 4 の前に、まず要求を減らすためにユーザーが選んだ。ダウンロードの枠を待っている間に cancel されたら、取得をやめる。最後まで走らせる GET は `--max-downloads` の半分まで（設計では「同じ数」としていたが、枠を持ち続けるので半分に変えた）。singleflight で先に GET を出した側がキャンセルされると、同じブロックを待っていた read にもキャンセルが伝わる、という既存の問題も解消する。counter は `kaz_canceled_get_finished`／`_dropped`。2026-10-09 01:27 に on（virtio）で1回計測した: GET −20%、broken pipe 787→1。起動時間は約26分で変わらず。Drive の15s 超の応答（35→68）と、キャッシュの追い出し後の取り直し（372件）が効いていた。ゲストのI/Oエラーなし。2026-10-09 に条件をそろえて on（08:11、約16分）と off（10:56、約19分）を比べた。on では Drive へのダウンロードが −28%（1,477→1,063）、broken pipe 576→0。ただし on の回は、追い出した後の取り直しが多かった（239 対 68）。比べたのは各1回で、Drive の状態の差が大きい。既知の点: slice の削除と GET の完了が競合すると、参照されないブロックがキャッシュに残り得る（今の GET にも同じ隙間があり、長くなるだけ）。race テストの警告は既存の WithTimeout／rawFull の分のみ。
@@ -95,12 +95,12 @@
 - [ ] **JuiceFS 改修版の独自オプションに `kaz` 名前空間を付ける（2026-10-08、ユーザー要望、いずれ）:** rclone と同じ規則（`--kaz-...`、ヘルプ先頭 `[kaz]`）に揃える。対象例 `--writer-flush-scope`、`--meta-write-batch`、`--writeback-fsync` など。既存の設定・起動スクリプトとの互換（旧名を別名として残すか）を検討する。
 
 - [ ] **metadata path 最適化（2026-10-07。Phase 1・2 は実装済みで `1.4.1-improve-kaz` に merge 済み、残りは次の機会）:** [調査結果と実装計画](docs/superpowers/specs/2026-10-07-metadata-random-io-optimization-plan.md)。主指標は qcow2 への Ubuntu Desktop 26.04 インストール時間（現状 約1時間）。ユーザーの計画承認後に着手する。
-  - [x] 2026-10-07 ユーザー実施の計測（unsafe、debug付き、12:52〜14:16）を解析した: [報告](metadata_random_io/2026-10-07/install-report-ja.md)。最大の待ちは fallocate(ZERO_RANGE) の全 inode flush（3,330s／173ms が flush 待ち）。commit は 43ms×62,317件。
+  - [x] 2026-10-07 ユーザー実施の計測（unsafe、debug付き、12:52〜14:16）を解析した: [報告](docs/inspection/metadata_random_io/2026-10-07/install-report-ja.md)。最大の待ちは fallocate(ZERO_RANGE) の全 inode flush（3,330s／173ms が flush 待ち）。commit は 43ms×62,317件。
   - [x] 同日 raw でも計測した: 約36分（qcow2 約84分）、fallocate 0回、最大の待ちは Read 前 flush 799s。
   - [x] 計画書を実測に合わせて改訂（§7 の順番、C4 の詳細設計・テスト・見込み）。
   - [ ] **最優先（実測で変更、Phase 1）:** Read 前と Fallocate 前の writer flush を、対象範囲と重なる chunk の pending に限定する（計画書 C4）。その後 group commit。writeback（QEMU）条件での計測は未実施。
     - [x] 2026-10-07 実装・検証済み（本体 `feat/range-flush` 18e641b8。`1.4.1-improve-kaz` から作成。2026-10-07 に merge 済み）。`--writer-flush-scope=range` で有効。詳細・懸念は agent_memo の「Phase 1 C4 実装」。計測用バイナリ `~/tmp_local/juicefs-builds/juicefs-rangeflush-20261007`。
-    - [x] qcow2 の range 計測（2026-10-07 17:34〜18:27）: **約84分 → 約53分**。fallocate 3,330s → 1,887s、commit −44%、write 合計 −80%。Read 前の待ちは変わらず。[報告](metadata_random_io/2026-10-07/install-range-report-ja.md)
+    - [x] qcow2 の range 計測（2026-10-07 17:34〜18:27）: **約84分 → 約53分**。fallocate 3,330s → 1,887s、commit −44%、write 合計 −80%。Read 前の待ちは変わらず。[報告](docs/inspection/metadata_random_io/2026-10-07/install-range-report-ja.md)
     - [x] raw の range 計測は、ユーザーの判断で行わない（ほとんど変わらない見込みのため、2026-10-07）。
     - [x] 本体の commit: `feat/range-flush` 18e641b8（2026-10-07、未 push）。バイナリ `~/tmp_local/juicefs-builds/juicefs-rangeflush-18e641b8`。
     - [x] 同じ handle の Write が preflush 中に待つ件 → 2段階 preflush（Read・Fallocate、range のみ）で対応した（2026-10-07）。
@@ -111,10 +111,10 @@
   - [ ] Phase 0: metadata metrics（op 別 p95/p99、open-file／txn lock 待ち、Redis cmd RTT、flush 時 pending 数、slices/chunk、compaction 回数）と、Redis RTT・インストール時の baseline 計測。
   - [ ] Phase 1: 同期 compaction（≥2500）を open-file lock の外へ。実機 meta URL の `client-cache` 有無を確認し、doWrite の stale attr（ファイル長後退）の可能性を再現テストで確認。
   - [x] Phase 2: 同 chunk の slice commit をまとめる（案C、3 engine、`--meta-write-batch` 既定0）。本体 `feat/meta-write-batch` f9308391（push なし）。[設計](docs/superpowers/specs/2026-10-07-meta-write-batch-design.md)・[計画](docs/superpowers/plans/2026-10-07-meta-write-batch.md)。最終レビューの Critical 2件・Important 3件を修正済み。
-    - [x] qcow2 の計測（2026-10-07 21:19〜22:02）: **約53分 → 約43分**。transaction −41%、Read 前の待ち −81%、Fallocate 前の待ち −28%。[報告](metadata_random_io/2026-10-07/install-batch-report-ja.md)
+    - [x] qcow2 の計測（2026-10-07 21:19〜22:02）: **約53分 → 約43分**。transaction −41%、Read 前の待ち −81%、Fallocate 前の待ち −28%。[報告](docs/inspection/metadata_random_io/2026-10-07/install-batch-report-ja.md)
     - [x] 2026-10-07 `1.4.1-improve-kaz` へ `--no-ff` で merge した（78acd63d）。2026-10-08 にユーザーが push。feat/range-flush・feat/meta-write-batch のブランチは残してある。
     - [x] 2026-10-08 **v1.4.1-kaz.3 を公開した**（本体 78acd63d、調査リポジトリのタグ 852b8f5）。ユーザーが install の動作を確認済み。
-  - **次の機会に回す改善（2026-10-07 ユーザー方針）**。根拠は [batch 版の報告](metadata_random_io/2026-10-07/install-batch-report-ja.md) の「次の候補」:
+  - **次の機会に回す改善（2026-10-07 ユーザー方針）**。根拠は [batch 版の報告](docs/inspection/metadata_random_io/2026-10-07/install-batch-report-ja.md) の「次の候補」:
     - [ ] Fallocate の metadata 更新を、範囲内の pending の commit と同じ transaction にまとめる（Fallocate 前の待ち 905s ＋ Meta.Fallocate 約590s が対象。meta API と 3 engine に関わる）。
     - [ ] chunk をまたぐまとめ（案A）。まず、単発の commit 14,235件のうち、他の chunk とまとめられる割合をログから見積もる。
     - [ ] Redis の transaction の RTT 削減（計画書 C7。WATCH／GET／MULTI-EXEC／UNWATCH を pipeline や Lua で 1〜2 RTT に）。
@@ -160,7 +160,7 @@
 - [ ] 本番への修正版適用とconfig FuseOpts.Timeout0確認（明示指示なしで実行しない）。現在稼働版はsmallput-diag-local/Timeout15mのまま。
 - [ ] backend/削除queueの30分級cleanup停滞への対策。必要ならenqueue wait/queue長・cleanup producerの診断とdurablecleanup設計を検討。単にqueuewaitをerror/未保存successへ変えない。
 - [ ] 隔離VMでの継続再現とguestFS状態確認。既に障害を受けたdataの復旧/repairは別作業、勝手に実行しない。
-- [x] rclone serve s3 の PUT 30s timeout（2026-10-06）: 原因は、Drive の変更通知による VFS ディレクトリの全件読み直し。ユーザーが `--poll-interval 0`／`--dir-cache-time 1h` を 10:40 に適用し、短期の観測で解消を確認した。詳細は `rclone_put_timeout/2026-10-06/report-ja.md`。
+- [x] rclone serve s3 の PUT 30s timeout（2026-10-06）: 原因は、Drive の変更通知による VFS ディレクトリの全件読み直し。ユーザーが `--poll-interval 0`／`--dir-cache-time 1h` を 10:40 に適用し、短期の観測で解消を確認した。詳細は `docs/inspection/rclone_put_timeout/2026-10-06/report-ja.md`。
 - [ ] 上記対策の長時間観測: chunks ディレクトリの切り替わり、1時間ごとのキャッシュ期限切れのとき、`/rclone-s3` を変更するのがこの rclone だけであることの維持。
 - [ ] 任意: JuiceFS の `ResponseHeaderTimeout` 30s 固定の扱い（設定可能にするか）。staging 再送が上限に達したときに WARN を出すか。zstd レベル 1 と 3 の圧縮率・CPU 比較（どれも未着手、実装はユーザーの指示があってから）。
 - [ ] 任意: rclone の `--rc` は localhost のみで、`--rc-user`／`--rc-pass` がない。同じホストの他ユーザーから操作できるので、必要なら認証を付ける。
@@ -213,7 +213,7 @@
 - [ ] 新stage→upload/compaction/obsoleteを相関。このprefixで新freeze同IDのPUTは0、DELETE同ID15,495。残pending/obsolete内訳を断定しない。
 - [ ] writable_window制限を維持/拡大した安全な局所比較を設計し、再利用効果・memory/metadata数・fsync/read-afterwriteを計測。設定timerだけを再延長しない。
 
-最新run解析結果はsmall_put_investigation/2026-10-02/。sourceの集約動作はまだ変更していない。
+最新run解析結果はdocs/inspection/small_put_investigation/2026-10-02/。sourceの集約動作はまだ変更していない。
 
 
 ### VM inode長停滞の設計候補（2026-10-02、未実装）

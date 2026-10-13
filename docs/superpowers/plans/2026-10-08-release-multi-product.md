@@ -815,7 +815,7 @@ jobs:
 
   バイナリの表示（`juicefs version`・`rclone version`）の形も書く。
 - [ ] **Step 3:** README のディレクトリ構成（`release/` の中身、workflow）と、資料の表の `docs/release-notes/` へのリンクを直す。
-- [ ] **Step 4:** `docs/superpowers/specs/2026-10-04-release-distribution.md` の先頭に、「2026-10-08 の [2製品対応の設計](2026-10-08-release-multi-product-design.md) で、配置・タグ・install スクリプトの使い方を置き換えた」と追記する。`docs/superpowers/README.md` の一覧表の Phase 3 の行に、実装計画へのリンクを入れる。
+- [ ] **Step 4:** `docs/superpowers/specs/2026-10-04-release-distribution.md` の先頭に、「2026-10-08 の [2製品対応の設計](../specs/2026-10-08-release-multi-product-design.md) で、配置・タグ・install スクリプトの使い方を置き換えた」と追記する。`docs/superpowers/README.md` の一覧表の Phase 3 の行に、実装計画へのリンクを入れる。
 - [ ] **Step 5:** `grep -rn "docs/release-notes\|releases/latest/download\|JFS_VERSION\|JFS_INSTALL" README.md docs/superpowers/README.md release .github` で、古い参照が残っていないことを確かめる（過去の記録である agent_memo・TODO の履歴と、古い設計書の本文は対象外）。
 - [ ] **Step 6: commit** — `git add -A README.md docs/superpowers && git commit -m "docs: 2製品の配布とインストールの手順に README を書き直す"`
 

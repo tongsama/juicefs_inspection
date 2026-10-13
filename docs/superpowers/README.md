@@ -4,7 +4,7 @@
 
 | フェーズ | 仕様・設計根拠 | 実装計画 |
 |---|---|---|
-| 初期 VM I/O 障害・Read flush エラー | [初期引き継ぎ](../../juicefs_vm_corruption_handoff_codex.md) | [2026-10-01 調査・修正](plans/2026-10-01-vm-io-investigation.md) |
+| 初期 VM I/O 障害・Read flush エラー | [初期引き継ぎ](../inspection/initial_incident/juicefs_vm_corruption_handoff_codex.md) | [2026-10-01 調査・修正](plans/2026-10-01-vm-io-investigation.md) |
 | FUSE 待機・GC 分離・背景 scheduler・slice 再利用 | [統合仕様](specs/2026-10-02-vm-io-combined.md) | [統合計画](plans/2026-10-02-vm-io-combined.md) |
 | 不要 staging の早期回収と upload 競合 | [local retirement 仕様](specs/2026-10-02-vm-io-gc-retirement.md) | [local retirement 計画](plans/2026-10-02-vm-io-gc-retirement.md) |
 | 改修版バイナリの配布（Releases・install スクリプト） | [配布仕様](specs/2026-10-04-release-distribution.md) | [配布計画](plans/2026-10-04-release-distribution.md) |

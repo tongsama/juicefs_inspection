@@ -2,7 +2,7 @@
 
 - 日付: 2026-10-08
 - 状態: 設計（2026-10-08 ユーザー承認済み）。
-- 根拠: [Phase 2 の調査](../../../rclone_dir_cache/2026-10-08/phase2-metadata-investigation-ja.md)
+- 根拠: [Phase 2 の調査](../../inspection/rclone_dir_cache/2026-10-08/phase2-metadata-investigation-ja.md)
 - 対象: rclone `tongsama/rclone` の `1.75.1-improve-kaz`（dd03d0243、Phase 1 を含む）から作業ブランチを切る。
 - 前提となる Phase 1: [パス指定 lookup の設計](2026-10-08-rclone-lookup-by-path-design.md)
 

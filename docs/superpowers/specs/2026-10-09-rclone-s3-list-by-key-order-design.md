@@ -5,7 +5,7 @@
 
 ## 1. 背景と目的
 
-`juicefs gc` は、最後に `object.ListAll(chunks/)` で、object storage の全件を一覧する。rclone serve s3（Google Drive）の ListObjectsV2 は、最初のページ（1,000 件）を返す前に、prefix 配下の全ディレクトリ（約 1,400 以上）を Drive から読んで並べ替える。そのため 1 時間以上かかり、JuiceFS の HTTP client の応答ヘッダの待ち（30s 固定、`pkg/object/restful.go:157`）で切られて、gc が FATAL で止まる。詳細は [調査報告](../../../juicefs_gc/2026-10-08/gc-list-timeout-investigation-ja.md)。
+`juicefs gc` は、最後に `object.ListAll(chunks/)` で、object storage の全件を一覧する。rclone serve s3（Google Drive）の ListObjectsV2 は、最初のページ（1,000 件）を返す前に、prefix 配下の全ディレクトリ（約 1,400 以上）を Drive から読んで並べ替える。そのため 1 時間以上かかり、JuiceFS の HTTP client の応答ヘッダの待ち（30s 固定、`pkg/object/restful.go:157`）で切られて、gc が FATAL で止まる。詳細は [調査報告](../../inspection/juicefs_gc/2026-10-08/gc-list-timeout-investigation-ja.md)。
 
 今の rclone の一覧（`cmd/serve/s3/list.go` の `entryListR`、`pager.go` の `pager`）には、ほかにも問題がある。
 

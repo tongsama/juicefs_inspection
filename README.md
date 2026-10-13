@@ -16,7 +16,7 @@
 
 本体の改修は `tongsama/juicefs` の `1.4.1-improve-kaz` ブランチ（既定ブランチ）で管理しています（2026-10-08 時点の HEAD は `78acd63d235db5f275068d3ff75b45baa4b2f616`、v1.4.1-kaz.3 のビルド元）。v1.4.1-kaz.2 のビルド元は `release-1.4.1-kaz.2` ブランチ（`9268beb4`）に残っています。以前の `fix/vm-io-wait-policy`（`84f19ca4`、v1.4.1-kaz.1）はこのブランチに含まれ、2026-10-06 に削除しました。このルートの文書を commit しても本体の差分は保存されないため、本体は別途 commit・push します。2026-10-03 の整理時点の HEAD `3bed0d82` は、author の書き換えにより `2ae17f94` になっています（内容は同一）。
 
-rclone の改修は `tongsama/rclone`（リモート名 `kaz`、upstream は `origin`）の `1.75.1-improve-kaz` ブランチ（既定ブランチ、v1.75.1 から分岐）で管理しています（2026-10-09 時点の HEAD は `fe0572749`。`feat/kaz-vfs-lookup`（Phase 1）、`feat/kaz-s3-persist-metadata`（Phase 2）、`feat/kaz-s3-cancel-get` と `feat/kaz-s3-list-by-key-order`（`merge/kaz-s3-cancel-get-list` 経由）を `--no-ff` で merge）。`.gitignore` の `/rclone` により、このルートの commit には含めません。改修の内容は [rclone の dir cache の知見](docs/findings.md#rclone-serve-s3-の-dir-cache-と複数ホスト2026-10-08) と [本番適用の手順書](rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) を参照してください。rclone の配布は [改修版バイナリの配布とインストール](#改修版バイナリの配布とインストール) を参照してください（2026-10-09 に `rclone-v1.75.1-kaz.2` のタグを push した。本番の2台構成に適用済みなのは `rclone-v1.75.1-kaz.1` と、`--kaz-s3-cancel-get-on-disconnect` を入れた手元ビルド）。
+rclone の改修は `tongsama/rclone`（リモート名 `kaz`、upstream は `origin`）の `1.75.1-improve-kaz` ブランチ（既定ブランチ、v1.75.1 から分岐）で管理しています（2026-10-09 時点の HEAD は `fe0572749`。`feat/kaz-vfs-lookup`（Phase 1）、`feat/kaz-s3-persist-metadata`（Phase 2）、`feat/kaz-s3-cancel-get` と `feat/kaz-s3-list-by-key-order`（`merge/kaz-s3-cancel-get-list` 経由）を `--no-ff` で merge）。`.gitignore` の `/rclone` により、このルートの commit には含めません。改修の内容は [rclone の dir cache の知見](docs/findings.md#rclone-serve-s3-の-dir-cache-と複数ホスト2026-10-08) と [本番適用の手順書](docs/inspection/rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) を参照してください。rclone の配布は [改修版バイナリの配布とインストール](#改修版バイナリの配布とインストール) を参照してください（2026-10-09 に `rclone-v1.75.1-kaz.2` のタグを push した。本番の2台構成に適用済みなのは `rclone-v1.75.1-kaz.1` と、`--kaz-s3-cancel-get-on-disconnect` を入れた手元ビルド）。
 
 ## 改修版バイナリの配布とインストール
 
@@ -88,9 +88,9 @@ JuiceFS は `$env:KAZ_PRODUCT='juicefs'` にします。
 | [知見の要約](docs/findings.md) | 障害原因、修正の意味、flush の分析、実測効果、限界、残課題 |
 | [TODO](TODO.md) | 現在の優先作業と、過去の作業履歴 |
 | [agent_memo](agent_memo.md) | セッションを跨ぐ方針、判断、詳細な経緯 |
-| [オプション効果の総合報告](option_effects/2026-10-03/report-ja.txt) | 固定ログの比較、PUT／fsync／GC、Read 異常、DEBUG 容量内訳 |
+| [オプション効果の総合報告](docs/inspection/option_effects/2026-10-03/report-ja.txt) | 固定ログの比較、PUT／fsync／GC、Read 異常、DEBUG 容量内訳 |
 | [技術診断の詳細](docs/development/vm_io_diagnostics.md) | 診断ログ・ソース経路・待機方針・制約。既存の英語資料を保持 |
-| [元の障害引き継ぎ](juicefs_vm_corruption_handoff_codex.md) | 初期障害の証拠と当初の調査状況 |
+| [元の障害引き継ぎ](docs/inspection/initial_incident/juicefs_vm_corruption_handoff_codex.md) | 初期障害の証拠と当初の調査状況 |
 
 最新の評価は `docs/findings.md` と日付付きレポートを優先してください。計画・memo・JSON の状態やパスは、当時の記録である場合があります。
 
@@ -102,7 +102,7 @@ JuiceFS は `$env:KAZ_PRODUCT='juicefs'` にします。
 - 明示的 flush の主因は fsync と特定しました。耐久期間では fsync が 335,774 回すべて成功し、通常 PUT 試行／slice finish 比率は補正前より 86.4% 低い観測値でした。負荷が異なるため、機能単独の保証された削減率ではありません。
 - **保存側の成功と、全 I/O の無エラーは別です。** Readfile EIO と旧プロセスの VFS EIO 累積カウンタ 1,207 が見つかり、取消の伝播・共有 retry counter の再現調査が残っています。
 
-ユーザーが耐久テスト合格と報告した期間は **30s / 10s** です。その後、10/03 の再起動で **15s / 10s** に変更しました。15 秒版を同じ長期耐久試験の結果として扱いません。設定や評価の根拠は [選択した runtime config](option_effects/2026-10-03/current-config-selected.json) と [解析 manifest](option_effects/2026-10-03/manifest.json) に保存しています。
+ユーザーが耐久テスト合格と報告した期間は **30s / 10s** です。その後、10/03 の再起動で **15s / 10s** に変更しました。15 秒版を同じ長期耐久試験の結果として扱いません。設定や評価の根拠は [選択した runtime config](docs/inspection/option_effects/2026-10-03/current-config-selected.json) と [解析 manifest](docs/inspection/option_effects/2026-10-03/manifest.json) に保存しています。
 
 ## ディレクトリ構成
 
@@ -122,19 +122,23 @@ juicefs_inspection/
 │   ├── juicefs/              # versions.json と notes/（リリースノート）
 │   └── rclone/               # versions.json と notes/
 ├── docs/
-│   ├── findings.md
+│   ├── findings.md           # 確定した知見の要約
 │   ├── development/vm_io_diagnostics.md
-│   └── superpowers/
-│       ├── specs/
-│       └── plans/
-├── small_put_investigation/   # raw／payload／freeze の初期調査
-├── incident_recurrence/      # 障害再発・FUSE watchdog・待機経路
-├── combined_vm_io/           # FUSE・GC・scheduler・reuse 統合版の記録
-├── restart_check/            # ゲスト再起動と I/O 遅延の調査
-├── gc_backlog/               # staging 滞留・local retirement・回帰検証
-├── option_effects/           # 導入効果、明示 flush、健全性、ログ容量
-├── rclone_put_timeout/       # rclone serve s3 の PUT 詰まり（2026-10-06）
-├── rclone_dir_cache/         # rclone serve s3 の dir cache と複数ホスト（2026-10-08）
+│   ├── superpowers/          # 仕様（specs/）と実装計画（plans/）
+│   └── inspection/           # 調査の報告と証跡（テーマ/日付ごと、一覧は README.md）
+│       ├── initial_incident/        # 最初の障害の引き継ぎ
+│       ├── small_put_investigation/ # raw／payload／freeze の初期調査
+│       ├── incident_recurrence/     # 障害再発・FUSE watchdog・待機経路
+│       ├── combined_vm_io/          # FUSE・GC・scheduler・reuse 統合版の記録
+│       ├── restart_check/           # ゲスト再起動と I/O 遅延の調査
+│       ├── gc_backlog/              # staging 滞留・local retirement・回帰検証
+│       ├── option_effects/          # 導入効果、明示 flush、健全性、ログ容量
+│       ├── rclone_put_timeout/      # rclone serve s3 の PUT 詰まり（2026-10-06）
+│       ├── metadata_random_io/      # 巨大ファイルの random I/O の metadata path（2026-10-07）
+│       ├── rclone_dir_cache/        # rclone serve s3 の dir cache と複数ホスト（2026-10-08）
+│       ├── juicefs_gc/              # juicefs gc の一覧タイムアウト（2026-10-08）
+│       ├── vm_boot_cold_read/       # キャッシュが空の VM 起動、GET の改修（2026-10-08〜09）
+│       └── doc_migration_2026-10-03/ # 本体リポジトリからの文書の移設記録
 ├── juicefs/                  # 独立管理する本体リポジトリ（Git ignore）
 └── rclone/                   # 独立管理する rclone 本体リポジトリ（Git ignore）
 ```
@@ -143,7 +147,7 @@ juicefs_inspection/
 
 ## 計画・仕様とソースとの関係
 
-[計画・仕様の一覧](docs/superpowers/README.md)から各フェーズを参照できます。以前 `juicefs/docs/superpowers/` に置いた内容は、このルートの `docs/superpowers/` へ移設しました。調査用の `vm_io_diagnostics.md` も `docs/development/` へ移設しています。[移設記録](docs/documentation-migration.json)に、移設時の内容保持確認を残しています。
+[計画・仕様の一覧](docs/superpowers/README.md)から各フェーズを参照できます。以前 `juicefs/docs/superpowers/` に置いた内容は、このルートの `docs/superpowers/` へ移設しました。調査用の `vm_io_diagnostics.md` も `docs/development/` へ移設しています。[移設記録](docs/inspection/doc_migration_2026-10-03/documentation-migration.json)に、移設時の内容保持確認を残しています。
 
 移設済みの計画で `pkg/`、`cmd/`、`go test` 等を記載する場合、作業ディレクトリは本体の `juicefs/` です。本体の一般的な CLI reference は、実装と対応するため本体側に残しています。本体 Git で移設元の tracked 文書が削除状態になるのは、この分離によるものです。
 

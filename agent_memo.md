@@ -1,5 +1,7 @@
 # Agent memo — JuiceFS VM I/O調査
 
+> **パスの移設（2026-10-13）:** 調査のテーマごとのディレクトリ（`combined_vm_io`、`gc_backlog`、`incident_recurrence`、`juicefs_gc`、`metadata_random_io`、`option_effects`、`rclone_dir_cache`、`rclone_put_timeout`、`restart_check`、`small_put_investigation`、`vm_boot_cold_read`）は、ルートから `docs/inspection/` の下へ移した（名前は同じ）。`juicefs_vm_corruption_handoff_codex.md` は `docs/inspection/initial_incident/`、`docs/documentation-*.json` は `docs/inspection/doc_migration_2026-10-03/` へ移した。この memo の本文の古いパスは、当時の記録としてそのまま残している。リンクは新しいパスに書き換え済み。一覧は `docs/inspection/README.md`。
+
 更新: 2026-10-03（日本時間。文書分離と最新の評価を反映）
 
 ## 継続ルール

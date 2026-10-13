@@ -2,13 +2,13 @@
 
 作成: 2026-10-07。対象: `tongsama/juicefs` の `1.4.1-improve-kaz`（HEAD `ea2c3757`、tree は `release-1.4.1-kaz.2` = `9268beb4` と同一）。upstream 基準は v1.4.1（`0b90c7db`）。
 状態: **調査完了・計画段階（実装未着手）**。本文中の `pkg/…`・`cmd/…` は本体 `juicefs/` 基準。
-根拠の詳細（file:line 付き）: [A write path](../../../metadata_random_io/2026-10-07/A_write_path.md)／[B Meta.Write・lock・Redis](../../../metadata_random_io/2026-10-07/B_meta_write_lock.md)／[C read・cache](../../../metadata_random_io/2026-10-07/C_read_cache.md)／[D metrics・計測手段](../../../metadata_random_io/2026-10-07/D_metrics.md)。
+根拠の詳細（file:line 付き）: [A write path](../../inspection/metadata_random_io/2026-10-07/A_write_path.md)／[B Meta.Write・lock・Redis](../../inspection/metadata_random_io/2026-10-07/B_meta_write_lock.md)／[C read・cache](../../inspection/metadata_random_io/2026-10-07/C_read_cache.md)／[D metrics・計測手段](../../inspection/metadata_random_io/2026-10-07/D_metrics.md)。
 
 表記: **[事実]** = ソースで確認、**[推論]** = ソースからの推論、**[未確認]** = 実機・実行で未確認。
 
 ---
 
-> **2026-10-07 実測による更新（最優先で読むこと）**: unsafe でのインストール計測（[解析報告](../../../metadata_random_io/2026-10-07/install-report-ja.md)）で、最大の待ちは **qcow2 の cluster 割り当てに伴う `fallocate(ZERO_RANGE)`** だった。15,343回、合計 3,330s、平均 217ms。そのうち 173ms は `VFS.Fallocate` が範囲に関係なく同 inode の全 pending を commit し終えるまで待つ flush で、強制 freeze の89%もこれが原因だった。
+> **2026-10-07 実測による更新（最優先で読むこと）**: unsafe でのインストール計測（[解析報告](../../inspection/metadata_random_io/2026-10-07/install-report-ja.md)）で、最大の待ちは **qcow2 の cluster 割り当てに伴う `fallocate(ZERO_RANGE)`** だった。15,343回、合計 3,330s、平均 217ms。そのうち 173ms は `VFS.Fallocate` が範囲に関係なく同 inode の全 pending を commit し終えるまで待つ flush で、強制 freeze の89%もこれが原因だった。
 > commit 自体（平均 43ms ≒ 4 RTT、62,317件）も、計測時間の52%を占めた。
 > 同条件の **raw では約36分（qcow2 は約84分）**で、fallocate は0回だった。raw で残る最大の待ちは Read 前の flush（合計799s、最大24.8s）。
 > このため、実装順を変更した（§7）。**Phase 1 =「Read／Fallocate 前の flush を範囲に限定（C4）」を最優先**とし、その次に group commit（C3）とする。Redis の RTT は実測 9.7〜10.5ms。client-cache は実機で有効だった。
@@ -193,7 +193,7 @@ SQL／TKV（参考）[事実]:
 
 - **目的**: RTT・回数・lock 待ち・fsync あたり pending 数を分離して測る。
 - **現状**: op 別は `meta_ops_total{method}` と合計秒だけで p95/p99 が取れない。NewSlice・Open・Close は未計測。lock 待ちは 1 秒以上の WARN ログだけ。mutex/block profile は無効。
-- **変更案**（既存の名前・型は変えずに追加。詳細は [D §5](../../../metadata_random_io/2026-10-07/D_metrics.md)）:
+- **変更案**（既存の名前・型は変えずに追加。詳細は [D §5](../../inspection/metadata_random_io/2026-10-07/D_metrics.md)）:
   - `juicefs_meta_op_durations_seconds{method}` histogram、`juicefs_meta_op_errors_total{method,errno}`（`timeit` の拡張、`base.go:621`）
   - NewSlice（refill 時のみ）・Open・Close の計測
   - `juicefs_meta_openfile_lock_wait_seconds{method}`（fork 既存の `lockWait` を Observe）
@@ -262,7 +262,7 @@ SQL／TKV（参考）[事実]:
 ### C4. Read／Fallocate 前の flush を範囲に限定（Phase 1、最優先。実測で昇格）
 
 - **目的**: Read と Fallocate の前に、同 inode の**全** pending ではなく、対象範囲と重なる chunk の pending だけを commit してから処理する。
-- **実測の根拠**（[解析報告](../../../metadata_random_io/2026-10-07/install-report-ja.md)）:
+- **実測の根拠**（[解析報告](../../inspection/metadata_random_io/2026-10-07/install-report-ja.md)）:
   - qcow2（prealloc=off）: Fallocate 前の flush が 15,343回、合計 2,661s（Fallocate 全体 3,330s の80%）。強制 freeze の89%。
   - raw: Read 前の flush が 32,205回、合計 799s、最大 24.8s。flush 中の Write 停止による write の1秒超が31回（121s）。
 - **現状** [事実]:

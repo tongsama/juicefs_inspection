@@ -1,7 +1,7 @@
 # rclone 改修版（lookup モード）の本番適用手順
 
 - 対象: 各ホストで動いている `rclone serve s3 gdrive_kwatan:/rclone-s3 ...`（ホストごとに1つ、同じ Drive フォルダを共有）。
-- 改修版: rclone `feat/kaz-vfs-lookup` 9b75066b4（v1.75.1 ベース）。仕様は [設計](../../docs/superpowers/specs/2026-10-08-rclone-lookup-by-path-design.md)、実機検証は [記録](drive-verification-ja.md)。
+- 改修版: rclone `feat/kaz-vfs-lookup` 9b75066b4（v1.75.1 ベース）。仕様は [設計](../../../superpowers/specs/2026-10-08-rclone-lookup-by-path-design.md)、実機検証は [記録](drive-verification-ja.md)。
 - 実施はユーザーが行う。この手順書は、起動スクリプトの中身（OAuth の秘密が平文で入っている）を写していない。
 
 ## 1. バイナリの用意
@@ -44,7 +44,7 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -o /tmp/rclone-kaz .
 2. 改修版を新しいオプションで起動する。
 3. 起動ログに `Starting s3 server` が出て、JuiceFS の読み書きが通ることを確かめてから、次のホストに進む。
 
-注意: rclone が止まっている時間が約14秒を超えると、そのホストの JuiceFS で、キャッシュに無いデータの読み込みが EIO になり得る（[findings の rclone の停止の節](../../docs/findings.md)）。止めてから起動までを短くする。staging・compaction・metadata は再試行で回復する。
+注意: rclone が止まっている時間が約14秒を超えると、そのホストの JuiceFS で、キャッシュに無いデータの読み込みが EIO になり得る（[findings の rclone の停止の節](../../../findings.md)）。止めてから起動までを短くする。staging・compaction・metadata は再試行で回復する。
 
 ## 4. 適用後に見るもの
 
@@ -64,7 +64,7 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -o /tmp/rclone-kaz .
 
 ## Phase 2: ユーザーメタデータの Drive 保存（`--kaz-s3-persist-metadata`）
 
-- 改修版: rclone `feat/kaz-s3-persist-metadata`（merge 後は `1.75.1-improve-kaz`）。仕様は [設計](../../docs/superpowers/specs/2026-10-08-rclone-s3-persist-metadata-design.md)、実機の確認は [記録](phase2-drive-verification-ja.md)。
+- 改修版: rclone `feat/kaz-s3-persist-metadata`（merge 後は `1.75.1-improve-kaz`）。仕様は [設計](../../../superpowers/specs/2026-10-08-rclone-s3-persist-metadata-design.md)、実機の確認は [記録](phase2-drive-verification-ja.md)。
 - **2つを必ず一緒に指定する。**
   - serve s3 の起動オプションに `--kaz-s3-persist-metadata` を追加する。
   - Drive 側は `rclone.conf` の `[gdrive_kwatan]` に `kaz_properties = true` を書く（または起動オプションに `--drive-kaz-properties`）。
