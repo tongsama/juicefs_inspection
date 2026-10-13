@@ -28,7 +28,7 @@ jobs:
       go_version: ${{ steps.r.outputs.go_version }}
       notes: ${{ steps.r.outputs.notes }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: r
         env:
           TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
@@ -60,12 +60,12 @@ jobs:
     needs: resolve
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: ${{ needs.resolve.outputs.repo }}
           ref: ${{ needs.resolve.outputs.commit }}
           path: rclone
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ needs.resolve.outputs.go_version }}
           cache-dependency-path: rclone/go.sum
@@ -107,7 +107,7 @@ jobs:
             "$b" serve s3 --help | grep -q -- "$flag" || { echo "::error::$flag がありません"; exit 1; }
           done
           "$b" help backend drive | grep -q -- '--drive-kaz-properties' || { echo "::error::--drive-kaz-properties がありません"; exit 1; }
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: rclone-dist
           path: dist/
@@ -118,7 +118,7 @@ jobs:
     needs: [resolve, build]
     runs-on: ubuntu-24.04-arm
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: rclone-dist
           path: dist
@@ -138,8 +138,8 @@ jobs:
       run:
         shell: pwsh
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: rclone-dist
           path: dist
@@ -188,8 +188,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: rclone-dist
           path: dist

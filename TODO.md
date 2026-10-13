@@ -12,6 +12,8 @@
 
 ## 次の優先作業
 
+- [x] **GitHub Actions の Node.js 20 の警告（2026-10-13）:** `.github/workflows/` の3ファイルで checkout v4→v7（10か所）、setup-go v5→v7（3）、upload-artifact v4→v7（3）、download-artifact v4→v8（5）に上げた（ユーザー承認、actionlint ok）。変更点の確認: download-artifact v5 の出力先の変更は ID 指定だけ（この repo は名前・pattern）、v8 はハッシュ不一致がエラー・zip でないものは展開しない（この repo は全部 zip）、setup-go v6 は toolchain の扱いの変更（go-version は明示）。確認は main への push（install-tests）と release の手動実行（draft は作られない）。
+
 - [ ] **rclone を公式 v1.75.2 に載せ直す（2026-10-13 追加、調査済み・方針の決定待ち）:** [調査報告](docs/inspection/rclone_v1752_port/2026-10-13/port-investigation-ja.md)。
   - 必須: kaz の lookup モードが upstream のセキュリティ修正 2f43b99ab（unsafe な名前の拒否）を迂回する（memory backend で root の外への書き込みを再現）。修正案あり。
   - serve s3 の状態がユーザーごとの tenant に移ったので、persist-metadata のメタデータの扱いと multipart の Create の位置を書き直す。
