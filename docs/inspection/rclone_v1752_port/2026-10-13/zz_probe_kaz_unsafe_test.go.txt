@@ -1,0 +1,46 @@
+package vfs
+
+// Scratch probe (not for commit): checks how kaz lookup mode treats unsafe names
+// that upstream v1.75.2 refuses with EINVAL.
+
+import (
+	"fmt"
+	"os"
+	"testing"
+	"time"
+
+	"github.com/rclone/rclone/vfs/vfscommon"
+)
+
+// TestZZProbeKazUnsafe logs what each entry point returns for unsafe names.
+func TestZZProbeKazUnsafe(t *testing.T) {
+	for _, lookup := range []bool{false, true} {
+		for _, mode := range []vfscommon.CacheMode{vfscommon.CacheModeOff, vfscommon.CacheModeWrites} {
+			for _, name := range []string{"..", ".", "", "../escape", "a/.."} {
+				t.Run(fmt.Sprintf("lookup=%v,mode=%v,%q", lookup, mode, name), func(t *testing.T) {
+					r, cf, v := newLookupVFSMode(t, lookup, time.Hour, mode)
+					root, _ := v.Root()
+					before := cf.newObjects.Load()
+					_, errStat := v.Stat(name)
+					afterStat := cf.newObjects.Load()
+					_, errDirStat := root.Stat(name)
+					h, errOpen := v.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+					var p string
+					var errW, errClose error
+					if errOpen == nil {
+						p = h.Node().Path()
+						_, errW = h.Write([]byte("x"))
+						errClose = h.Close()
+					}
+					var items []string
+					for k := range root.items {
+						items = append(items, fmt.Sprintf("%q", k))
+					}
+					t.Logf("RESULT Stat=%v (NewObject+%d) root.Stat=%v OpenFile(TRUNC)=%v path=%q write=%v close=%v rootItems=%v",
+						errStat, afterStat-before, errDirStat, errOpen, p, errW, errClose, items)
+					_ = r
+				})
+			}
+		}
+	}
+}

@@ -20,4 +20,5 @@ JuiceFS 本体（`juicefs/`）と rclone 本体（`rclone/`）以外の、調査
 | rclone_dir_cache | 2026-10-08 | rclone serve s3 の dir cache と複数ホスト、Drive での確認、本番適用の手順 | [本番適用の手順](rclone_dir_cache/2026-10-08/deploy-runbook-ja.md) |
 | juicefs_gc | 2026-10-08 | `juicefs gc` が object の一覧の 30s で止まる件 | [調査報告](juicefs_gc/2026-10-08/gc-list-timeout-investigation-ja.md) |
 | vm_boot_cold_read | 2026-10-08〜09 | キャッシュが空のときの VM 起動、GET の改修の計測、header-timeout による EIO、Drive の遅さの時間帯 | [報告](vm_boot_cold_read/2026-10-08/report-ja.md)、[時間帯の集計](vm_boot_cold_read/2026-10-09/drive-latency-by-hour-ja.md) |
+| rclone_v1752_port | 2026-10-13 | rclone の kaz 改修を公式 v1.75.2 へ移植するときの衝突・意味の衝突・推奨手順、移植版の実 Drive での確認 | [調査報告](rclone_v1752_port/2026-10-13/port-investigation-ja.md)、[Drive での確認](rclone_v1752_port/2026-10-13/drive-verification-ja.md) |
 | doc_migration_2026-10-03 | 2026-10-03 | 調査文書を本体リポジトリから分離したときの移設と確認の記録 | [ディレクトリ](doc_migration_2026-10-03/) |

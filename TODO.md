@@ -12,6 +12,12 @@
 
 ## 次の優先作業
 
+- [ ] **rclone を公式 v1.75.2 に載せ直す（2026-10-13 追加、調査済み・方針の決定待ち）:** [調査報告](docs/inspection/rclone_v1752_port/2026-10-13/port-investigation-ja.md)。
+  - 必須: kaz の lookup モードが upstream のセキュリティ修正 2f43b99ab（unsafe な名前の拒否）を迂回する（memory backend で root の外への書き込みを再現）。修正案あり。
+  - serve s3 の状態がユーザーごとの tenant に移ったので、persist-metadata のメタデータの扱いと multipart の Create の位置を書き直す。
+  - 一覧は upstream が同じ方式を常に有効にした。kaz_list は捨て、取り消しとログだけ足し、`--kaz-s3-list-by-key-order` は受け付けるだけにする案。
+  - 2026-10-13 決定: タグは `rclone-v1.75.2-kaz.1`。一覧は upstream の方式に任せる。載せ直しは案 B（機能ごとに cherry-pick で当て直す）。[実装計画](docs/superpowers/plans/2026-10-13-rclone-port-to-v1.75.2.md)。2026-10-13 Task 0〜8 を実装済み（`port-1.75.2/kaz-s3-list` c4ed92bad まで、最終レビュー済み）。2026-10-13 Task 9 merge（9816e18ae）と Task 10 実 Drive の確認（[記録](docs/inspection/rclone_v1752_port/2026-10-13/drive-verification-ja.md)）済み、versions.json とノートを用意。2026-10-13 push とタグ `rclone-v1.75.2-kaz.1` を実施。残り: draft の公開（ユーザー）、本番適用（ユーザー）、cancel-get の取り消しと JuiceFS を動かしての確認（本番で観察）。
+
 - [ ] **client-cache（CSC）の不具合調査（2026-10-08 追加、未着手）:** メタデータの変更（例: ファイルのパーミッション）が、client-cache（meta URL の `client-cache=true`）を有効にした他の client に反映されない。
   - ユーザーが確認した事実: 裏側のメタデータ DB（Redis）では、正しく変更されている。
   - 関連: 計画書 §5.4（自分の commit が local cache を消さない、BCAST の invalidation が遅れる窓）、`pkg/meta/redis_csc.go`。実機は client-cache が有効（client-cache-expire=24h）。
