@@ -821,3 +821,5 @@ README.mdに主題/scope/別Git管理/資料入口/成果と留保/配置/検証
 - 2026-10-14 read-min 100＋block の再計測（回 J、12:50〜12:53、ログ vm-io-20261014-124917.log 固定 prefix 227,366,261 byte SHA 2dbe8342…）: PUT の合計 1 MiB あたり 21.1（G 19.0、I 23.2）、read p99 106 ms（I 319 ms）。同じ設定でも 10〜15% ばらつく。訂正（ユーザー）: 計測のあと落としていたのは VM ではなくアプリ（VM は動いたまま）。
 - 2026-10-14 upstream（read-min 100）の同日計測（回 K、13:27:36〜13:37、ログ vm-io-20261014-130831.log 固定 prefix 442,970,361 byte SHA da4f1508…）: PUT の合計 1 MiB あたり 26.2（block 約 20）、slice 1 個あたり 0.47（block 約 0.32）、read p99 2,984 ms（block 約 120 ms）、アプリ起動 7 分。block の効果は PUT の合計 2〜3 割減と read の待ちの大幅減。本番は今 upstream で mount 中（13:08）。
 - 2026-10-14 ユーザーの指示で feat/kaz-block-compaction を 1.4.1-improve-kaz に --no-ff merge（86321d84）し kaz に push（8a64eb07..86321d84、read-min の 6d9a3095 も含む）。調査ルートの文書も commit・push（初期 untracked だった vm_write_hotspot と compaction policy の spec/plan も、ユーザーの「文書は commit」の指示で含めた）。本番の mount はユーザーが block（read-min 100）に戻す。次はリリースの判断。
+- 2026-10-14 juicefs-v1.4.1-kaz.6 のリリースを準備: versions.json とノートを commit・push（5c04d5e）、タグを push、workflow 成功、draft 作成済み（公開はユーザー）。TODO の更新は未 commit。
+- 2026-10-14 ユーザーが juicefs-v1.4.1-kaz.6 を公開した。
