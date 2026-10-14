@@ -1,0 +1,23 @@
+== 2026/10/14 04:55:00 .. 2026/10/14 04:59:09 (4.2 min) guest write 6918 ops 79.4 MiB, read 50947 ops, fallocate 50
+   acc_fallocate = 50
+   acc_read = 50947
+   acc_read_bytes = 4124610560
+   acc_write = 6918
+   acc_write_bytes = 83284992
+   compaction_bytes = 1264472064
+   compaction_merged = 4375
+   compactions = 21
+   deletes = 1391
+   freeze_origin_none = 3174
+   freeze_origin_vfs.Fallocate.prelock = 112
+   freeze_origin_vfs.Read = 31
+   freeze_origin_vfs.Read.prelock = 1399
+   freezes = 4716
+   max_slices_at_compaction = 961
+   put = 477
+   put_compaction = 289
+   put_writer = 188
+   read_flush_p99_ms = 0
+   read_flush_sum_s = 0
+   per guest MiB: compaction_GiB=0.0148 put=6.0 put_compaction=3.6 deletes=17.5
+   per minute: compactions=5.06 put=114.9 put_compaction=69.6 deletes=335.2 guest_write_ops=1667

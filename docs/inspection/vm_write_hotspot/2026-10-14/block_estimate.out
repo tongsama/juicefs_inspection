@@ -1,0 +1,54 @@
+== A freeze_20261013
+all: compactions=85 full=1077 range=537 (-50%) block=297 (-72%) falloc-only-blocks=0
+not-first: compactions=37 full=481 range=376 (-22%) block=207 (-57%) falloc-only-blocks=0
+first: compactions=48 full=596 range=161 (-73%) block=90 (-85%) falloc-only-blocks=0
+touched-block distribution (not-first): {1: 2, 2: 5, 3: 6, 4: 4, 5: 1, 6: 6, 7: 2, 8: 3, 9: 1, 10: 4, 11: 3}
+hull-block distribution (not-first): {1: 2, 2: 3, 3: 4, 4: 1, 8: 2, 9: 1, 10: 3, 11: 6, 14: 3, 15: 2, 16: 10}
+ chunk 1: n=16 touched=[8, 4, 9, 10, 8, 10, 4, 7, 8, 11, 11, 4, 7, 10, 10, 11] hull=[16, 14, 16, 16, 16, 16, 14, 16, 15, 16, 16, 14, 15, 16, 16, 16]
+ chunk 1920: n=7 touched=[6, 5, 6, 6, 6, 6, 6] hull=[11, 11, 11, 11, 11, 11, 11]
+ chunk 1930: n=4 touched=[2, 3, 3, 3] hull=[2, 3, 3, 3]
+ chunk 168: n=3 touched=[1, 1, 8] hull=[1, 1, 8]
+ chunk 3022: n=2 touched=[0, 2] hull=[0, 2]
+== B policy_20261014
+all: compactions=8 full=104 range=76 (-27%) block=42 (-60%) falloc-only-blocks=0
+not-first: compactions=4 full=56 range=48 (-14%) block=26 (-54%) falloc-only-blocks=0
+first: compactions=4 full=48 range=28 (-42%) block=16 (-67%) falloc-only-blocks=0
+touched-block distribution (not-first): {3: 2, 10: 2}
+hull-block distribution (not-first): {3: 1, 13: 1, 16: 2}
+ chunk 1: n=4 touched=[10, 10, 10, 3] hull=[16, 16, 16, 13]
+ chunk 1930: n=2 touched=[3, 3] hull=[3, 3]
+ chunk 151: n=1 touched=[1] hull=[1]
+ chunk 168: n=1 touched=[2] hull=[8]
+== C readmin_20261014
+all: compactions=44 full=603 range=375 (-38%) block=215 (-64%) falloc-only-blocks=0
+not-first: compactions=16 full=231 range=184 (-20%) block=123 (-47%) falloc-only-blocks=0
+first: compactions=28 full=372 range=191 (-49%) block=92 (-75%) falloc-only-blocks=0
+touched-block distribution (not-first): {1: 1, 2: 1, 3: 1, 6: 4, 7: 2, 10: 1, 11: 3, 12: 3}
+hull-block distribution (not-first): {1: 1, 2: 1, 3: 1, 8: 1, 10: 2, 11: 2, 16: 8}
+ chunk 1: n=8 touched=[3, 11, 11, 11, 10, 12, 12, 12] hull=[14, 16, 16, 16, 16, 16, 16, 16]
+ chunk 1920: n=4 touched=[7, 7, 6, 7] hull=[11, 11, 10, 11]
+ chunk 139: n=2 touched=[1, 1] hull=[1, 1]
+ chunk 2: n=2 touched=[6, 6] hull=[10, 10]
+ chunk 896: n=2 touched=[4, 2] hull=[10, 2]
+== D delay30_20261014
+all: compactions=38 full=530 range=347 (-35%) block=176 (-67%) falloc-only-blocks=0
+not-first: compactions=17 full=256 range=178 (-30%) block=98 (-62%) falloc-only-blocks=0
+first: compactions=21 full=274 range=169 (-38%) block=78 (-72%) falloc-only-blocks=0
+touched-block distribution (not-first): {1: 1, 2: 1, 3: 3, 4: 1, 5: 2, 6: 4, 7: 1, 10: 3, 11: 1}
+hull-block distribution (not-first): {1: 1, 3: 1, 5: 1, 8: 3, 10: 3, 11: 2, 15: 3, 16: 3}
+ chunk 1: n=6 touched=[3, 11, 10, 10, 6, 10] hull=[14, 16, 15, 16, 15, 16]
+ chunk 168: n=4 touched=[3, 3, 3, 5] hull=[8, 8, 8, 8]
+ chunk 2: n=3 touched=[6, 6, 6] hull=[10, 10, 10]
+ chunk 1920: n=3 touched=[7, 7, 6] hull=[11, 11, 11]
+ chunk 0: n=2 touched=[3, 3] hull=[10, 10]
+== E delay60_20261014
+all: compactions=38 full=554 range=293 (-47%) block=158 (-71%) falloc-only-blocks=0
+not-first: compactions=17 full=253 range=145 (-43%) block=81 (-68%) falloc-only-blocks=0
+first: compactions=21 full=301 range=148 (-51%) block=77 (-74%) falloc-only-blocks=0
+touched-block distribution (not-first): {1: 2, 2: 1, 3: 4, 4: 4, 5: 1, 6: 2, 10: 1, 11: 2}
+hull-block distribution (not-first): {1: 2, 2: 1, 5: 1, 6: 1, 8: 3, 9: 2, 10: 4, 16: 3}
+ chunk 1: n=4 touched=[11, 11, 11, 10] hull=[16, 16, 16, 16]
+ chunk 168: n=4 touched=[4, 4, 5, 4] hull=[8, 8, 8, 8]
+ chunk 0: n=3 touched=[3, 3, 3] hull=[10, 10, 10]
+ chunk 45: n=2 touched=[0, 1] hull=[0, 1]
+ chunk 2: n=2 touched=[6, 6] hull=[10, 10]

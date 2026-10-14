@@ -1,0 +1,4 @@
+compaction                       slices=   83 PUT@4MiB= 1036 PUT@8MiB(est)=  527 (-49%) len dist={'>32MiB': 65, '8-32MiB': 15, '<=4MiB': 3}
+writer                           slices= 3229 PUT@4MiB= 3230 PUT@8MiB(est)= 3229 (-0%) len dist={'<=4MiB': 3228, '4-8MiB': 1}
+unknown(before window/staging)   slices=    6 PUT@4MiB=    6 PUT@8MiB(est)=    6 (+0%) len dist={'<=4MiB': 6}
+total PUT@4MiB=4272 est@8MiB=3762 (-11.9%)

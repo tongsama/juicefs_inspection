@@ -1,0 +1,512 @@
+{
+ "inputs": {
+  "log": {
+   "path": "log.prefix",
+   "prefix_bytes": 226806428,
+   "sha256": "5b9f68906f119f9a0975aec23cf763a940f88aa6988b5b7126d60f3ff97f0d0f"
+  },
+  "accesslog": {
+   "path": "accesslog.txt",
+   "prefix_bytes": 8561170,
+   "sha256": "6c079f0bcd2d2b17a9f0a118021a4fed42531bc80014885223e5e1c80b639f22"
+  }
+ },
+ "window": {
+  "start": "2026/10/13 20:02:00",
+  "end": "2026/10/13 20:04:00"
+ },
+ "debug_log": {
+  "span_seconds": 117.50210404396057,
+  "levels": {
+   "DEBUG": 530757,
+   "WARNING": 24,
+   "INFO": 20
+  },
+  "commits": {
+   "count": 352,
+   "total": {
+    "count": 352,
+    "sum": 17.194484,
+    "mean": 0.048847966573455116,
+    "p50": 0.050208091735839844,
+    "p95": 0.0543971061706543,
+    "p99": 0.05996894836425781,
+    "max": 0.26857686042785645
+   },
+   "doWrite": {
+    "count": 352,
+    "sum": 14.483794,
+    "mean": 0.04114714290056818,
+    "p50": 0.040235321,
+    "p95": 0.043423738999999996,
+    "p99": 0.048565264999999996,
+    "max": 0.257216029
+   },
+   "lock_wait": {
+    "count": 352,
+    "sum": 2.635593,
+    "mean": 0.007487479059659091,
+    "p50": 0.010070519000000002,
+    "p95": 0.011504828,
+    "p99": 0.014146188,
+    "max": 0.017615936999999998
+   }
+  },
+  "top_inodes": [
+   {
+    "inode": "627902",
+    "commits": 352,
+    "chunks": 28,
+    "doWrite_busy_seconds": 14.484,
+    "doWrite_busy_ratio_of_span": 0.1233,
+    "lock_wait": {
+     "count": 352,
+     "sum": 2.635593,
+     "mean": 0.007487479059659091,
+     "p50": 0.010070519000000002,
+     "p95": 0.011504828,
+     "p99": 0.014146188,
+     "max": 0.017615936999999998
+    },
+    "doWrite": {
+     "count": 352,
+     "sum": 14.483794,
+     "mean": 0.04114714290056818,
+     "p50": 0.040235321,
+     "p95": 0.043423738999999996,
+     "p99": 0.048565264999999996,
+     "max": 0.257216029
+    },
+    "commit_total": {
+     "count": 352,
+     "sum": 17.194484,
+     "mean": 0.048847966573455116,
+     "p50": 0.050208091735839844,
+     "p95": 0.0543971061706543,
+     "p99": 0.05996894836425781,
+     "max": 0.26857686042785645
+    },
+    "slices_at_commit": {
+     "count": 352,
+     "sum": 137269,
+     "mean": 389.96875,
+     "p50": 386,
+     "p95": 710,
+     "p99": 724,
+     "max": 740
+    }
+   }
+  ],
+  "writer_flush_by_origin": {
+   "vfs.Flush": {
+    "count": 1,
+    "sum": 0.000435,
+    "mean": 0.000435355,
+    "p50": 0.000435355,
+    "p95": 0.000435355,
+    "p99": 0.000435355,
+    "max": 0.000435355
+   },
+   "vfs.Release": {
+    "count": 1,
+    "sum": 0.000141,
+    "mean": 0.000140708,
+    "p50": 0.000140708,
+    "p95": 0.000140708,
+    "p99": 0.000140708,
+    "max": 0.000140708
+   },
+   "internal.close": {
+    "count": 1,
+    "sum": 0.000115,
+    "mean": 0.00011519199999999999,
+    "p50": 0.00011519199999999999,
+    "p95": 0.00011519199999999999,
+    "p99": 0.00011519199999999999,
+    "max": 0.00011519199999999999
+   },
+   "vfs.Read.prelock": {
+    "count": 19602,
+    "sum": 17.421631,
+    "mean": 0.0008887680360167331,
+    "p50": 3.0253e-05,
+    "p95": 0.0006349319999999999,
+    "p99": 0.008657292,
+    "max": 0.34573043200000003
+   },
+   "vfs.Read": {
+    "count": 19602,
+    "sum": 5.241908,
+    "mean": 0.0002674169971431487,
+    "p50": 1.0006e-05,
+    "p95": 0.00023438,
+    "p99": 0.001961085,
+    "max": 0.13055328600000002
+   },
+   "vfs.Fallocate.prelock": {
+    "count": 10,
+    "sum": 0.624141,
+    "mean": 0.062414100699999996,
+    "p50": 0.091315523,
+    "p95": 0.139740683,
+    "p99": 0.139740683,
+    "max": 0.139740683
+   },
+   "vfs.Fallocate": {
+    "count": 10,
+    "sum": 0.001373,
+    "mean": 0.0001373465,
+    "p50": 2.2428e-05,
+    "p95": 0.001184023,
+    "p99": 0.001184023,
+    "max": 0.001184023
+   }
+  },
+  "freeze_reason": {
+   "explicit_flush": 636,
+   "writable_window": 877,
+   "idle": 78,
+   "age": 2
+  },
+  "freeze_origin": {
+   "vfs.Read.prelock": 400,
+   "none": 957,
+   "vfs.Fallocate.prelock": 178,
+   "vfs.Read": 58
+  },
+  "freeze_raw_length": {
+   "count": 1593,
+   "sum": 20509696,
+   "mean": 12874.887633396109,
+   "p50": 4096,
+   "p95": 32768,
+   "p99": 98304,
+   "max": 3198976
+  },
+  "put_cost": {
+   "compaction_or_large": {
+    "count": 114,
+    "sum": 596.53314,
+    "mean": 5.232746844587719,
+    "p50": 4.702508199,
+    "p95": 8.532723421,
+    "p99": 8.973335975,
+    "max": 9.995281866
+   },
+   "other": {
+    "count": 155,
+    "sum": 527.755078,
+    "mean": 3.404871473748387,
+    "p50": 3.274265636,
+    "p95": 5.131746536,
+    "p99": 7.049097657,
+    "max": 7.927927473
+   }
+  },
+  "compaction_phase_lines": {
+   "read": 9,
+   "object": 9,
+   "metadata": 8,
+   "done": 8
+  },
+  "warnings": {
+   "slow compaction inode chunk once force slices bytes total queue_wait object meta": 8,
+   "fail to read sliceId 6863193 (off size clen inode context canceled [readSlice@re": 4,
+   "fail to read sliceId 7164102 (off size clen inode context canceled [readSlice@re": 1,
+   "fail to read sliceId 7177989 (off size clen inode context canceled [readSlice@re": 1,
+   "fail to read sliceId 7169095 (off size clen inode context canceled [readSlice@re": 1,
+   "fail to read sliceId 7168952 (off size clen inode context canceled [readSlice@re": 1,
+   "Transaction succeeded after 3 tries (142.707429ms), keys method last error trans": 1,
+   "fail to read sliceId 7169093 (off size clen inode context canceled [readSlice@re": 1,
+   "fail to read sliceId 7167895 (off size clen inode context canceled [readSlice@re": 1,
+   "fail to read sliceId 7220473 (off size clen inode context canceled [readSlice@re": 1,
+   "fail to read sliceId 7168212 (off size clen inode context canceled [readSlice@re": 1,
+   "fail to read sliceId 7240177 (off size clen inode context canceled [readSlice@re": 1,
+   "fail to read sliceId 7165702 (off size clen inode context canceled [readSlice@re": 1,
+   "fail to read sliceId 7228404 (off size clen inode context canceled [readSlice@re": 1
+  }
+ },
+ "accesslog": {
+  "target_inode": "627902",
+  "by_op": {
+   "read": {
+    "count": 19749,
+    "sum": 220.844397,
+    "mean": 0.011182560990429894,
+    "p50": 0.000325,
+    "p95": 0.059632,
+    "p99": 0.120056,
+    "max": 4.213931
+   },
+   "write": {
+    "count": 1899,
+    "sum": 20.381679,
+    "mean": 0.010732848341232226,
+    "p50": 5.9e-05,
+    "p95": 0.052157,
+    "p99": 0.077093,
+    "max": 0.26732
+   },
+   "getattr": {
+    "count": 1255,
+    "sum": 12.49107,
+    "mean": 0.009953043824701196,
+    "p50": 0.009763,
+    "p95": 0.011276,
+    "p99": 0.013225,
+    "max": 0.015425
+   },
+   "fallocate": {
+    "count": 10,
+    "sum": 1.168649,
+    "mean": 0.11686490000000001,
+    "p50": 0.13836,
+    "p95": 0.192009,
+    "p99": 0.192009,
+    "max": 0.192009
+   },
+   "setlk": {
+    "count": 12,
+    "sum": 0.492139,
+    "mean": 0.04101158333333333,
+    "p50": 0.040312,
+    "p95": 0.050209,
+    "p99": 0.050209,
+    "max": 0.050209
+   },
+   "lookup": {
+    "count": 28,
+    "sum": 0.287163,
+    "mean": 0.010255821428571428,
+    "p50": 0.00999,
+    "p95": 0.013205,
+    "p99": 0.013593,
+    "max": 0.013593
+   },
+   "open": {
+    "count": 21,
+    "sum": 0.066252,
+    "mean": 0.0031548571428571433,
+    "p50": 0.00099,
+    "p95": 0.00995,
+    "p99": 0.009991,
+    "max": 0.009991
+   },
+   "flush": {
+    "count": 19,
+    "sum": 0.060079,
+    "mean": 0.0031620526315789474,
+    "p50": 1e-06,
+    "p95": 0.030388,
+    "p99": 0.030388,
+    "max": 0.030388
+   },
+   "getlk": {
+    "count": 5,
+    "sum": 0.049698,
+    "mean": 0.0099396,
+    "p50": 0.009971,
+    "p95": 0.010007,
+    "p99": 0.010007,
+    "max": 0.010007
+   },
+   "release": {
+    "count": 20,
+    "sum": 0.047883,
+    "mean": 0.00239415,
+    "p50": 2e-06,
+    "p95": 0.000206,
+    "p99": 0.047607,
+    "max": 0.047607
+   }
+  },
+  "target_by_op": {
+   "read": {
+    "count": 19605,
+    "sum": 220.844164,
+    "mean": 0.011264685743432798,
+    "p50": 0.000331,
+    "p95": 0.059751,
+    "p99": 0.121486,
+    "max": 4.213931
+   },
+   "write": {
+    "count": 1899,
+    "sum": 20.381679,
+    "mean": 0.010732848341232226,
+    "p50": 5.9e-05,
+    "p95": 0.052157,
+    "p99": 0.077093,
+    "max": 0.26732
+   },
+   "getattr": {
+    "count": 1222,
+    "sum": 12.151518,
+    "mean": 0.009943959083469721,
+    "p50": 0.009757,
+    "p95": 0.011266,
+    "p99": 0.01304,
+    "max": 0.015425
+   },
+   "fallocate": {
+    "count": 10,
+    "sum": 1.168649,
+    "mean": 0.11686490000000001,
+    "p50": 0.13836,
+    "p95": 0.192009,
+    "p99": 0.192009,
+    "max": 0.192009
+   },
+   "setlk": {
+    "count": 12,
+    "sum": 0.492139,
+    "mean": 0.04101158333333333,
+    "p50": 0.040312,
+    "p95": 0.050209,
+    "p99": 0.050209,
+    "max": 0.050209
+   },
+   "flush": {
+    "count": 3,
+    "sum": 0.060062,
+    "mean": 0.020020666666666666,
+    "p50": 0.029673,
+    "p95": 0.030388,
+    "p99": 0.030388,
+    "max": 0.030388
+   },
+   "getlk": {
+    "count": 5,
+    "sum": 0.049698,
+    "mean": 0.0099396,
+    "p50": 0.009971,
+    "p95": 0.010007,
+    "p99": 0.010007,
+    "max": 0.010007
+   },
+   "open": {
+    "count": 5,
+    "sum": 0.048819,
+    "mean": 0.0097638,
+    "p50": 0.009742,
+    "p95": 0.009991,
+    "p99": 0.009991,
+    "max": 0.009991
+   },
+   "release": {
+    "count": 4,
+    "sum": 0.047849,
+    "mean": 0.011962249999999999,
+    "p50": 2.4e-05,
+    "p95": 0.047607,
+    "p99": 0.047607,
+    "max": 0.047607
+   }
+  },
+  "target_write_sizes_top": [
+   [
+    4096,
+    1316
+   ],
+   [
+    8192,
+    239
+   ],
+   [
+    12288,
+    72
+   ],
+   [
+    131072,
+    41
+   ],
+   [
+    16384,
+    39
+   ],
+   [
+    20480,
+    32
+   ],
+   [
+    24576,
+    21
+   ],
+   [
+    28672,
+    14
+   ],
+   [
+    32768,
+    14
+   ],
+   [
+    65536,
+    12
+   ]
+  ],
+  "target_read_sizes_top": [
+   [
+    131072,
+    10055
+   ],
+   [
+    4096,
+    4742
+   ],
+   [
+    16384,
+    1512
+   ],
+   [
+    8192,
+    483
+   ],
+   [
+    12288,
+    380
+   ],
+   [
+    65536,
+    338
+   ],
+   [
+    32768,
+    244
+   ],
+   [
+    126976,
+    209
+   ],
+   [
+    20480,
+    199
+   ],
+   [
+    24576,
+    145
+   ]
+  ],
+  "errors": {},
+  "target_seconds_per_minute": [
+   {
+    "minute": "20:02",
+    "flush": 0.06,
+    "getattr": 0.117,
+    "getlk": 0.05,
+    "open": 0.049,
+    "read": 5.035,
+    "release": 0.048,
+    "setlk": 0.492,
+    "write": 0.0
+   },
+   {
+    "minute": "20:03",
+    "fallocate": 1.169,
+    "getattr": 12.035,
+    "read": 215.809,
+    "write": 20.381
+   }
+  ]
+ }
+}

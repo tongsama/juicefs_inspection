@@ -21,4 +21,5 @@ JuiceFS 本体（`juicefs/`）と rclone 本体（`rclone/`）以外の、調査
 | juicefs_gc | 2026-10-08 | `juicefs gc` が object の一覧の 30s で止まる件 | [調査報告](juicefs_gc/2026-10-08/gc-list-timeout-investigation-ja.md) |
 | vm_boot_cold_read | 2026-10-08〜09 | キャッシュが空のときの VM 起動、GET の改修の計測、header-timeout による EIO、Drive の遅さの時間帯 | [報告](vm_boot_cold_read/2026-10-08/report-ja.md)、[時間帯の集計](vm_boot_cold_read/2026-10-09/drive-latency-by-hour-ja.md) |
 | rclone_v1752_port | 2026-10-13 | rclone の kaz 改修を公式 v1.75.2 へ移植するときの衝突・意味の衝突・推奨手順、移植版の実 Drive での確認 | [調査報告](rclone_v1752_port/2026-10-13/port-investigation-ja.md)、[Drive での確認](rclone_v1752_port/2026-10-13/drive-verification-ja.md) |
+| vm_write_hotspot | 2026-10-13〜14 | VM（qcow2 preallocation=metadata、unsafe）の起動とアプリでの freeze の内訳、書き込みの偏り（journald）、compaction の書き直し、ブロックサイズの見積もり、read cache に残る slice。kaz compaction policy の実機計測（PUT の総数、cooldown の削除、upload-delay）、ブロック単位の compaction の見積もりと実機計測（§6〜11） | [報告](vm_write_hotspot/2026-10-13/report-ja.md)、[policy と block の計測](vm_write_hotspot/2026-10-14/report-ja.md) |
 | doc_migration_2026-10-03 | 2026-10-03 | 調査文書を本体リポジトリから分離したときの移設と確認の記録 | [ディレクトリ](doc_migration_2026-10-03/) |

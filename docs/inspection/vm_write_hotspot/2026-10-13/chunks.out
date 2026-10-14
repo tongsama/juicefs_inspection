@@ -1,0 +1,26 @@
+== read: ops=52619 bytes=4016.5MiB chunks=518
+   top1 chunks share of ops: 2.4%
+   top5 chunks share of ops: 9.6%
+   top10 chunks share of ops: 15.6%
+   top20 chunks share of ops: 25.9%
+   top8 (chunk:ops, offset GiB): [(1920, 1248, 120.0), (139, 1145, 8.69), (2543, 1085, 158.94), (1921, 845, 120.06), (25, 712, 1.56), (2471, 695, 154.44), (2465, 640, 154.06), (24, 640, 1.5)]
+== write: ops=9650 bytes=145.7MiB chunks=125
+   top1 chunks share of ops: 29.8%
+   top5 chunks share of ops: 59.2%
+   top10 chunks share of ops: 72.8%
+   top20 chunks share of ops: 86.7%
+   top8 (chunk:ops, offset GiB): [(1, 2874, 0.06), (1920, 792, 120.0), (2384, 776, 149.0), (1930, 676, 120.62), (168, 590, 10.5), (2385, 284, 149.06), (167, 283, 10.44), (151, 281, 9.44)]
+== fallocate: ops=85 bytes=24.7MiB chunks=12
+   top1 chunks share of ops: 40.0%
+   top5 chunks share of ops: 91.8%
+   top10 chunks share of ops: 97.6%
+   top20 chunks share of ops: 100.0%
+   top8 (chunk:ops, offset GiB): [(168, 34, 10.5), (20, 18, 1.25), (21, 12, 1.31), (1, 9, 0.06), (136, 5, 8.5), (3, 1, 0.19), (2434, 1, 152.12), (2433, 1, 152.06)]
+chunks written 125 read 518 both 123
+reads landing in written chunks: 20919 39.8%
+freeze chunks 125 total 7571
+   freeze top1 share 37.4%
+   freeze top5 share 64.5%
+   freeze top10 share 77.2%
+   freeze top8: [(1, 2834), (1920, 792), (1930, 674), (168, 346), (167, 241), (151, 238), (0, 210), (1921, 201)]
+   read-origin freeze top8: [(1, 582), (1920, 245), (167, 77), (151, 77), (896, 75), (1921, 69), (0, 65), (139, 63)] chunks 68

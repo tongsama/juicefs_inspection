@@ -1,0 +1,17 @@
+commits=2025 slices=7571 chunks=125 reads=51968 window=915s observed compactions=85 chunk1=16 chunk1920=7 chunk1930=4 chunk168=3 median dur=8.8s
+policy                               comp  <99   PUT   DEL DEL/c ch1 ch1920 forced pend slices@end  slices-at-read mean/p50/p95/p99/max
+current (read>=5, every100, cap350)   105   75  1370  6664    63  15      8      0   35       1328  6/0/32/84/697
+read>=50                               66   45   854  5964    90  20     12      0    1       2058  6/0/28/68/687
+read>=100                              51    9   689  5902   116  18     10      0    0       2028  6/0/26/89/687
+read off (commit trigger only)         45    2   605  5896   131  17      7      0    0       2028  7/0/33/106/687
+read>=100, every200 cap700             43   12   592  5452   127  16      8      0    0       2470  6/0/26/89/681
+read>=100, every300 cap1000            41   13   579  5424   132  15      8      0    1       2740  6/0/32/100/681
+cooldown30s                           104   90  1381  6142    59   4      6      0   32       1853  9/0/35/97/1759
+cooldown1m                             88   80  1195  4501    51   1      1      0   29       3470  9/0/34/101/2024
+cooldown3m                             41   40   548  3080    75   1      0      1   46       4840  18/0/75/206/2506
+cooldown1m force1000                   90   81  1227  4501    50   2      1      1   29       3472  9/0/34/101/1166
+cooldown3m force1000                   43   41   580  2785    65   2      0      2   46       5137  14/0/74/206/1166
+read>=20                               90   64  1210  6526    73  18     14      0    7       1559  6/0/26/76/695
+read>=100 + cooldown1m force700        12    1   164  4533   378   4      1      4   10       3358  10/0/45/206/1045
+read>=100 + cooldown1m force1000        9    1   120  3108   345   2      0      2   12       4780  12/0/45/206/1166
+read>=100 + cooldown3m force1000        2    0    32  2018  1009   2      0      2   13       5863  14/0/75/209/1166

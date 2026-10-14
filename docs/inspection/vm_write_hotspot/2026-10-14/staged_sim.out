@@ -1,0 +1,30 @@
+### freeze_20261013
+frozen slices=7549 reads=51968 K=18 D=3.77s DUR=8.8s
+policy                                              comp   PUTw   PUTc    PUT retired_w  ret%
+current (kaz.5)                                      135   3593   1665   5258      3957   52%
+read-min 100                                          44   3984    397   4381      3566   47%
+read-min 100 + cooldown 1m force 700                  22   4989    269   5258      2561   34%
+read-min 100 + stage>=50                              58   3673    371   4044      3877   51%
+read-min 100 + stage>=100                             46   3954    378   4332      3596   48%
+read-min 100 + stage>=200                             44   4107    393   4500      3443   46%
+read-min 100 + cooldown 1m force 700 + stage>=100     40   4174    265   4439      3376   45%
+### policy_20261014
+frozen slices=6261 reads=49220 K=18 D=3.77s DUR=8.8s
+policy                                              comp   PUTw   PUTc    PUT retired_w  ret%
+current (kaz.5)                                      101   2663   1448   4111      3600   57%
+read-min 100                                          34   3296    320   3616      2967   47%
+read-min 100 + cooldown 1m force 700                  15   3520    192   3712      2743   44%
+read-min 100 + stage>=50                              52   2590    456   3046      3673   59%
+read-min 100 + stage>=100                             36   3137    312   3449      3126   50%
+read-min 100 + stage>=200                             34   3155    304   3459      3108   50%
+read-min 100 + cooldown 1m force 700 + stage>=100     30   3214    240   3454      3049   49%
+### readmin_20261014
+frozen slices=5912 reads=48357 K=18 D=3.77s DUR=8.8s
+policy                                              comp   PUTw   PUTc    PUT retired_w  ret%
+current (kaz.5)                                      136   2121   2010   4131      3795   64%
+read-min 100                                          32   2162    327   2489      3754   63%
+read-min 100 + cooldown 1m force 700                  24   2520    335   2855      3396   57%
+read-min 100 + stage>=50                              39   1881    423   2304      4035   68%
+read-min 100 + stage>=100                             32   2162    327   2489      3754   63%
+read-min 100 + stage>=200                             32   2162    327   2489      3754   63%
+read-min 100 + cooldown 1m force 700 + stage>=100     36   2303    327   2630      3613   61%

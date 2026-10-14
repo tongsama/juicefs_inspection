@@ -1,0 +1,9 @@
+compactions 85 rewritten GiB 4.12
+ chunk 1: compactions=16 merged_slices=2859
+ chunk 1920: compactions=7 merged_slices=799
+ chunk 1930: compactions=4 merged_slices=596
+ chunk 168: compactions=3 merged_slices=382
+ chunk 3022: compactions=2 merged_slices=15
+ chunk 136: compactions=2 merged_slices=15
+ chunk 2447: compactions=2 merged_slices=10
+ chunk 4: compactions=2 merged_slices=48

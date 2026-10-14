@@ -1,0 +1,5 @@
+window 2026/10/14 13:37:00 .. 2026/10/14 13:45:40  log_end=2026/10/14 13:45:41  guest write 2433 ops 52.0 MiB, read 3312 ops, fallocate 13
+ compactions=24 modes={} blocks/compaction mean=0.00 max_slices_at_compaction=152 compaction_bytes=1321119744 masks=0 slow=25
+ PUT in window: writer=1154 compaction=333 other=994; compaction PUT after window=0; deletes=3991
+ frozen=1677 uploaded=1150 (69%) writer_PUTs=1154 retired_before_upload=527 (31%) still_pending=0
+ per guest MiB: writer_put=22.2 compaction_put=6.4 total=28.6

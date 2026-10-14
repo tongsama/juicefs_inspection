@@ -1,0 +1,23 @@
+freeze by inode (all window): [('627902', 7571)]
+== boot target freezes 1593
+   ('writable_window', 'none') 877
+   ('explicit_flush', 'vfs.Read.prelock') 400
+   ('explicit_flush', 'vfs.Fallocate.prelock') 178
+   ('idle', 'none') 78
+   ('explicit_flush', 'vfs.Read') 58
+   ('age', 'none') 2
+   origin=vfs.Read.prelock: n=400 raw p50=4096 <=64KiB=394 contiguous_next_within_1s=1
+   origin=vfs.Read: n=58 raw p50=4096 <=64KiB=57 contiguous_next_within_1s=2
+   origin=vfs.Fallocate.prelock: n=178 raw p50=4096 <=64KiB=177 contiguous_next_within_1s=4
+   origin=none: n=957 raw p50=4096 <=64KiB=936 contiguous_next_within_1s=5
+== apps target freezes 5956
+   ('idle', 'none') 2763
+   ('writable_window', 'none') 1529
+   ('explicit_flush', 'vfs.Read.prelock') 1241
+   ('explicit_flush', 'vfs.Fallocate.prelock') 224
+   ('explicit_flush', 'vfs.Read') 112
+   ('age', 'none') 87
+   origin=vfs.Read.prelock: n=1241 raw p50=4096 <=64KiB=1218 contiguous_next_within_1s=8
+   origin=vfs.Read: n=112 raw p50=4096 <=64KiB=112 contiguous_next_within_1s=3
+   origin=vfs.Fallocate.prelock: n=224 raw p50=8192 <=64KiB=194 contiguous_next_within_1s=22
+   origin=none: n=4379 raw p50=4096 <=64KiB=4259 contiguous_next_within_1s=17

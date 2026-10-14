@@ -1,0 +1,33 @@
+### freeze_20261013
+delay    0s read-min 100  comp=  44 PUT= 4381 (writer 3984, compaction 397) retired=47%
+delay    0s kaz.5         comp= 135 PUT= 5258 (writer 3593, compaction 1665) retired=52%
+delay   10s read-min 100  comp=  44 PUT= 4282 (writer 3885, compaction 397) retired=49%
+delay   10s kaz.5         comp= 135 PUT= 5152 (writer 3488, compaction 1664) retired=54%
+delay   30s read-min 100  comp=  44 PUT= 4043 (writer 3672, compaction 371) retired=51%
+delay   30s kaz.5         comp= 135 PUT= 4888 (writer 3225, compaction 1663) retired=57%
+delay   60s read-min 100  comp=  44 PUT= 3796 (writer 3467, compaction 329) retired=54%
+delay   60s kaz.5         comp= 135 PUT= 4586 (writer 2951, compaction 1635) retired=61%
+delay  120s read-min 100  comp=  44 PUT= 3353 (writer 3052, compaction 301) retired=60%
+delay  120s kaz.5         comp= 135 PUT= 3740 (writer 2185, compaction 1555) retired=71%
+### policy_20261014
+delay    0s read-min 100  comp=  34 PUT= 3616 (writer 3296, compaction 320) retired=47%
+delay    0s kaz.5         comp= 101 PUT= 4111 (writer 2663, compaction 1448) retired=57%
+delay   10s read-min 100  comp=  34 PUT= 3563 (writer 3243, compaction 320) retired=48%
+delay   10s kaz.5         comp= 101 PUT= 4073 (writer 2625, compaction 1448) retired=58%
+delay   30s read-min 100  comp=  34 PUT= 3280 (writer 2960, compaction 320) retired=53%
+delay   30s kaz.5         comp= 101 PUT= 3951 (writer 2503, compaction 1448) retired=60%
+delay   60s read-min 100  comp=  34 PUT= 2777 (writer 2545, compaction 232) retired=59%
+delay   60s kaz.5         comp= 101 PUT= 3629 (writer 2237, compaction 1392) retired=64%
+delay  120s read-min 100  comp=  34 PUT= 2419 (writer 2235, compaction 184) retired=64%
+delay  120s kaz.5         comp= 101 PUT= 3077 (writer 1741, compaction 1336) retired=72%
+### readmin_20261014
+delay    0s read-min 100  comp=  32 PUT= 2489 (writer 2162, compaction 327) retired=63%
+delay    0s kaz.5         comp= 136 PUT= 4131 (writer 2121, compaction 2010) retired=64%
+delay   10s read-min 100  comp=  32 PUT= 2451 (writer 2124, compaction 327) retired=64%
+delay   10s kaz.5         comp= 136 PUT= 4078 (writer 2068, compaction 2010) retired=65%
+delay   30s read-min 100  comp=  32 PUT= 2349 (writer 2022, compaction 327) retired=66%
+delay   30s kaz.5         comp= 136 PUT= 3977 (writer 1967, compaction 2010) retired=67%
+delay   60s read-min 100  comp=  32 PUT= 2215 (writer 1888, compaction 327) retired=68%
+delay   60s kaz.5         comp= 136 PUT= 3822 (writer 1812, compaction 2010) retired=69%
+delay  120s read-min 100  comp=  32 PUT= 2047 (writer 1728, compaction 319) retired=71%
+delay  120s kaz.5         comp= 136 PUT= 3642 (writer 1632, compaction 2010) retired=72%

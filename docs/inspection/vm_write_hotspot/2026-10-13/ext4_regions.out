@@ -1,0 +1,26 @@
+data extents 5504 distinct host-guest deltas 2118 top (MiB) [(30.625, 232), (30.9375, 200), (9.1875, 175), (9.0625, 160), (27.9375, 116)]
+other data                    3076 (31.9%)    71.2 MiB
+journald system.journal       2709 (28.1%)    21.7 MiB
+journald user-1000.journal    1340 (13.9%)     7.9 MiB
+ext4 jbd2 journal             1062 (11.0%)    33.4 MiB
+flex inode tables              881 ( 9.1%)     4.7 MiB
+flex block bitmaps             199 ( 2.1%)     0.9 MiB
+qcow2 meta/unmapped            162 ( 1.7%)     4.8 MiB
+superblock/GDT                  82 ( 0.8%)     0.4 MiB
+ext4 orphan file                71 ( 0.7%)     0.3 MiB
+flex inode bitmaps              68 ( 0.7%)     0.3 MiB
+ host chunk 1 {'journald system.journal': 2190, 'other data': 605, 'journald user-1000.journal': 79}
+ host chunk 1920 {'flex inode bitmaps': 38, 'flex inode tables': 599, 'other data': 149, 'flex block bitmaps': 5, 'qcow2 meta/unmapped': 1}
+ host chunk 1930 {'journald user-1000.journal': 676}
+ host chunk 2384 {'ext4 jbd2 journal': 776}
+ host chunk 168 {'journald system.journal': 178, 'other data': 273, 'journald user-1000.journal': 139}
+ host chunk 167 {'journald system.journal': 152, 'journald user-1000.journal': 107, 'other data': 24}
+ host chunk 151 {'journald system.journal': 67, 'journald user-1000.journal': 158, 'other data': 56}
+ host chunk 0 {'superblock/GDT': 82, 'qcow2 meta/unmapped': 59, 'flex block bitmaps': 24, 'ext4 orphan file': 71}
+other data by block group top: [(2, 542), (960, 350), (1274, 271), (1256, 252), (465, 201), (1511, 152), (456, 136), (1292, 81)]
+ group 0 writes 2936 blocks 0 - 31787 top [(9293, 20), (31486, 19), (9332, 18)]
+ group 2 writes 542 blocks 65792 - 91136 top [(80896, 15), (80900, 13), (80910, 13)]
+ group 960 writes 992 blocks 31457280 - 31472944 top [(31457296, 11), (31457298, 10), (31457433, 10)]
+ group 965 writes 676 blocks 31623682 - 31625718 top [(31624592, 13), (31624607, 11), (31625509, 10)]
+ group 1368 writes 349 blocks 44838922 - 44840959 top [(44839575, 13), (44840006, 13), (44840251, 12)]
+ group 1566 writes 304 blocks 51330688 - 51342662 top [(51342083, 14), (51342194, 14), (51342596, 14)]

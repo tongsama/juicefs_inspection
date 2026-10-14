@@ -1,0 +1,71 @@
+== 2026/10/13 20:02:00 .. 2026/10/13 20:04:00 (2.0 min) guest write 1899 ops 22.2 MiB, read 19605 ops, fallocate 10
+   acc_fallocate = 10
+   acc_read = 19605
+   acc_read_bytes = 1534468096
+   acc_write = 1899
+   acc_write_bytes = 23327744
+   compaction_bytes = 519987200
+   compaction_merged = 1287
+   compactions = 9
+   deletes = 430
+   freeze_origin_none = 957
+   freeze_origin_vfs.Fallocate.prelock = 178
+   freeze_origin_vfs.Read = 58
+   freeze_origin_vfs.Read.prelock = 400
+   freezes = 1593
+   max_slices_at_compaction = 418
+   put = 269
+   put_compaction = 120
+   put_writer = 149
+   read_flush_p99_ms = 0
+   read_flush_sum_s = 0
+   per guest MiB: compaction_GiB=0.0218 put=12.1 put_compaction=5.4 deletes=19.3
+   per minute: compactions=4.50 put=134.5 put_compaction=60.0 deletes=215.0 guest_write_ops=950
+== 2026/10/13 20:04:00 .. 2026/10/13 20:18:05 (14.1 min) guest write 7751 ops 123.4 MiB, read 33014 ops, fallocate 75
+   acc_fallocate = 75
+   acc_read = 33014
+   acc_read_bytes = 2677112832
+   acc_write = 7751
+   acc_write_bytes = 129409024
+   compaction_bytes = 3833851904
+   compaction_merged = 4795
+   compactions = 75
+   deletes = 6128
+   freeze_origin_none = 4379
+   freeze_origin_vfs.Fallocate.prelock = 224
+   freeze_origin_vfs.Read = 112
+   freeze_origin_vfs.Read.prelock = 1241
+   freezes = 5956
+   max_slices_at_compaction = 470
+   put = 4003
+   put_compaction = 916
+   put_other = 6
+   put_writer = 3081
+   read_flush_p99_ms = 0
+   read_flush_sum_s = 0
+   per guest MiB: compaction_GiB=0.0289 put=32.4 put_compaction=7.4 deletes=49.7
+   per minute: compactions=5.33 put=284.2 put_compaction=65.0 deletes=435.1 guest_write_ops=550
+== 2026/10/13 20:02:00 .. 2026/10/13 20:18:05 (16.1 min) guest write 9650 ops 145.7 MiB, read 52619 ops, fallocate 85
+   acc_fallocate = 85
+   acc_read = 52619
+   acc_read_bytes = 4211580928
+   acc_write = 9650
+   acc_write_bytes = 152736768
+   compaction_bytes = 4353839104
+   compaction_merged = 6082
+   compactions = 84
+   deletes = 6558
+   freeze_origin_none = 5336
+   freeze_origin_vfs.Fallocate.prelock = 402
+   freeze_origin_vfs.Read = 170
+   freeze_origin_vfs.Read.prelock = 1641
+   freezes = 7549
+   max_slices_at_compaction = 470
+   put = 4272
+   put_compaction = 1036
+   put_other = 6
+   put_writer = 3230
+   read_flush_p99_ms = 0
+   read_flush_sum_s = 0
+   per guest MiB: compaction_GiB=0.0278 put=29.3 put_compaction=7.1 deletes=45.0
+   per minute: compactions=5.22 put=265.6 put_compaction=64.4 deletes=407.8 guest_write_ops=600

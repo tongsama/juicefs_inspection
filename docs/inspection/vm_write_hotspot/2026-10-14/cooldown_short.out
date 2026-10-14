@@ -1,0 +1,21 @@
+### freeze_20261013
+read-min 100                             comp=  44 PUT= 4381 (writer 3984, compaction 397) retired=47%
+read-min 100 + cooldown 2s force 700     comp=  40 PUT= 4340 (writer 3946, compaction 394) retired=48%
+read-min 100 + cooldown 5s force 700     comp=  40 PUT= 4373 (writer 3980, compaction 393) retired=47%
+read-min 100 + cooldown 10s force 700    comp=  39 PUT= 4468 (writer 4083, compaction 385) retired=46%
+read-min 100 + cooldown 30s force 700    comp=  27 PUT= 4986 (writer 4669, compaction 317) retired=38%
+read-min 100 + cooldown 60s force 700    comp=  22 PUT= 5258 (writer 4989, compaction 269) retired=34%
+### policy_20261014
+read-min 100                             comp=  34 PUT= 3616 (writer 3296, compaction 320) retired=47%
+read-min 100 + cooldown 2s force 700     comp=  33 PUT= 3360 (writer 3064, compaction 296) retired=51%
+read-min 100 + cooldown 5s force 700     comp=  29 PUT= 3451 (writer 3139, compaction 312) retired=50%
+read-min 100 + cooldown 10s force 700    comp=  29 PUT= 3442 (writer 3170, compaction 272) retired=49%
+read-min 100 + cooldown 30s force 700    comp=  21 PUT= 3613 (writer 3381, compaction 232) retired=46%
+read-min 100 + cooldown 60s force 700    comp=  15 PUT= 3712 (writer 3520, compaction 192) retired=44%
+### readmin_20261014
+read-min 100                             comp=  32 PUT= 2489 (writer 2162, compaction 327) retired=63%
+read-min 100 + cooldown 2s force 700     comp=  31 PUT= 2497 (writer 2156, compaction 341) retired=64%
+read-min 100 + cooldown 5s force 700     comp=  34 PUT= 2398 (writer 2063, compaction 335) retired=65%
+read-min 100 + cooldown 10s force 700    comp=  31 PUT= 2483 (writer 2133, compaction 350) retired=64%
+read-min 100 + cooldown 30s force 700    comp=  26 PUT= 2534 (writer 2199, compaction 335) retired=63%
+read-min 100 + cooldown 60s force 700    comp=  24 PUT= 2855 (writer 2520, compaction 335) retired=57%

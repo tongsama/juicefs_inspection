@@ -1,0 +1,518 @@
+{
+ "inputs": {
+  "log": {
+   "path": "log.prefix",
+   "prefix_bytes": 226806428,
+   "sha256": "5b9f68906f119f9a0975aec23cf763a940f88aa6988b5b7126d60f3ff97f0d0f"
+  },
+  "accesslog": {
+   "path": "accesslog.txt",
+   "prefix_bytes": 8561170,
+   "sha256": "6c079f0bcd2d2b17a9f0a118021a4fed42531bc80014885223e5e1c80b639f22"
+  }
+ },
+ "window": {
+  "start": "2026/10/13 20:04:00",
+  "end": "2026/10/13 20:18:05"
+ },
+ "debug_log": {
+  "span_seconds": 844.7535820007324,
+  "levels": {
+   "DEBUG": 823944,
+   "WARNING": 439,
+   "INFO": 87
+  },
+  "commits": {
+   "count": 957,
+   "total": {
+    "count": 957,
+    "sum": 43.771809,
+    "mean": 0.04573856725463548,
+    "p50": 0.04143810272216797,
+    "p95": 0.056095123291015625,
+    "p99": 0.06560301780700684,
+    "max": 0.9924280643463135
+   },
+   "doWrite": {
+    "count": 957,
+    "sum": 40.282843,
+    "mean": 0.0420928350031348,
+    "p50": 0.04058013,
+    "p95": 0.049243875000000006,
+    "p99": 0.057144142,
+    "max": 0.264674402
+   },
+   "lock_wait": {
+    "count": 957,
+    "sum": 3.333808,
+    "mean": 0.0034836026739811913,
+    "p50": 2.66e-07,
+    "p95": 0.010934953,
+    "p99": 0.014894768,
+    "max": 0.951330893
+   }
+  },
+  "top_inodes": [
+   {
+    "inode": "627902",
+    "commits": 957,
+    "chunks": 114,
+    "doWrite_busy_seconds": 40.283,
+    "doWrite_busy_ratio_of_span": 0.0477,
+    "lock_wait": {
+     "count": 957,
+     "sum": 3.333808,
+     "mean": 0.0034836026739811913,
+     "p50": 2.66e-07,
+     "p95": 0.010934953,
+     "p99": 0.014894768,
+     "max": 0.951330893
+    },
+    "doWrite": {
+     "count": 957,
+     "sum": 40.282843,
+     "mean": 0.0420928350031348,
+     "p50": 0.04058013,
+     "p95": 0.049243875000000006,
+     "p99": 0.057144142,
+     "max": 0.264674402
+    },
+    "commit_total": {
+     "count": 957,
+     "sum": 43.771809,
+     "mean": 0.04573856725463548,
+     "p50": 0.04143810272216797,
+     "p95": 0.056095123291015625,
+     "p99": 0.06560301780700684,
+     "max": 0.9924280643463135
+    },
+    "slices_at_commit": {
+     "count": 957,
+     "sum": 39721,
+     "mean": 41.50574712643678,
+     "p50": 16,
+     "p95": 144,
+     "p99": 394,
+     "max": 505
+    }
+   }
+  ],
+  "writer_flush_by_origin": {
+   "vfs.Read.prelock": {
+    "count": 33014,
+    "sum": 47.120194,
+    "mean": 0.0014272791441509664,
+    "p50": 3.2843000000000004e-05,
+    "p95": 0.000716445,
+    "p99": 0.050727475,
+    "max": 0.9979508990000001
+   },
+   "vfs.Read": {
+    "count": 33014,
+    "sum": 11.338951,
+    "mean": 0.00034345887847579817,
+    "p50": 1.0901999999999998e-05,
+    "p95": 0.000580998,
+    "p99": 0.003353811,
+    "max": 0.20142594600000002
+   },
+   "vfs.Fallocate.prelock": {
+    "count": 75,
+    "sum": 4.661818,
+    "mean": 0.06215757026666666,
+    "p50": 0.053283582,
+    "p95": 0.147224078,
+    "p99": 0.24056642500000003,
+    "max": 0.24056642500000003
+   },
+   "vfs.Fallocate": {
+    "count": 75,
+    "sum": 0.002659,
+    "mean": 3.545528e-05,
+    "p50": 2.7239999999999997e-05,
+    "p95": 9.8063e-05,
+    "p99": 0.000212941,
+    "max": 0.000212941
+   }
+  },
+  "freeze_reason": {
+   "age": 87,
+   "explicit_flush": 1577,
+   "writable_window": 1529,
+   "idle": 2763
+  },
+  "freeze_origin": {
+   "none": 4379,
+   "vfs.Read.prelock": 1241,
+   "vfs.Fallocate.prelock": 224,
+   "vfs.Read": 112
+  },
+  "freeze_raw_length": {
+   "count": 5956,
+   "sum": 126705664,
+   "mean": 21273.61719274681,
+   "p50": 4096,
+   "p95": 40960,
+   "p99": 311296,
+   "max": 8359936
+  },
+  "put_cost": {
+   "other": {
+    "count": 3129,
+    "sum": 10693.701495,
+    "mean": 3.417609937748482,
+    "p50": 3.456178072,
+    "p95": 4.501110441,
+    "p99": 5.511878085,
+    "max": 8.421398889
+   },
+   "compaction_or_large": {
+    "count": 864,
+    "sum": 4166.530787,
+    "mean": 4.822373596069444,
+    "p50": 4.788630966,
+    "p95": 7.287385802,
+    "p99": 9.199134028,
+    "max": 9.86598146
+   }
+  },
+  "compaction_phase_lines": {
+   "metadata": 74,
+   "done": 74,
+   "read": 78,
+   "object": 75
+  },
+  "warnings": {
+   "slow compaction inode chunk once force slices bytes total queue_wait object meta": 75,
+   "fail to read sliceId 7240068 (off size clen inode context canceled [readSlice@re": 24,
+   "fail to read sliceId 7253932 (off size clen inode context canceled [readSlice@re": 17,
+   "fail to read sliceId 7139835 (off size clen inode context canceled [readSlice@re": 13,
+   "fail to read sliceId 7254003 (off size clen inode context canceled [readSlice@re": 12,
+   "fail to read sliceId 7249069 (off size clen inode context canceled [readSlice@re": 11,
+   "fail to read sliceId 6907822 (off size clen inode context canceled [readSlice@re": 10,
+   "fail to read sliceId 7169426 (off size clen inode context canceled [readSlice@re": 10,
+   "fail to read sliceId 7243811 (off size clen inode context canceled [readSlice@re": 9,
+   "fail to read sliceId 7239898 (off size clen inode context canceled [readSlice@re": 8,
+   "fail to read sliceId 7169032 (off size clen inode context canceled [readSlice@re": 8,
+   "fail to read sliceId 7139833 (off size clen inode context canceled [readSlice@re": 8,
+   "fail to read sliceId 7139834 (off size clen inode context canceled [readSlice@re": 8,
+   "fail to read sliceId 7254307 (off size clen inode context canceled [readSlice@re": 8,
+   "fail to read sliceId 6907969 (off size clen inode context canceled [readSlice@re": 7,
+   "fail to read sliceId 6907976 (off size clen inode context canceled [readSlice@re": 7,
+   "fail to read sliceId 7161738 (off size clen inode context canceled [readSlice@re": 7,
+   "fail to read sliceId 7237544 (off size clen inode context canceled [readSlice@re": 7,
+   "fail to read sliceId 7169008 (off size clen inode context canceled [readSlice@re": 7,
+   "fail to read sliceId 7243807 (off size clen inode context canceled [readSlice@re": 6,
+   "fail to read sliceId 6907892 (off size clen inode context canceled [readSlice@re": 5,
+   "fail to read sliceId 6907970 (off size clen inode context canceled [readSlice@re": 5,
+   "fail to read sliceId 7220450 (off size clen inode context canceled [readSlice@re": 5,
+   "fail to read sliceId 7243789 (off size clen inode context canceled [readSlice@re": 5,
+   "fail to read sliceId 7139832 (off size clen inode context canceled [readSlice@re": 5,
+   "fail to read sliceId 7242114 (off size clen inode context canceled [readSlice@re": 5,
+   "fail to read sliceId 7219800 (off size clen inode context canceled [readSlice@re": 5,
+   "fail to read sliceId 7204509 (off size clen inode context canceled [readSlice@re": 5,
+   "fail to read sliceId 7169013 (off size clen inode context canceled [readSlice@re": 4,
+   "fail to read sliceId 7241999 (off size clen inode context canceled [readSlice@re": 4
+  }
+ },
+ "accesslog": {
+  "target_inode": "627902",
+  "by_op": {
+   "read": {
+    "count": 34510,
+    "sum": 7259.43593,
+    "mean": 0.21035745957693422,
+    "p50": 0.000306,
+    "p95": 2.269543,
+    "p99": 3.662539,
+    "max": 7.769634
+   },
+   "write": {
+    "count": 7751,
+    "sum": 474.896409,
+    "mean": 0.061269050316088244,
+    "p50": 3.5e-05,
+    "p95": 0.04536,
+    "p99": 2.899883,
+    "max": 6.194032
+   },
+   "getattr": {
+    "count": 4040,
+    "sum": 72.203318,
+    "mean": 0.017872108415841585,
+    "p50": 0.010161,
+    "p95": 0.01419,
+    "p99": 0.021067,
+    "max": 2.633171
+   },
+   "fallocate": {
+    "count": 75,
+    "sum": 50.537453,
+    "mean": 0.6738327066666666,
+    "p50": 0.119238,
+    "p95": 3.51485,
+    "p99": 4.82477,
+    "max": 4.82477
+   },
+   "lookup": {
+    "count": 33,
+    "sum": 0.562056,
+    "mean": 0.017032,
+    "p50": 0.010137,
+    "p95": 0.013207,
+    "p99": 0.226526,
+    "max": 0.226526
+   },
+   "open": {
+    "count": 163,
+    "sum": 0.18758,
+    "mean": 0.00115079754601227,
+    "p50": 0.000936,
+    "p95": 0.002175,
+    "p99": 0.002933,
+    "max": 0.003209
+   },
+   "release": {
+    "count": 163,
+    "sum": 0.000394,
+    "mean": 2.4171779141104294e-06,
+    "p50": 2e-06,
+    "p95": 4e-06,
+    "p99": 1.8e-05,
+    "max": 2.7e-05
+   },
+   "flush": {
+    "count": 163,
+    "sum": 0.000242,
+    "mean": 1.4846625766871167e-06,
+    "p50": 1e-06,
+    "p95": 3e-06,
+    "p99": 1.3e-05,
+    "max": 1.7e-05
+   }
+  },
+  "target_by_op": {
+   "read": {
+    "count": 33014,
+    "sum": 7259.432679,
+    "mean": 0.2198895219906706,
+    "p50": 0.000356,
+    "p95": 2.405234,
+    "p99": 3.698909,
+    "max": 7.769634
+   },
+   "write": {
+    "count": 7751,
+    "sum": 474.896409,
+    "mean": 0.061269050316088244,
+    "p50": 3.5e-05,
+    "p95": 0.04536,
+    "p99": 2.899883,
+    "max": 6.194032
+   },
+   "getattr": {
+    "count": 3803,
+    "sum": 69.69944,
+    "mean": 0.01832748882461215,
+    "p50": 0.01016,
+    "p95": 0.014241,
+    "p99": 0.021156,
+    "max": 2.633171
+   },
+   "fallocate": {
+    "count": 75,
+    "sum": 50.537453,
+    "mean": 0.6738327066666666,
+    "p50": 0.119238,
+    "p95": 3.51485,
+    "p99": 4.82477,
+    "max": 4.82477
+   }
+  },
+  "target_write_sizes_top": [
+   [
+    4096,
+    5178
+   ],
+   [
+    8192,
+    775
+   ],
+   [
+    131072,
+    369
+   ],
+   [
+    12288,
+    320
+   ],
+   [
+    16384,
+    180
+   ],
+   [
+    20480,
+    126
+   ],
+   [
+    65536,
+    123
+   ],
+   [
+    24576,
+    102
+   ],
+   [
+    28672,
+    86
+   ],
+   [
+    32768,
+    58
+   ]
+  ],
+  "target_read_sizes_top": [
+   [
+    131072,
+    18223
+   ],
+   [
+    4096,
+    9120
+   ],
+   [
+    16384,
+    1134
+   ],
+   [
+    8192,
+    837
+   ],
+   [
+    12288,
+    518
+   ],
+   [
+    126976,
+    294
+   ],
+   [
+    20480,
+    253
+   ],
+   [
+    32768,
+    250
+   ],
+   [
+    24576,
+    241
+   ],
+   [
+    118784,
+    234
+   ]
+  ],
+  "errors": {},
+  "target_seconds_per_minute": [
+   {
+    "minute": "20:04",
+    "fallocate": 3.492,
+    "getattr": 3.297,
+    "read": 131.768,
+    "write": 29.848
+   },
+   {
+    "minute": "20:05",
+    "getattr": 0.39,
+    "read": 220.099,
+    "write": 24.534
+   },
+   {
+    "minute": "20:06",
+    "getattr": 0.407,
+    "read": 137.258,
+    "write": 27.096
+   },
+   {
+    "minute": "20:07",
+    "getattr": 0.334,
+    "read": 121.036,
+    "write": 20.079
+   },
+   {
+    "minute": "20:08",
+    "getattr": 24.637,
+    "read": 671.977,
+    "write": 28.066
+   },
+   {
+    "minute": "20:09",
+    "getattr": 1.949,
+    "read": 1359.575,
+    "write": 58.872
+   },
+   {
+    "minute": "20:10",
+    "fallocate": 0.365,
+    "getattr": 7.209,
+    "read": 1392.455,
+    "write": 58.636
+   },
+   {
+    "minute": "20:11",
+    "fallocate": 13.833,
+    "getattr": 15.064,
+    "read": 602.315,
+    "write": 35.809
+   },
+   {
+    "minute": "20:12",
+    "fallocate": 2.778,
+    "getattr": 0.732,
+    "read": 240.766,
+    "write": 50.275
+   },
+   {
+    "minute": "20:13",
+    "fallocate": 0.499,
+    "getattr": 0.849,
+    "read": 264.443,
+    "write": 34.899
+   },
+   {
+    "minute": "20:14",
+    "fallocate": 3.6,
+    "getattr": 4.592,
+    "read": 1145.871,
+    "write": 50.413
+   },
+   {
+    "minute": "20:15",
+    "fallocate": 11.139,
+    "getattr": 9.387,
+    "read": 848.2,
+    "write": 39.925
+   },
+   {
+    "minute": "20:16",
+    "fallocate": 6.99,
+    "getattr": 0.674,
+    "read": 83.787,
+    "write": 10.93
+   },
+   {
+    "minute": "20:17",
+    "fallocate": 7.844,
+    "getattr": 0.168,
+    "read": 39.86,
+    "write": 5.515
+   },
+   {
+    "minute": "20:18",
+    "getattr": 0.011,
+    "read": 0.024
+   }
+  ]
+ }
+}

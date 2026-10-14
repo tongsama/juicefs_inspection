@@ -185,6 +185,19 @@ force=true slowログ3,649件は再帰callframeの完了数で、独立した手
 - **Phase 1（`--writer-flush-scope=range`、本体 18e641b8）の qcow2 計測（2026-10-07）: 約84分 → 約53分**。Read と Fallocate 前の flush を、触る chunk の pending と、その依存に限定した。待ちは handle のロックの外で行い、ロックの中でもう一度確認する。fallocate の合計は 3,330s → 1,887s、commit は −44%、write の合計は −80%。Read 前の待ちは変わらなかった。残る待ちは in-range の commit（約41ms/件）と Meta.Fallocate で、次は group commit。mtime が古い slice の commit で巻き戻る upstream 由来の問題も、同じ commit で修正した（scope に関係なく有効）。fsync・close は全体の flush のまま。[報告](inspection/metadata_random_io/2026-10-07/install-range-report-ja.md)
 - **Phase 2（`--meta-write-batch=64`、本体 f9308391）の qcow2 計測（2026-10-07）: 約53分 → 約43分**（変更前の約84分からは −49%）。同じ chunk の連続した slice を1回の transaction でまとめ、transaction 数は 35,006 → 20,654（−41%）、batch は平均3.2件。batch 1回の時間は単発と同じ約41ms。Read 前の待ちは 352s → 66s（−81%）、Fallocate 前の待ちは 1,264s → 905s（−28%）。残る主な待ちは、Fallocate 前の commit 待ち、Meta.Fallocate（約44ms/回）、単発の commit で、どれも Redis の transaction 1回 ≒ 41ms の直列に起因する。[報告](inspection/metadata_random_io/2026-10-07/install-batch-report-ja.md)
 
+## VM の書き込みの偏りと compaction の書き直し（2026-10-13）
+
+[報告](inspection/vm_write_hotspot/2026-10-13/report-ja.md)。qcow2（preallocation=metadata、`discard=unmap`、`cache=unsafe`）の VM を起動してアプリを立ち上げた 16 分（`--debug`）。PUT を減らす目的の調査。
+
+- **compaction の書き直しが大きい**: 85 回で 4.12 GiB を書き直し、ゲストの書き込み 146 MiB の約 28 倍。最も書かれた chunk は 16 回 compaction された（1 回あたり約 63 MiB）。PUT 4,272 件のうち compaction が 1,036 件。起動の条件はソースに固定（base.go:2185、99 個目ごと、350 個超、2,500 個で同期）で、`priority` は順番だけを決める。
+- **書き込みは journald に偏る**: 書き込みの 42% 以上が systemd-journald のログファイル（`system.journal`、`user-1000.journal`）、ext4 の jbd2 が 11%、inode テーブルが 9%。最も書かれた chunk の 76% は `system.journal`。read は 518 chunk に散る。
+- **Read 起因の freeze は 23〜29%**。Read で閉じた slice のあとに続きの書き込みが来た例はほとんど無く（1,811 件中 14 件）、Read が slice を細かくしている影響は小さいと見ている（推論）。Read 前の flush は read-after-write のために必要（reader は commit 済みの slice しか見ない）。
+- **ブロックサイズ 8 MiB の効果は約 −12% で、compaction の分だけ**。writer の slice は 4 MiB 超が 3,229 個中 1 個。ブロックサイズは既存のボリュームでは変えられない（format の更新は `--force` なしで拒否）。
+- **preallocation=metadata の配置が崩れていた**: `qemu-img map` でゲストとファイルの位置の差が 2,118 通り。`discard=unmap` による割り当て直しと推測。preallocation=metadata でも ZERO_RANGE が 85 回出た。
+- **PUT の総数と compaction（2026-10-14 の計測、[報告](inspection/vm_write_hotspot/2026-10-14/report-ja.md)）**: compaction は writeback の staging にあるアップロード待ちの小さな slice をまとめて片付け（retire）、その PUT を省く（policy なしで freeze した slice の 52%）。そのため compaction の PUT を減らすだけでは PUT の総数は減らない。書き込みの続く chunk を保留する cooldown は、片付けを妨げて PUT の総数を増やした（ゲストの 1 MiB あたり 36.5→39.9）。Read からの compaction の下限を 100 にすると 17.6（−52%）。`--kaz-compaction-read-min N` は「Read で chunk（64 MiB）の slice の一覧をメタデータから読み直したとき、記録された slice が N 個以上ならバックグラウンドの compaction を要求する」（upstream は 5、commit の側の条件は変えない）。`--upload-delay 60s` はアップロードされる割合を 29%→18% に下げる。各 1 回の計測。上の「compaction の書き直しが大きい」の PUT の数は区間内の compaction の分だけである。
+- **ブロック単位の compaction（2026-10-14 実装・計測）**: `--kaz-compaction-mode block` で、バックグラウンドの compaction は変化した 4 MiB ブロックだけをブロックごとの新しい slice として書く（既定は `upstream`）。既存のログからの見積もりでは compaction の PUT が −47〜−68%（範囲だけの方式は −14〜−43%）、PUT の総数は read-min 100 の回で約 −12〜17% [推論]。片付ける小さい slice の集合と起動の条件は変えない。同日・同手順の実機計測（報告 §7〜11）では、upstream に比べて PUT の合計が 1 MiB あたり約 −23%（26.2→約 20）、compaction の PUT が約 −70%、ゲストの read の p99 が約 3 秒→約 0.1 秒（各 1 回）。read の下限を 30／50 に下げたり upload-delay 1s を足しても PUT は減らなかった。[設計書](superpowers/specs/2026-10-14-kaz-block-compaction-design.md)、本体 `1.4.1-improve-kaz`（86321d84 で merge・push 済み。block のときは `juicefs compact` も block で行う）。
+- **ローカルの read cache**: slice の削除はローカルの片付け（`Retire`）を先に行い、失敗すれば DELETE に進まない。ただし並行した GET が片付けの後にキャッシュへ書くと、参照されないブロックが残り得る（ソース上の条件、未再現。`--kaz-finish-canceled-get` は窓を長くする）。2026-10-13 の本番の実測では 0 個（4,359 ブロックすべて参照あり）。
+
 ## 検証範囲
 
 対象の Redis／SQLite／MemKV、queue飽和、共有reference、marker回復、upload取消、fsync／read-after-write、実kernel FUSE等を隔離して検証した。PostgreSQLはユーザー指示でsource reviewのみ、runtime未実施。他KV engineの全runtime atomicityまで保証しない。

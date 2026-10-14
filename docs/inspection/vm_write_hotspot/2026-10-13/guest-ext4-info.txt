@@ -1,0 +1,49 @@
+ゲスト ubuntu2604-desktop-mt（qcow2 inode 627902 の中）で、ユーザーが 2026-10-13〜14 に実行した結果の写し。
+計測（2026-10-13 20:02〜20:18）の後に VM を一度止めて起動し直してから取ったもの。読み取りのみ。
+
+== lsblk -b -o NAME,START,SIZE,FSTYPE,MOUNTPOINT（loop と sr0 は省略）
+vda          322122547200
+├─vda1  2048      1048576
+└─vda2  4096 322119401472 ext4     /
+
+== dumpe2fs -h /dev/vda2（抜粋）
+Filesystem features:      has_journal ext_attr resize_inode dir_index orphan_file filetype needs_recovery extent 64bit flex_bg metadata_csum_seed sparse_super large_file huge_file dir_nlink extra_isize metadata_csum orphan_present
+Block size:               4096
+Blocks per group:         32768
+Inode blocks per group:   512
+Flex block group size:    16
+Inode size:               256
+Journal inode:            8
+Total journal size:       1024M
+Total journal blocks:     262144
+
+== debugfs -R 'stat <8>'（jbd2 journal）の EXTENTS
+(ETB0):38830079, (0-262143):38830080-39092223（8 extent に分かれているが連続）
+
+== env LANG=C dumpe2fs /dev/vda2 の Group 0 と Group 960
+Group 0: (Blocks 0-32767) csum 0x58c6 [ITABLE_ZEROED]
+  Primary superblock at 0, Group descriptors at 1-38
+  Reserved GDT blocks at 39-1062
+  Block bitmap at 1063 (+1063)
+  Inode bitmap at 1079 (+1079)
+  Inode table at 1095-1606 (+1095)
+Group 960: (Blocks 31457280-31490047) csum 0x3357 [ITABLE_ZEROED]
+  Block bitmap at 31457280 (+0)
+  Inode bitmap at 31457296 (+16)
+  Inode table at 31457312-31457823 (+32)
+  （日本語ロケールでは "Group" の行が翻訳されて grep に掛からない。LANG=C が必要）
+
+== debugfs -R 'icheck ...'
+9293 -> 12, 9332 -> 12, 31486 -> 3801891, 80896 -> <block not found>,
+31457296 -> <block not found>, 31624592 -> 3806761, 44839575 -> 3806761, 51342083 -> 3806761
+
+== debugfs -R 'ncheck 12 3801891 3806761'
+3801891 /var/log/journal/13504dbd46354cd8a21451c4f0f3942c/system.journal
+3806761 /var/log/journal/13504dbd46354cd8a21451c4f0f3942c/user-1000.journal
+（inode 12 は名前なし。stat <12> は Size 2097152、EXTENTS (0-511):9293-9804 で、orphan_file と判断）
+
+== filefrag -v -b4096（物理ブロックの連続範囲にまとめたもの）
+system.journal (16 MiB):    15256064, 29565-31611, 16332-18379
+user-1000.journal (24 MiB): 15240708, 31623679-31625725, 44838912-44840959, 51341312-51343359
+（どちらも途中に unwritten の extent を多数含む。再起動後の状態なので、計測時に別の場所にあった
+  journald のファイル（rotate 済みなど）はここに含まれない）
