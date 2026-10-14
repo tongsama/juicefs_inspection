@@ -28,5 +28,11 @@
     "commit": "8a64eb076884fb2b65e29a54bf51535c6ef341ba",
     "go_version": "1.25.11",
     "notes": "release/juicefs/notes/juicefs-v1.4.1-kaz.5.md"
+  },
+  "juicefs-v1.4.1-kaz.6": {
+    "repo": "tongsama/juicefs",
+    "commit": "86321d84e5162619ac675f23806b56447837a963",
+    "go_version": "1.25.11",
+    "notes": "release/juicefs/notes/juicefs-v1.4.1-kaz.6.md"
   }
 }
