@@ -1,0 +1,17 @@
+== R raw (634040) 14:50-14:54
+flush: n=1 mean=30.9ms p50=30.86 p99=30.9 max=31 over1s=0 total=0.0s
+read: n=47551 mean=19.2ms p50=0.26 p99=131.2 max=5367 over1s=184 total=915.3s
+write: n=6606 mean=15.4ms p50=0.05 p99=65.7 max=4169 over1s=18 total=101.8s
+freeze 4415 {'writable_window/none': '2657 (60%)', 'explicit_flush/vfs.Read': '1124 (25%)', 'idle/none': '622 (14%)', 'age/none': '12 (0%)'}
+== J qcow2 (627902) 12:50-12:53
+fallocate: n=37 mean=168.2ms p50=144.18 p99=537.1 max=537 over1s=0 total=6.2s
+flush: n=1 mean=30.7ms p50=30.69 p99=30.7 max=31 over1s=0 total=0.0s
+read: n=52569 mean=10.1ms p50=0.33 p99=106.5 max=4929 over1s=28 total=528.7s
+write: n=7150 mean=4.3ms p50=0.04 p99=52.8 max=4723 over1s=3 total=30.7s
+freeze 4975 {'writable_window/none': '2320 (47%)', 'explicit_flush/vfs.Read': '1836 (37%)', 'idle/none': '734 (15%)', 'explicit_flush/vfs.Fallocate': '67 (1%)', 'age/none': '18 (0%)'}
+== G qcow2 (627902) 10:21-10:26
+fallocate: n=52 mean=144.6ms p50=110.75 p99=627.6 max=628 over1s=0 total=7.5s
+flush: n=3 mean=19.6ms p50=28.63 p99=30.0 max=30 over1s=0 total=0.1s
+read: n=51370 mean=16.6ms p50=0.71 p99=137.1 max=4404 over1s=151 total=851.3s
+write: n=10573 mean=5.7ms p50=0.06 p99=54.0 max=3304 over1s=9 total=60.2s
+GET (object, DEBUG log): R 94 sum 306.0s mean 3.25s; J 19 sum 73.7s mean 3.88s

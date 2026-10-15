@@ -1,0 +1,6 @@
+== R2 raw (634040) 15:07:37-15:10:30
+flush: n=1 mean=31.0ms p50=31.02 p99=31.0 max=31 over1s=0 total=0.0s
+read: n=48031 mean=15.4ms p50=0.26 p99=108.4 max=3471 over1s=136 total=738.5s
+write: n=6573 mean=8.0ms p50=0.05 p99=53.8 max=3367 over1s=6 total=52.5s
+freeze 4393 {'writable_window/none': '2769 (63%)', 'explicit_flush/vfs.Read': '1014 (23%)', 'idle/none': '595 (14%)', 'age/none': '15 (0%)'}
+GET (object, DEBUG log): R2 42 sum 134.2s mean 3.20s

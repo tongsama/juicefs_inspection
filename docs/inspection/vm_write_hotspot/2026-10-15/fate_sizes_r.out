@@ -1,0 +1,4 @@
+<64K    uploaded=  1130 (     7.6 MiB) retired=  3111 (    19.4 MiB) pending=0
+64K-1M  uploaded=    58 (    11.3 MiB) retired=    17 (     1.9 MiB) pending=1
+1M-4M   uploaded=     5 (     8.2 MiB) retired=     0 (     0.0 MiB) pending=0
+>=4M    uploaded=     2 (    17.1 MiB) retired=     0 (     0.0 MiB) pending=0

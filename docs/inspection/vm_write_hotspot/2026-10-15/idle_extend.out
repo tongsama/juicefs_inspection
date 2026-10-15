@@ -1,0 +1,10 @@
+== boot: idle freezes 78
+   grew with >=1 write: 9 (11.5%), absorbed writes 13, bytes 176128, first absorbed write in 16-31s gap 13
+   counterfactual close: {'idle31': 47, 'explicit': 31}
+   real slices whose first write would be absorbed: 5 by reason {'idle': 4, 'explicit_flush': 1}
+== apps: idle freezes 2763
+   grew with >=1 write: 101 (3.7%), absorbed writes 268, bytes 3305472, first absorbed write in 16-31s gap 169
+   counterfactual close: {'idle31': 2610, 'explicit': 74, 'age60': 79}
+   real slices whose first write would be absorbed: 138 by reason {'idle': 89, 'writable_window': 27, 'age': 14, 'explicit_flush': 8}
+== boot upper bound: same-chunk write in gap 38, within +-64KiB 29 of 78
+== apps upper bound: same-chunk write in gap 639, within +-64KiB 148 of 2763
