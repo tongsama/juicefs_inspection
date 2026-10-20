@@ -35,8 +35,8 @@
   - [x] 2026-10-20 判定（19:46、share＋B）: アプリ 8.7 分、補充 0.90 GiB（未達）。A-c は効いたが B は実績なしを使い切った後に起動のブロックを降格。
   - [x] 2026-10-20 §10 hot-age を実装（07aaf254）。テスト版 ~/.local/bin/kaz-test/juicefs-kaz2q-07aaf254。
   - [x] 2026-10-20 軽い検証（約 30 分）: 常連用の compaction の出力の増加が止まった（8.38 → 7.70 GB で横ばい）。判定の再起動は未実施。本番は 07aaf254 で動作中。
-  - [ ] 計測の常駐（sampler PID 359496、key_tracker PID 244411）を止める（ユーザーの判断）。
-  - [ ] feat/kaz-cache-2q の扱い（1.4.1-improve-kaz への merge、リリース）をユーザーが決める。
+  - [x] 計測の常駐を止めた（2026-10-20 20:58、データは gzip で保存）。
+  - [x] 2026-10-20 feat/kaz-cache-2q を 1.4.1-improve-kaz に merge（c5c5658b）・push、juicefs-v1.4.1-kaz.7 の draft を作成（公開はユーザー）。
   - [ ] 旧項目（参考）: 判定: テスト版を share 0.5＋demote-unread-first で mount（前に管理ファイルを複製）→ 入れ替え直後の起動（判定外）→ 流入 30 GiB → VM 再起動。補充 0.35 GiB 以下か。ghost_hit の内訳と demote_unread／demote_read を見る。 入れてから 3 回目の起動で GET の補充が 0.35 GiB 以下か。各起動の前後で metrics（kaz_cache_2q_*）と cache_churn の道具で記録。2 回目と 3 回目の間に demote と protected の bytes を確認し、多ければ probation-ratio を下げる。
   - [x] 2026-10-19 設計書をユーザーが承認: [設計書](docs/superpowers/specs/2026-10-19-kaz-cache-2q-design.md)。承認後に writing-plans。運用の案内: compaction は `juicefs compact <mount のパス>` を使い、`gc --compact` は使わない。
   - [x] 対策の設計（brainstorming から）: 2Q などの受け入れ方針、compaction の出力をキャッシュに入れる条件（入れたことが後のヒットにつながるかを先に計測する案もある）。記録の常駐（PID 244409、244411）は、必要がなくなったら止める。
