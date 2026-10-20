@@ -1,0 +1,409 @@
+# HELP juicefs_blockcache_blocks number of cached blocks
+# TYPE juicefs_blockcache_blocks gauge
+juicefs_blockcache_blocks{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 10659
+# HELP juicefs_blockcache_bytes number of cached bytes
+# TYPE juicefs_blockcache_bytes gauge
+juicefs_blockcache_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2.1313486848e+10
+# HELP juicefs_blockcache_drops dropped block
+# TYPE juicefs_blockcache_drops counter
+juicefs_blockcache_drops{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+# HELP juicefs_blockcache_evicts evicted cache blocks
+# TYPE juicefs_blockcache_evicts counter
+juicefs_blockcache_evicts{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 9409
+# HELP juicefs_blockcache_hit_bytes read bytes from cached block
+# TYPE juicefs_blockcache_hit_bytes counter
+juicefs_blockcache_hit_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.524475936e+11
+# HELP juicefs_blockcache_hits read from cached block
+# TYPE juicefs_blockcache_hits counter
+juicefs_blockcache_hits{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 368846
+# HELP juicefs_blockcache_miss missed read from cached block
+# TYPE juicefs_blockcache_miss counter
+juicefs_blockcache_miss{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 8361
+# HELP juicefs_blockcache_miss_bytes missed bytes from cached block
+# TYPE juicefs_blockcache_miss_bytes counter
+juicefs_blockcache_miss_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 4.9910784e+09
+# HELP juicefs_blockcache_read_hist_seconds read cached block latency distribution
+# TYPE juicefs_blockcache_read_hist_seconds histogram
+juicefs_blockcache_read_hist_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 199.8428949399987
+juicefs_blockcache_read_hist_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 368846
+# HELP juicefs_blockcache_write_bytes write bytes of cached block
+# TYPE juicefs_blockcache_write_bytes counter
+juicefs_blockcache_write_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3.2712446976e+10
+# HELP juicefs_blockcache_write_hist_seconds write cached block latency distribution
+# TYPE juicefs_blockcache_write_hist_seconds histogram
+juicefs_blockcache_write_hist_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1639.8622398799928
+juicefs_blockcache_write_hist_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 93823
+# HELP juicefs_blockcache_writes written cached block
+# TYPE juicefs_blockcache_writes counter
+juicefs_blockcache_writes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 93823
+# HELP juicefs_compact_size_histogram_bytes Distribution of size of compacted data in bytes.
+# TYPE juicefs_compact_size_histogram_bytes histogram
+juicefs_compact_size_histogram_bytes_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2.2856830976e+10
+juicefs_compact_size_histogram_bytes_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 5450
+# HELP juicefs_compaction_gc_events_total Compaction GC phase outcomes; local success counts callbacks, not removed files; deferred remote intent remains durable.
+# TYPE juicefs_compaction_gc_events_total counter
+juicefs_compaction_gc_events_total{event="hint_overflow",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+juicefs_compaction_gc_events_total{event="local_error",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1842
+juicefs_compaction_gc_events_total{event="local_retire_success",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 89960
+juicefs_compaction_gc_events_total{event="remote_deferred",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+juicefs_compaction_gc_events_total{event="remote_enqueued",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 89960
+# HELP juicefs_cpu_usage Accumulated CPU usage in seconds.
+# TYPE juicefs_cpu_usage gauge
+juicefs_cpu_usage{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1041.253588
+# HELP juicefs_fuse_open_handlers number of open files and directories.
+# TYPE juicefs_fuse_open_handlers gauge
+juicefs_fuse_open_handlers{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1
+# HELP juicefs_fuse_ops_durations_histogram_seconds Operations latency distributions.
+# TYPE juicefs_fuse_ops_durations_histogram_seconds histogram
+juicefs_fuse_ops_durations_histogram_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 16815.722177850115
+juicefs_fuse_ops_durations_histogram_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.133767e+06
+# HELP juicefs_fuse_ops_durations_seconds Operations latency in seconds.
+# TYPE juicefs_fuse_ops_durations_seconds counter
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="fallocate",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1435.286849462016
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="flush",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.32526303800000295
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="getattr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 403.77319440599933
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="getlk",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.029853135000000003
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="lookup",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1078.7750114130129
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="open",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 931.2471650679958
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="opendir",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 6.0932999999999994e-05
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="read",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 9172.976509602648
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="readdir",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.03028195
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="release",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2.620920338999971
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="releasedir",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 7.3268e-05
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="setattr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.041646629
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="setlk",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.220186408
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="statfs",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2607.5952056259953
+juicefs_fuse_ops_durations_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="write",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1182.7999565729995
+# HELP juicefs_fuse_ops_io_errors Number of IO errors.
+# TYPE juicefs_fuse_ops_io_errors counter
+juicefs_fuse_ops_io_errors{errno="ENOENT",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 14587
+# HELP juicefs_fuse_ops_total Total number of operations.
+# TYPE juicefs_fuse_ops_total counter
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="fallocate",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 32555
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="flush",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 100657
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="getattr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 29989
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="getlk",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="lookup",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 106302
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="open",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 104972
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="opendir",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 7
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="read",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 345705
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="readdir",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="release",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 104971
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="releasedir",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 7
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="setattr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="setlk",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 5
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="statfs",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 86303
+juicefs_fuse_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="write",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 222288
+# HELP juicefs_fuse_read_size_bytes size of read distributions.
+# TYPE juicefs_fuse_read_size_bytes histogram
+juicefs_fuse_read_size_bytes_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.0741071872e+10
+juicefs_fuse_read_size_bytes_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 202495
+# HELP juicefs_fuse_written_size_bytes size of write distributions.
+# TYPE juicefs_fuse_written_size_bytes histogram
+juicefs_fuse_written_size_bytes_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 8.681874432e+09
+juicefs_fuse_written_size_bytes_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 222288
+# HELP juicefs_go_build_info Build information about the main Go module.
+# TYPE juicefs_go_build_info gauge
+juicefs_go_build_info{checksum="",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",path="github.com/juicedata/juicefs",version="v1.4.2-0.20261019064549-bf9efe73f861",vol_name="juicefs-data"} 1
+# HELP juicefs_go_gc_duration_seconds A summary of the wall-time pause (stop-the-world) duration in garbage collection cycles.
+# TYPE juicefs_go_gc_duration_seconds summary
+juicefs_go_gc_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",quantile="0"} 1.7494e-05
+juicefs_go_gc_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",quantile="0.25"} 0.000141927
+juicefs_go_gc_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",quantile="0.5"} 0.000187814
+juicefs_go_gc_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",quantile="0.75"} 0.00028597
+juicefs_go_gc_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data",quantile="1"} 0.001227214
+juicefs_go_gc_duration_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.034659418
+juicefs_go_gc_duration_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 150
+# HELP juicefs_go_gc_gogc_percent Heap size target percentage configured by the user, otherwise 100. This value is set by the GOGC environment variable, and the runtime/debug.SetGCPercent function. Sourced from /gc/gogc:percent.
+# TYPE juicefs_go_gc_gogc_percent gauge
+juicefs_go_gc_gogc_percent{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 100
+# HELP juicefs_go_gc_gomemlimit_bytes Go runtime memory limit configured by the user, otherwise math.MaxInt64. This value is set by the GOMEMLIMIT environment variable, and the runtime/debug.SetMemoryLimit function. Sourced from /gc/gomemlimit:bytes.
+# TYPE juicefs_go_gc_gomemlimit_bytes gauge
+juicefs_go_gc_gomemlimit_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 9.223372036854776e+18
+# HELP juicefs_go_goroutines Number of goroutines that currently exist.
+# TYPE juicefs_go_goroutines gauge
+juicefs_go_goroutines{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 218
+# HELP juicefs_go_info Information about the Go environment.
+# TYPE juicefs_go_info gauge
+juicefs_go_info{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",version="go1.25.11",vol_name="juicefs-data"} 1
+# HELP juicefs_go_memstats_alloc_bytes Number of bytes allocated in heap and currently in use. Equals to /memory/classes/heap/objects:bytes.
+# TYPE juicefs_go_memstats_alloc_bytes gauge
+juicefs_go_memstats_alloc_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 5.6850824e+08
+# HELP juicefs_go_memstats_alloc_bytes_total Total number of bytes allocated in heap until now, even if released already. Equals to /gc/heap/allocs:bytes.
+# TYPE juicefs_go_memstats_alloc_bytes_total counter
+juicefs_go_memstats_alloc_bytes_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3.2542303552e+10
+# HELP juicefs_go_memstats_buck_hash_sys_bytes Number of bytes used by the profiling bucket hash table. Equals to /memory/classes/profiling/buckets:bytes.
+# TYPE juicefs_go_memstats_buck_hash_sys_bytes gauge
+juicefs_go_memstats_buck_hash_sys_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3.085168e+06
+# HELP juicefs_go_memstats_frees_total Total number of heap objects frees. Equals to /gc/heap/frees:objects + /gc/heap/tiny/allocs:objects.
+# TYPE juicefs_go_memstats_frees_total counter
+juicefs_go_memstats_frees_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3.53562263e+08
+# HELP juicefs_go_memstats_gc_sys_bytes Number of bytes used for garbage collection system metadata. Equals to /memory/classes/metadata/other:bytes.
+# TYPE juicefs_go_memstats_gc_sys_bytes gauge
+juicefs_go_memstats_gc_sys_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.3498176e+07
+# HELP juicefs_go_memstats_heap_alloc_bytes Number of heap bytes allocated and currently in use, same as go_memstats_alloc_bytes. Equals to /memory/classes/heap/objects:bytes.
+# TYPE juicefs_go_memstats_heap_alloc_bytes gauge
+juicefs_go_memstats_heap_alloc_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 5.6850824e+08
+# HELP juicefs_go_memstats_heap_idle_bytes Number of heap bytes waiting to be used. Equals to /memory/classes/heap/released:bytes + /memory/classes/heap/free:bytes.
+# TYPE juicefs_go_memstats_heap_idle_bytes gauge
+juicefs_go_memstats_heap_idle_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 7.03053824e+08
+# HELP juicefs_go_memstats_heap_inuse_bytes Number of heap bytes that are in use. Equals to /memory/classes/heap/objects:bytes + /memory/classes/heap/unused:bytes
+# TYPE juicefs_go_memstats_heap_inuse_bytes gauge
+juicefs_go_memstats_heap_inuse_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 5.81484544e+08
+# HELP juicefs_go_memstats_heap_objects Number of currently allocated objects. Equals to /gc/heap/objects:objects.
+# TYPE juicefs_go_memstats_heap_objects gauge
+juicefs_go_memstats_heap_objects{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2.32186e+06
+# HELP juicefs_go_memstats_heap_released_bytes Number of heap bytes released to OS. Equals to /memory/classes/heap/released:bytes.
+# TYPE juicefs_go_memstats_heap_released_bytes gauge
+juicefs_go_memstats_heap_released_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 5.9281408e+08
+# HELP juicefs_go_memstats_heap_sys_bytes Number of heap bytes obtained from system. Equals to /memory/classes/heap/objects:bytes + /memory/classes/heap/unused:bytes + /memory/classes/heap/released:bytes + /memory/classes/heap/free:bytes.
+# TYPE juicefs_go_memstats_heap_sys_bytes gauge
+juicefs_go_memstats_heap_sys_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.284538368e+09
+# HELP juicefs_go_memstats_last_gc_time_seconds Number of seconds since 1970 of last garbage collection.
+# TYPE juicefs_go_memstats_last_gc_time_seconds gauge
+juicefs_go_memstats_last_gc_time_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.7924087500925846e+09
+# HELP juicefs_go_memstats_mallocs_total Total number of heap objects allocated, both live and gc-ed. Semantically a counter version for go_memstats_heap_objects gauge. Equals to /gc/heap/allocs:objects + /gc/heap/tiny/allocs:objects.
+# TYPE juicefs_go_memstats_mallocs_total counter
+juicefs_go_memstats_mallocs_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3.55884123e+08
+# HELP juicefs_go_memstats_mcache_inuse_bytes Number of bytes in use by mcache structures. Equals to /memory/classes/metadata/mcache/inuse:bytes.
+# TYPE juicefs_go_memstats_mcache_inuse_bytes gauge
+juicefs_go_memstats_mcache_inuse_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 12080
+# HELP juicefs_go_memstats_mcache_sys_bytes Number of bytes used for mcache structures obtained from system. Equals to /memory/classes/metadata/mcache/inuse:bytes + /memory/classes/metadata/mcache/free:bytes.
+# TYPE juicefs_go_memstats_mcache_sys_bytes gauge
+juicefs_go_memstats_mcache_sys_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 15704
+# HELP juicefs_go_memstats_mspan_inuse_bytes Number of bytes in use by mspan structures. Equals to /memory/classes/metadata/mspan/inuse:bytes.
+# TYPE juicefs_go_memstats_mspan_inuse_bytes gauge
+juicefs_go_memstats_mspan_inuse_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3.33232e+06
+# HELP juicefs_go_memstats_mspan_sys_bytes Number of bytes used for mspan structures obtained from system. Equals to /memory/classes/metadata/mspan/inuse:bytes + /memory/classes/metadata/mspan/free:bytes.
+# TYPE juicefs_go_memstats_mspan_sys_bytes gauge
+juicefs_go_memstats_mspan_sys_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 7.5888e+06
+# HELP juicefs_go_memstats_next_gc_bytes Number of heap bytes when next garbage collection will take place. Equals to /gc/heap/goal:bytes.
+# TYPE juicefs_go_memstats_next_gc_bytes gauge
+juicefs_go_memstats_next_gc_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 7.80634762e+08
+# HELP juicefs_go_memstats_other_sys_bytes Number of bytes used for other system allocations. Equals to /memory/classes/other:bytes.
+# TYPE juicefs_go_memstats_other_sys_bytes gauge
+juicefs_go_memstats_other_sys_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 6.360688e+06
+# HELP juicefs_go_memstats_stack_inuse_bytes Number of bytes obtained from system for stack allocator in non-CGO environments. Equals to /memory/classes/heap/stacks:bytes.
+# TYPE juicefs_go_memstats_stack_inuse_bytes gauge
+juicefs_go_memstats_stack_inuse_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2.408448e+07
+# HELP juicefs_go_memstats_stack_sys_bytes Number of bytes obtained from system for stack allocator. Equals to /memory/classes/heap/stacks:bytes + /memory/classes/os-stacks:bytes.
+# TYPE juicefs_go_memstats_stack_sys_bytes gauge
+juicefs_go_memstats_stack_sys_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2.408448e+07
+# HELP juicefs_go_memstats_sys_bytes Number of bytes obtained from system. Equals to /memory/classes/total:byte.
+# TYPE juicefs_go_memstats_sys_bytes gauge
+juicefs_go_memstats_sys_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.339171384e+09
+# HELP juicefs_go_sched_gomaxprocs_threads The current runtime.GOMAXPROCS setting, or the number of operating system threads that can execute user-level Go code simultaneously. Sourced from /sched/gomaxprocs:threads.
+# TYPE juicefs_go_sched_gomaxprocs_threads gauge
+juicefs_go_sched_gomaxprocs_threads{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 10
+# HELP juicefs_go_threads Number of OS threads created.
+# TYPE juicefs_go_threads gauge
+juicefs_go_threads{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 507
+# HELP juicefs_juicefs_bgjob_deletions_total Number of deletions (files or slices) by background jobs.
+# TYPE juicefs_juicefs_bgjob_deletions_total counter
+juicefs_juicefs_bgjob_deletions_total{instance="ODPC240501",job="cleanDelayedSlice",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+juicefs_juicefs_bgjob_deletions_total{instance="ODPC240501",job="cleanTrashFile",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+# HELP juicefs_juicefs_bgjob_duration_seconds Background job duration in seconds.
+# TYPE juicefs_juicefs_bgjob_duration_seconds histogram
+juicefs_juicefs_bgjob_duration_seconds_sum{instance="ODPC240501",job="cleanDelayedSlice",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",status="success",vol_name="juicefs-data"} 0.013089151
+juicefs_juicefs_bgjob_duration_seconds_count{instance="ODPC240501",job="cleanDelayedSlice",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",status="success",vol_name="juicefs-data"} 1
+juicefs_juicefs_bgjob_duration_seconds_sum{instance="ODPC240501",job="cleanTrashFile",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",status="success",vol_name="juicefs-data"} 0.013076082
+juicefs_juicefs_bgjob_duration_seconds_count{instance="ODPC240501",job="cleanTrashFile",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",status="success",vol_name="juicefs-data"} 1
+# HELP juicefs_kaz_cache_2q_blocks [kaz] Number of cached blocks per 2Q segment (staging excluded).
+# TYPE juicefs_kaz_cache_2q_blocks gauge
+juicefs_kaz_cache_2q_blocks{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",segment="probation",vol_name="juicefs-data"} 4813
+juicefs_kaz_cache_2q_blocks{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",segment="protected",vol_name="juicefs-data"} 5697
+# HELP juicefs_kaz_cache_2q_bytes [kaz] Bytes of cached blocks per 2Q segment (staging excluded).
+# TYPE juicefs_kaz_cache_2q_bytes gauge
+juicefs_kaz_cache_2q_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",segment="probation",vol_name="juicefs-data"} 5.022109696e+09
+juicefs_kaz_cache_2q_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",segment="protected",vol_name="juicefs-data"} 1.6248328192e+10
+# HELP juicefs_kaz_cache_2q_events_total [kaz] 2Q cache events (promote, demote, evictions, ghost hits, compaction output, state file).
+# TYPE juicefs_kaz_cache_2q_events_total counter
+juicefs_kaz_cache_2q_events_total{event="compaction_output_cached",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 4881
+juicefs_kaz_cache_2q_events_total{event="compaction_output_skipped",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 552
+juicefs_kaz_cache_2q_events_total{event="demote",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1217
+juicefs_kaz_cache_2q_events_total{event="evict_probation",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 9409
+juicefs_kaz_cache_2q_events_total{event="ghost_hit",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1275
+juicefs_kaz_cache_2q_events_total{event="promote",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2685
+juicefs_kaz_cache_2q_events_total{event="state_saved",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 43
+# HELP juicefs_kaz_cache_2q_ghost_blocks [kaz] Number of keys in the 2Q evicted-key list.
+# TYPE juicefs_kaz_cache_2q_ghost_blocks gauge
+juicefs_kaz_cache_2q_ghost_blocks{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 8550
+# HELP juicefs_kaz_cache_2q_ghost_bytes [kaz] Bytes the keys in the 2Q evicted-key list had when cached.
+# TYPE juicefs_kaz_cache_2q_ghost_bytes gauge
+juicefs_kaz_cache_2q_ghost_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.0988481684e+10
+# HELP juicefs_kaz_cache_2q_hits_total [kaz] User cache hits by the origin of the block (legacy, write, fill, compaction).
+# TYPE juicefs_kaz_cache_2q_hits_total counter
+juicefs_kaz_cache_2q_hits_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",origin="compaction",vol_name="juicefs-data"} 68324
+juicefs_kaz_cache_2q_hits_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",origin="fill",vol_name="juicefs-data"} 67988
+juicefs_kaz_cache_2q_hits_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",origin="legacy",vol_name="juicefs-data"} 71337
+juicefs_kaz_cache_2q_hits_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",origin="write",vol_name="juicefs-data"} 70022
+# HELP juicefs_kaz_canceled_get_dropped Full-block GETs aborted on cancel because too many were already kept running.
+# TYPE juicefs_kaz_canceled_get_dropped counter
+juicefs_kaz_canceled_get_dropped{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2
+# HELP juicefs_kaz_canceled_get_finished Full-block GETs finished and cached after their reader was canceled.
+# TYPE juicefs_kaz_canceled_get_finished counter
+juicefs_kaz_canceled_get_finished{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 695
+# HELP juicefs_kaz_compaction_block_amount_total Kaz block compaction amounts: blocks_written, masks, removed (records dropped).
+# TYPE juicefs_kaz_compaction_block_amount_total counter
+juicefs_kaz_compaction_block_amount_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",kind="blocks_written",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 5364
+juicefs_kaz_compaction_block_amount_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",kind="masks",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1
+juicefs_kaz_compaction_block_amount_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",kind="removed",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 113659
+# HELP juicefs_kaz_compaction_block_events_total Kaz block compaction outcomes: noop, partial, full, wasted, error, fallback_upstream.
+# TYPE juicefs_kaz_compaction_block_events_total counter
+juicefs_kaz_compaction_block_events_total{event="error",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 10
+juicefs_kaz_compaction_block_events_total{event="full",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 18
+juicefs_kaz_compaction_block_events_total{event="noop",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 31
+juicefs_kaz_compaction_block_events_total{event="partial",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 827
+# HELP juicefs_kaz_compaction_policy_events_total Decisions of the kaz compaction policy on read-triggered requests: read_below_min, pass.
+# TYPE juicefs_kaz_compaction_policy_events_total counter
+juicefs_kaz_compaction_policy_events_total{event="pass",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3003
+juicefs_kaz_compaction_policy_events_total{event="read_below_min",instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 25412
+# HELP juicefs_kaz_compaction_queue_wait_seconds Time from queuing a chunk in the priority compaction scheduler to the start of its compaction.
+# TYPE juicefs_kaz_compaction_queue_wait_seconds histogram
+juicefs_kaz_compaction_queue_wait_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 95610.54501279094
+juicefs_kaz_compaction_queue_wait_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 887
+# HELP juicefs_kaz_compaction_scheduled_slices Slice count recorded in the priority scheduler hint when its compaction starts.
+# TYPE juicefs_kaz_compaction_scheduled_slices histogram
+juicefs_kaz_compaction_scheduled_slices_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 130886
+juicefs_kaz_compaction_scheduled_slices_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 887
+# HELP juicefs_kaz_get_header_timeouts Full-block GETs abandoned because no response headers arrived within --kaz-get-header-timeout.
+# TYPE juicefs_kaz_get_header_timeouts counter
+juicefs_kaz_get_header_timeouts{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 12
+# HELP juicefs_last_backup_duration Last backup duration.
+# TYPE juicefs_last_backup_duration gauge
+juicefs_last_backup_duration{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+# HELP juicefs_last_successful_backup Last successful backup.
+# TYPE juicefs_last_successful_backup gauge
+juicefs_last_successful_backup{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.7924011962101924e+09
+# HELP juicefs_memory Used memory in bytes.
+# TYPE juicefs_memory gauge
+juicefs_memory{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 8.29771776e+08
+# HELP juicefs_meta_ops_duration_seconds Meta operation duration in seconds.
+# TYPE juicefs_meta_ops_duration_seconds counter
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="Fallocate",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1320.4750251380094
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="GetAttr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2228.0435644969575
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="GetXattr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.319425677
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="Lookup",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1077.6565209870062
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="NewDirHandler",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.0744e-05
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="Read",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 358.0472481680011
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="SetAttr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.041620092
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="SetXattr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0.033042826
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="StatFS",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2633.652152625038
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="Write",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 692.4954491860007
+juicefs_meta_ops_duration_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="WriteSlices",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 306.1924314629986
+# HELP juicefs_meta_ops_durations_histogram_seconds Operation latency distributions.
+# TYPE juicefs_meta_ops_durations_histogram_seconds histogram
+juicefs_meta_ops_durations_histogram_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 8616.956491403218
+juicefs_meta_ops_durations_histogram_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 491799
+# HELP juicefs_meta_ops_total Meta operation count
+# TYPE juicefs_meta_ops_total counter
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="Fallocate",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 32555
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="GetAttr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 211537
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="GetXattr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 31
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="Lookup",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 106302
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="NewDirHandler",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="Read",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 29466
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="SetAttr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="SetXattr",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="StatFS",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 87610
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="Write",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 16812
+juicefs_meta_ops_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="WriteSlices",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 7483
+# HELP juicefs_object_request_data_bytes Object requests size in bytes.
+# TYPE juicefs_object_request_data_bytes counter
+juicefs_object_request_data_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data"} 6.382165519e+09
+juicefs_object_request_data_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data"} 8.408996473e+09
+# HELP juicefs_object_request_durations_histogram_seconds Object requests latency distributions.
+# TYPE juicefs_object_request_durations_histogram_seconds histogram
+juicefs_object_request_durations_histogram_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data"} 121024.6565309703
+juicefs_object_request_durations_histogram_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="DELETE",mp="/home/kwatanabe/mnt_juicefs",storage_class="",vol_name="juicefs-data"} 91229
+juicefs_object_request_durations_histogram_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data"} 14538.160382558997
+juicefs_object_request_durations_histogram_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="GET",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data"} 6986
+juicefs_object_request_durations_histogram_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data"} 220106.47613327266
+juicefs_object_request_durations_histogram_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="PUT",mp="/home/kwatanabe/mnt_juicefs",storage_class="STANDARD",vol_name="juicefs-data"} 60984
+# HELP juicefs_object_request_errors failed requests to object store
+# TYPE juicefs_object_request_errors counter
+juicefs_object_request_errors{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 484
+# HELP juicefs_object_request_uploading number of uploading requests
+# TYPE juicefs_object_request_uploading gauge
+juicefs_object_request_uploading{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 18
+# HELP juicefs_process_cpu_seconds_total Total user and system CPU time spent in seconds.
+# TYPE juicefs_process_cpu_seconds_total counter
+juicefs_process_cpu_seconds_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1041.24
+# HELP juicefs_process_max_fds Maximum number of open file descriptors.
+# TYPE juicefs_process_max_fds gauge
+juicefs_process_max_fds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 100000
+# HELP juicefs_process_network_receive_bytes_total Number of bytes received by the process over the network.
+# TYPE juicefs_process_network_receive_bytes_total counter
+juicefs_process_network_receive_bytes_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 6.6112141085e+10
+# HELP juicefs_process_network_transmit_bytes_total Number of bytes sent by the process over the network.
+# TYPE juicefs_process_network_transmit_bytes_total counter
+juicefs_process_network_transmit_bytes_total{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 6.8211586697e+10
+# HELP juicefs_process_open_fds Number of open file descriptors.
+# TYPE juicefs_process_open_fds gauge
+juicefs_process_open_fds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 108
+# HELP juicefs_process_resident_memory_bytes Resident memory size in bytes.
+# TYPE juicefs_process_resident_memory_bytes gauge
+juicefs_process_resident_memory_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 8.29771776e+08
+# HELP juicefs_process_start_time_seconds Start time of the process since unix epoch in seconds.
+# TYPE juicefs_process_start_time_seconds gauge
+juicefs_process_start_time_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.79239578922e+09
+# HELP juicefs_process_virtual_memory_bytes Virtual memory size in bytes.
+# TYPE juicefs_process_virtual_memory_bytes gauge
+juicefs_process_virtual_memory_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.2227137536e+10
+# HELP juicefs_process_virtual_memory_max_bytes Maximum amount of virtual memory available in bytes.
+# TYPE juicefs_process_virtual_memory_max_bytes gauge
+juicefs_process_virtual_memory_max_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.8446744073709552e+19
+# HELP juicefs_staging_block_bytes Total bytes of blocks in the staging path.
+# TYPE juicefs_staging_block_bytes gauge
+juicefs_staging_block_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 4.456448e+06
+# HELP juicefs_staging_block_delay_seconds Total seconds of delay for staging blocks
+# TYPE juicefs_staging_block_delay_seconds counter
+juicefs_staging_block_delay_seconds{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 4.655144147577264e+06
+# HELP juicefs_staging_block_errors Total errors when staging blocks
+# TYPE juicefs_staging_block_errors counter
+juicefs_staging_block_errors{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+# HELP juicefs_staging_blocks Number of blocks in the staging path.
+# TYPE juicefs_staging_blocks gauge
+juicefs_staging_blocks{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 149
+# HELP juicefs_staging_write_bytes write bytes of blocks in the staging path.
+# TYPE juicefs_staging_write_bytes counter
+juicefs_staging_write_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 8.60084736e+09
+# HELP juicefs_staging_writing_blocks Number of writing blocks in staging.
+# TYPE juicefs_staging_writing_blocks gauge
+juicefs_staging_writing_blocks{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+# HELP juicefs_store_cache_size_bytes size of store cache.
+# TYPE juicefs_store_cache_size_bytes gauge
+juicefs_store_cache_size_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 0
+# HELP juicefs_subdir_info Subdir configuration for JuiceFS mount (empty string means root mount)
+# TYPE juicefs_subdir_info gauge
+juicefs_subdir_info{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",subdir="",vol_name="juicefs-data"} 1
+# HELP juicefs_total_inodes Total number of inodes.
+# TYPE juicefs_total_inodes gauge
+juicefs_total_inodes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.0998297e+07
+# HELP juicefs_total_space Total space in bytes.
+# TYPE juicefs_total_space gauge
+juicefs_total_space{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.125899906842624e+15
+# HELP juicefs_transaction_durations_histogram_seconds Transactions latency distributions.
+# TYPE juicefs_transaction_durations_histogram_seconds histogram
+juicefs_transaction_durations_histogram_seconds_sum{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 4481.292634681977
+juicefs_transaction_durations_histogram_seconds_count{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 124596
+# HELP juicefs_transaction_restart The number of times a transaction is restarted.
+# TYPE juicefs_transaction_restart counter
+juicefs_transaction_restart{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="cleanupZeroRef",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 838
+juicefs_transaction_restart{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="doKazReplaceChunk",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3
+juicefs_transaction_restart{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",method="doRefreshSession",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 3
+# HELP juicefs_uptime Total running time in seconds.
+# TYPE juicefs_uptime gauge
+juicefs_uptime{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 13066.11200343
+# HELP juicefs_used_buffer_size_bytes size of currently used buffer.
+# TYPE juicefs_used_buffer_size_bytes gauge
+juicefs_used_buffer_size_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 2.285568e+07
+# HELP juicefs_used_inodes Total used number of inodes.
+# TYPE juicefs_used_inodes gauge
+juicefs_used_inodes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 512537
+# HELP juicefs_used_read_buffer_size_bytes size of currently used buffer for read
+# TYPE juicefs_used_read_buffer_size_bytes gauge
+juicefs_used_read_buffer_size_bytes{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 32768
+# HELP juicefs_used_space Total used space in bytes.
+# TYPE juicefs_used_space gauge
+juicefs_used_space{instance="ODPC240501",juicefs_version="1.4.1+2026-10-19.bf9efe73",mp="/home/kwatanabe/mnt_juicefs",vol_name="juicefs-data"} 1.783752679424e+12

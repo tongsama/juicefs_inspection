@@ -1,0 +1,36 @@
+chunks scanned 473596 in 17.1s, cache files 11706 in 0.0s
+referenced slice ids 495104
+
+== category (bytes, files) ==
+full        15.35 GiB  77.7%    6112 files
+partial      3.94 GiB  20.0%    1591 files
+hidden       0.35 GiB   1.8%    3400 files
+dead         0.00 GiB   0.0%       0 files
+new          0.11 GiB   0.5%     603 files
+total       19.75 GiB
+partial blocks: visible 3.04 GiB of 3.94 GiB
+
+== last access age (GiB) ==
+             <1h    1-6h   6-24h    1-3d    3-7d    >=7d
+full        0.28    4.19   10.89    0.00    0.00    0.00
+partial     0.18    0.67    3.10    0.00    0.00    0.00
+hidden      0.04    0.10    0.21    0.00    0.00    0.00
+dead        0.00    0.00    0.00    0.00    0.00    0.00
+new         0.11    0.00    0.00    0.00    0.00    0.00
+
+== top inodes by cached bytes (GiB) ==
+634040                   total  13.70  full=9.31 partial=3.94 hidden=0.35 new=0.11
+634040,634042            total   5.31  full=5.31
+634042                   total   0.65  full=0.65
+627902                   total   0.01  full=0.00 partial=0.01
+596156                   total   0.01  full=0.01
+598200                   total   0.01  full=0.01
+596158                   total   0.01  full=0.01
+596152                   total   0.01  full=0.01
+596154                   total   0.01  full=0.01
+596153                   total   0.01  full=0.01
+623800,626872            total   0.01  full=0.01
+1027                     total   0.01  full=0.01
+580898                   total   0.01  full=0.01
+583864                   total   0.01  full=0.01
+1026                     total   0.01  full=0.01

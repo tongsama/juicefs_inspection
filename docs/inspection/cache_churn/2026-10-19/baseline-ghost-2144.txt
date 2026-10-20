@@ -1,0 +1,17 @@
+juicefs_kaz_cache_2q_bytes_by_origin{origin="compaction",segment="probation",} 2.9360128e+08
+juicefs_kaz_cache_2q_bytes_by_origin{origin="compaction",segment="protected",} 7.113510912e+09
+juicefs_kaz_cache_2q_bytes_by_origin{origin="fill",segment="probation",} 1.15027968e+09
+juicefs_kaz_cache_2q_bytes_by_origin{origin="fill",segment="protected",} 5.15639618e+09
+juicefs_kaz_cache_2q_bytes_by_origin{origin="legacy",segment="probation",} 7.99039488e+08
+juicefs_kaz_cache_2q_bytes_by_origin{origin="legacy",segment="protected",} 5.51776256e+09
+juicefs_kaz_cache_2q_bytes_by_origin{origin="write",segment="probation",} 5.90271488e+08
+juicefs_kaz_cache_2q_bytes_by_origin{origin="write",segment="protected",} 6.6543616e+08
+juicefs_kaz_cache_2q_events_total{event="compaction_output_cached",} 67
+juicefs_kaz_cache_2q_events_total{event="compaction_output_skipped",} 47
+juicefs_kaz_cache_2q_events_total{event="ghost_hit",} 106
+juicefs_kaz_cache_2q_events_total{event="ghost_hit_compaction",} 0
+juicefs_kaz_cache_2q_events_total{event="ghost_hit_demoted",} 0
+juicefs_kaz_cache_2q_events_total{event="ghost_hit_probation",} 106
+juicefs_kaz_cache_2q_events_total{event="ghost_hit_protected",} 0
+juicefs_kaz_cache_2q_events_total{event="promote",} 1293
+juicefs_kaz_cache_2q_events_total{event="state_saved",} 1

@@ -1,0 +1,12 @@
+01:00-06:00: compactions=883 GiB=14.26
+chunk 1920: n=167 (33.4/h) GiB=7.10 (50%) MiB/each=43.5 median slices=109
+chunk 2810: n=350 (70.0/h) GiB=2.97 (21%) MiB/each=8.7 median slices=107
+chunk 1985: n=28 (5.6/h) GiB=0.46 (3%) MiB/each=16.9 median slices=115
+chunk 2615: n=17 (3.4/h) GiB=0.36 (3%) MiB/each=21.6 median slices=99
+chunk 0: n=40 (8.0/h) GiB=0.31 (2%) MiB/each=7.9 median slices=102
+chunk 2566: n=21 (4.2/h) GiB=0.22 (2%) MiB/each=10.9 median slices=99
+chunk 906: n=15 (3.0/h) GiB=0.18 (1%) MiB/each=12.0 median slices=99
+chunk 2080: n=21 (4.2/h) GiB=0.16 (1%) MiB/each=8.0 median slices=99
+chunk 1925: n=15 (3.0/h) GiB=0.12 (1%) MiB/each=8.3 median slices=99
+chunk 2378: n=2 (0.4/h) GiB=0.12 (1%) MiB/each=60.0 median slices=99
+chunks: 73

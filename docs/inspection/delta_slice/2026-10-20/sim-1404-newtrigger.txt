@@ -1,0 +1,96 @@
+== fold 2MiB trigger(new) 85
+chunk 1920: 書き込み 8170 個 44240 KiB、今の方式の実績 compaction 出力 3748.0 MiB（record 937）
+  gap      0: PUT 436.34 MiB / 167 回、compaction 96（畳み込み 6）、差分 最大 2488 KiB・範囲 最大 307 個、終了時 1980 KiB・256 個
+  gap   4096: PUT 480.82 MiB / 179 回、compaction 96（畳み込み 7）、差分 最大 2656 KiB・範囲 最大 248 個、終了時 1960 KiB・207 個
+  gap  16384: PUT 730.82 MiB / 239 回、compaction 96（畳み込み 12）、差分 最大 3316 KiB・範囲 最大 159 個、終了時 640 KiB・94 個
+  gap  65536: PUT 1520.04 MiB / 424 回、compaction 96（畳み込み 29）、差分 最大 3584 KiB・範囲 最大 76 個、終了時 1588 KiB・68 個
+chunk 1985: 書き込み 2488 個 11876 KiB、今の方式の実績 compaction 出力 464.0 MiB（record 116）
+  gap      0: PUT 83.61 MiB / 41 回、compaction 29（畳み込み 3）、差分 最大 1704 KiB・範囲 最大 327 個、終了時 768 KiB・157 個
+  gap   4096: PUT 72.18 MiB / 37 回、compaction 29（畳み込み 2）、差分 最大 2220 KiB・範囲 最大 278 個、終了時 1596 KiB・268 個
+  gap  16384: PUT 107.11 MiB / 45 回、compaction 29（畳み込み 4）、差分 最大 2260 KiB・範囲 最大 182 個、終了時 1076 KiB・123 個
+  gap  65536: PUT 273.41 MiB / 78 回、compaction 29（畳み込み 13）、差分 最大 3556 KiB・範囲 最大 67 個、終了時 396 KiB・12 個
+合計: 書き込み 65780 KiB、今の方式の実績 4381.1 MiB
+  gap      0: 差分方式 PUT 544.8 MiB / 226 回
+  gap   4096: 差分方式 PUT 577.9 MiB / 234 回
+  gap  16384: 差分方式 PUT 863.0 MiB / 302 回
+  gap  65536: 差分方式 PUT 1820.8 MiB / 520 回
+== fold 2MiB trigger(new) 200
+chunk 1920: 書き込み 8170 個 44240 KiB、今の方式の実績 compaction 出力 3748.0 MiB（record 937）
+  gap      0: PUT 360.21 MiB / 112 回、compaction 40（畳み込み 6）、差分 最大 3496 KiB・範囲 最大 347 個、終了時 1272 KiB・196 個
+  gap   4096: PUT 394.19 MiB / 121 回、compaction 40（畳み込み 7）、差分 最大 3504 KiB・範囲 最大 247 個、終了時 1396 KiB・165 個
+  gap  16384: PUT 593.16 MiB / 167 回、compaction 40（畳み込み 11）、差分 最大 2688 KiB・範囲 最大 166 個、終了時 1720 KiB・136 個
+  gap  65536: PUT 1239.16 MiB / 320 回、compaction 40（畳み込み 24）、差分 最大 4500 KiB・範囲 最大 84 個、終了時 1472 KiB・65 個
+chunk 1985: 書き込み 2488 個 11876 KiB、今の方式の実績 compaction 出力 464.0 MiB（record 116）
+  gap      0: PUT 68.70 MiB / 24 回、compaction 12（畳み込み 3）、差分 最大 1756 KiB・範囲 最大 338 個、終了時 672 KiB・136 個
+  gap   4096: PUT 52.47 MiB / 20 回、compaction 12（畳み込み 2）、差分 最大 2364 KiB・範囲 最大 308 個、終了時 1360 KiB・237 個
+  gap  16384: PUT 71.61 MiB / 24 回、compaction 12（畳み込み 3）、差分 最大 2500 KiB・範囲 最大 186 個、終了時 1960 KiB・186 個
+  gap  65536: PUT 213.93 MiB / 54 回、compaction 12（畳み込み 11）、差分 最大 4300 KiB・範囲 最大 68 個、終了時 1832 KiB・35 個
+合計: 書き込み 65780 KiB、今の方式の実績 4381.1 MiB
+  gap      0: 差分方式 PUT 429.3 MiB / 141 回
+  gap   4096: 差分方式 PUT 447.1 MiB / 146 回
+  gap  16384: 差分方式 PUT 665.2 MiB / 196 回
+  gap  65536: 差分方式 PUT 1454.5 MiB / 379 回
+== fold 4MiB trigger(new) 85
+chunk 1920: 書き込み 8170 個 44240 KiB、今の方式の実績 compaction 出力 3748.0 MiB（record 937）
+  gap      0: PUT 401.31 MiB / 156 回、compaction 96（畳み込み 5）、差分 最大 3288 KiB・範囲 最大 332 個、終了時 304 KiB・69 個
+  gap   4096: PUT 368.08 MiB / 132 回、compaction 96（畳み込み 3）、差分 最大 4324 KiB・範囲 最大 308 個、終了時 52 KiB・9 個
+  gap  16384: PUT 393.92 MiB / 132 回、compaction 96（畳み込み 3）、差分 最大 4608 KiB・範囲 最大 215 個、終了時 3780 KiB・215 個
+  gap  65536: PUT 826.74 MiB / 239 回、compaction 96（畳み込み 12）、差分 最大 5652 KiB・範囲 最大 91 個、終了時 3436 KiB・81 個
+chunk 1985: 書き込み 2488 個 11876 KiB、今の方式の実績 compaction 出力 464.0 MiB（record 116）
+  gap      0: PUT 83.61 MiB / 41 回、compaction 29（畳み込み 3）、差分 最大 1704 KiB・範囲 最大 327 個、終了時 768 KiB・157 個
+  gap   4096: PUT 76.70 MiB / 37 回、compaction 29（畳み込み 2）、差分 最大 2700 KiB・範囲 最大 308 個、終了時 1076 KiB・194 個
+  gap  16384: PUT 107.91 MiB / 37 回、compaction 29（畳み込み 2）、差分 最大 4292 KiB・範囲 最大 208 個、終了時 124 KiB・21 個
+  gap  65536: PUT 175.45 MiB / 53 回、compaction 29（畳み込み 6）、差分 最大 5240 KiB・範囲 最大 72 個、終了時 3236 KiB・59 個
+合計: 書き込み 65780 KiB、今の方式の実績 4381.1 MiB
+  gap      0: 差分方式 PUT 489.3 MiB / 210 回
+  gap   4096: 差分方式 PUT 449.2 MiB / 182 回
+  gap  16384: 差分方式 PUT 506.3 MiB / 182 回
+  gap  65536: 差分方式 PUT 1009.0 MiB / 305 回
+== fold 4MiB trigger(new) 200
+chunk 1920: 書き込み 8170 個 44240 KiB、今の方式の実績 compaction 出力 3748.0 MiB（record 937）
+  gap      0: PUT 268.50 MiB / 88 回、compaction 40（畳み込み 4）、差分 最大 3496 KiB・範囲 最大 347 個、終了時 1980 KiB・256 個
+  gap   4096: PUT 192.23 MiB / 64 回、compaction 40（畳み込み 2）、差分 最大 4596 KiB・範囲 最大 305 個、終了時 2804 KiB・300 個
+  gap  16384: PUT 256.70 MiB / 76 回、compaction 40（畳み込み 3）、差分 最大 4868 KiB・範囲 最大 205 個、終了時 3564 KiB・205 個
+  gap  65536: PUT 681.62 MiB / 179 回、compaction 40（畳み込み 12）、差分 最大 4832 KiB・範囲 最大 93 個、終了時 1472 KiB・65 個
+chunk 1985: 書き込み 2488 個 11876 KiB、今の方式の実績 compaction 出力 464.0 MiB（record 116）
+  gap      0: PUT 68.70 MiB / 24 回、compaction 12（畳み込み 3）、差分 最大 1756 KiB・範囲 最大 338 個、終了時 672 KiB・136 個
+  gap   4096: PUT 55.04 MiB / 20 回、compaction 12（畳み込み 2）、差分 最大 2920 KiB・範囲 最大 331 個、終了時 720 KiB・124 個
+  gap  16384: PUT 65.18 MiB / 20 回、compaction 12（畳み込み 2）、差分 最大 4272 KiB・範囲 最大 208 個、終了時 564 KiB・74 個
+  gap  65536: PUT 135.90 MiB / 36 回、compaction 12（畳み込み 6）、差分 最大 5644 KiB・範囲 最大 71 個、終了時 2628 KiB・57 個
+合計: 書き込み 65780 KiB、今の方式の実績 4381.1 MiB
+  gap      0: 差分方式 PUT 337.6 MiB / 117 回
+  gap   4096: 差分方式 PUT 247.7 MiB / 89 回
+  gap  16384: 差分方式 PUT 322.3 MiB / 101 回
+  gap  65536: 差分方式 PUT 818.9 MiB / 220 回
+== fold 8MiB trigger(new) 85
+chunk 1920: 書き込み 8170 個 44240 KiB、今の方式の実績 compaction 出力 3748.0 MiB（record 937）
+  gap      0: PUT 401.31 MiB / 156 回、compaction 96（畳み込み 5）、差分 最大 3288 KiB・範囲 最大 332 個、終了時 304 KiB・69 個
+  gap   4096: PUT 311.12 MiB / 123 回、compaction 96（畳み込み 2）、差分 最大 4728 KiB・範囲 最大 312 個、終了時 2676 KiB・287 個
+  gap  16384: PUT 646.57 MiB / 190 回、compaction 96（畳み込み 1）、差分 最大 8460 KiB・範囲 最大 241 個、終了時 2724 KiB・173 個
+  gap  65536: PUT 685.97 MiB / 213 回、compaction 96（畳み込み 3）、差分 最大 8644 KiB・範囲 最大 97 個、終了時 5076 KiB・92 個
+chunk 1985: 書き込み 2488 個 11876 KiB、今の方式の実績 compaction 出力 464.0 MiB（record 116）
+  gap      0: PUT 83.61 MiB / 41 回、compaction 29（畳み込み 3）、差分 最大 1704 KiB・範囲 最大 327 個、終了時 768 KiB・157 個
+  gap   4096: PUT 76.70 MiB / 37 回、compaction 29（畳み込み 2）、差分 最大 2700 KiB・範囲 最大 308 個、終了時 1076 KiB・194 個
+  gap  16384: PUT 123.12 MiB / 45 回、compaction 29（畳み込み 0）、差分 最大 6800 KiB・範囲 最大 201 個、終了時 6800 KiB・181 個
+  gap  65536: PUT 170.34 MiB / 55 回、compaction 29（畳み込み 2）、差分 最大 8608 KiB・範囲 最大 70 個、終了時 6704 KiB・58 個
+合計: 書き込み 65780 KiB、今の方式の実績 4381.1 MiB
+  gap      0: 差分方式 PUT 489.3 MiB / 210 回
+  gap   4096: 差分方式 PUT 392.2 MiB / 173 回
+  gap  16384: 差分方式 PUT 774.2 MiB / 248 回
+  gap  65536: 差分方式 PUT 863.1 MiB / 281 回
+== fold 8MiB trigger(new) 200
+chunk 1920: 書き込み 8170 個 44240 KiB、今の方式の実績 compaction 出力 3748.0 MiB（record 937）
+  gap      0: PUT 268.50 MiB / 88 回、compaction 40（畳み込み 4）、差分 最大 3496 KiB・範囲 最大 347 個、終了時 1980 KiB・256 個
+  gap   4096: PUT 188.71 MiB / 65 回、compaction 40（畳み込み 2）、差分 最大 4732 KiB・範囲 最大 304 個、終了時 2724 KiB・295 個
+  gap  16384: PUT 304.14 MiB / 87 回、compaction 40（畳み込み 1）、差分 最大 8496 KiB・範囲 最大 243 個、終了時 2676 KiB・169 個
+  gap  65536: PUT 358.12 MiB / 105 回、compaction 40（畳み込み 3）、差分 最大 9008 KiB・範囲 最大 99 個、終了時 3608 KiB・83 個
+chunk 1985: 書き込み 2488 個 11876 KiB、今の方式の実績 compaction 出力 464.0 MiB（record 116）
+  gap      0: PUT 68.70 MiB / 24 回、compaction 12（畳み込み 3）、差分 最大 1756 KiB・範囲 最大 338 個、終了時 672 KiB・136 個
+  gap   4096: PUT 55.04 MiB / 20 回、compaction 12（畳み込み 2）、差分 最大 2920 KiB・範囲 最大 331 個、終了時 720 KiB・124 個
+  gap  16384: PUT 52.07 MiB / 19 回、compaction 12（畳み込み 0）、差分 最大 6800 KiB・範囲 最大 201 個、終了時 6800 KiB・181 個
+  gap  65536: PUT 90.66 MiB / 28 回、compaction 12（畳み込み 2）、差分 最大 8624 KiB・範囲 最大 71 個、終了時 6552 KiB・59 個
+合計: 書き込み 65780 KiB、今の方式の実績 4381.1 MiB
+  gap      0: 差分方式 PUT 337.6 MiB / 117 回
+  gap   4096: 差分方式 PUT 244.2 MiB / 90 回
+  gap  16384: 差分方式 PUT 356.7 MiB / 111 回
+  gap  65536: 差分方式 PUT 450.2 MiB / 138 回

@@ -1,0 +1,16 @@
+juicefs_kaz_cache_2q_bytes{segment="probation",} 4.183589888e+09
+juicefs_kaz_cache_2q_bytes{segment="protected",} 1.6804756628e+10
+juicefs_kaz_cache_2q_events_total{event="compaction_output_cached",} 362
+juicefs_kaz_cache_2q_events_total{event="compaction_output_skipped",} 11
+juicefs_kaz_cache_2q_events_total{event="demote",} 482
+juicefs_kaz_cache_2q_events_total{event="demote_read",} 0
+juicefs_kaz_cache_2q_events_total{event="demote_unread",} 482
+juicefs_kaz_cache_2q_events_total{event="evict_probation",} 1425
+juicefs_kaz_cache_2q_events_total{event="ghost_hit",} 599
+juicefs_kaz_cache_2q_events_total{event="ghost_hit_compaction",} 92
+juicefs_kaz_cache_2q_events_total{event="ghost_hit_demoted",} 153
+juicefs_kaz_cache_2q_events_total{event="ghost_hit_probation",} 354
+juicefs_kaz_cache_2q_events_total{event="ghost_hit_protected",} 0
+juicefs_kaz_cache_2q_events_total{event="promote",} 1595
+juicefs_kaz_cache_2q_events_total{event="state_saved",} 3
+juicefs_kaz_cache_2q_protected_unread_bytes{} 2.02850304e+09

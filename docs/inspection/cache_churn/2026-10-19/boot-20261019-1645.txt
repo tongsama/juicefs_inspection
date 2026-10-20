@@ -1,0 +1,8 @@
+window 10/19 16:45 - 10/19 16:50, max slice id before: 8112274
+GET fills: 57 files, 0.15 GiB
+  evicted                    0.11 GiB   72.6%
+  evicted-before-tracking    0.04 GiB   27.4%
+  never-seen                 0.00 GiB    0.0%
+
+when the evicted ones were removed (hour): {'11:00': 0.02, '12:00': 0.04, '13:00': 0.05}
+their last access before removal (hour): {'10/18 16:00': 0.0, '10/18 17:00': 0.01, '10/19 04:00': 0.0, '10/19 10:00': 0.01, '10/19 11:00': 0.08}

@@ -12,6 +12,34 @@
 
 ## 次の優先作業
 
+- [ ] **長時間の稼働でキャッシュが入れ替わり、起動が遅くなる（2026-10-19、ユーザー報告、検討中）:** 仮説 H1（無効なブロックが容量を占める）、H2（書き込みと compaction の出力が LRU の先頭に入り、起動用のブロックを押し出す。ソース上はこちらが有力）、H3（キャッシュミス以外が原因）。計測案 A-1〜A-3（読み取りのみ）と対策案（早期回収、2Q の受け入れ方針）は agent_memo 2026-10-19。**前提（ユーザー方針）:** 無改良の JuiceFS との互換性を保つ（キャッシュのファイル名・配置・形式は変えない、追加の状態は無改良版が無視でき、無いときは従来の LRU で動く）、upstream の更新に載せ直しやすい作り。
+  - [x] 2026-10-19 A-2（[報告](docs/inspection/cache_churn/2026-10-19/report-ja.md)）: 無効な容量は約 1.3 GiB（7%）、dead 0。H1 は小さい。
+  - [ ] A-1 の時系列（`metrics.tsv`、5 分間隔で常駐、PID 197922）から、アイドル中の流入の速さと 20G が一周する時間を見積もる。
+  - [ ] A-3: 次の VM 起動のとき（ユーザーが声をかける）、起動の前後で A-1 の差分と A-2 を取る。`keys-events.tsv`（key_tracker、PID 200030）で、起動時に GET したブロックが以前に del されていたか（追い出しによる GET か）を判定する。
+  - 10/19 10 時の再起動の GET の補充は 2.99 GiB、アイドル中の流入は約 2.8 GiB（報告の追記）。
+  - [x] 2026-10-19 通常使用（2 時間で流入 29.5 GiB、compaction の出力が 45%）で、追い出した直後の再 GET 3.02 GiB を観測した。
+  - [x] 2026-10-19 A-3（13:10 の再起動、ログインまで 13.5 分）: GET で補充した 3.45 GiB は、すべて当日の追い出しによるもの。**H2 を確認。**
+  - [x] 2026-10-19 実装計画を作成: [計画](docs/superpowers/plans/2026-10-19-kaz-cache-2q.md)。
+  - [x] 2026-10-19 subagent-driven で実装。本体 `feat/kaz-cache-2q`（89776b30..bf9efe73、push・merge なし）。最終レビュー済み。
+  - [ ] ブランチの扱い（1.4.1-improve-kaz への merge、リリース）をユーザーが決める。
+  - [x] 2026-10-19 本番にテスト版（bf9efe73）を入れた。1 回目 16:09（アプリまで 21.3 分）、16:43 に probation-ratio 0.25 で mount し直し、2 回目 16:45（4.7 分、GET 75 件、途中経過）。
+  - [x] 2026-10-19 判定（3 回目の起動、20:25）: 補充 1.03 GiB（13:10 の lru 3.45 GiB から 70% 減、基準 0.35 GiB は未達）。アプリまで 11.4 分（lru 30.5 分）。常連用の 37% が compaction の出力。
+  - [x] 2026-10-19 改良を実装（設計書 §8、計画 2026-10-19-kaz-cache-2q-placement.md）: `--kaz-cache-compaction-placement inherit|probation|replace`、ghost_hit の区分別、bytes_by_origin、管理ファイル v2。本体 ba511485..57b3de8a。テスト版 ~/.local/bin/kaz-test/juicefs-kaz2q-57b3de8a。
+  - [ ] 判定（検証は 1 回だけ）: テスト版を `--kaz-cache-compaction-placement probation` で mount → 半日（流入 30 GiB）→ VM 再起動。補充 0.35 GiB 以下か。ghost_hit の内訳（降格を経た／上がらなかった／compaction）で原因を切り分ける。デプロイ直後の起動の後に counter の基準値を取る。
+  - [x] 2026-10-20 判定（07:18、placement=probation）: アプリまで 7.9 分、補充 0.68 GiB（基準 0.35 は未達）。主な損失は夜間に compaction で作り直された起動のブロック。
+  - [x] 2026-10-20 夜間の compaction の解析（[報告](docs/inspection/cache_churn/2026-10-20/compaction-overnight-ja.md)）: 書いた量の約 10 倍を compaction が書き直す。commit 時の x99 の起動条件と、block compaction の 4 MiB 単位の書き直しが原因。
+  - [ ] **差分 slice 方式の compaction（別の会話セッション・別のブランチで行う、ユーザー方針 2026-10-20）:** [引き継ぎ](docs/inspection/delta_slice/2026-10-20/handoff-ja.md)。効果の見積もりは chunk 1920 で PUT 約 9 割減。参照数（B1）・record の上限・起動の条件の変更が要点。
+  - [x] 2026-10-20 壁打ち: 差分 slice 方式（変更データだけを 1 つの slice に詰め、record で読み分ける）。実現性の調査済み（[報告](docs/inspection/delta_slice/2026-10-20/feasibility-ja.md)、メタデータ上は可能、参照数を N に合わせる・record 数を抑える・TKV clone の既存不具合に注意）。ユーザーは upload を遅らせる案を好まない。
+  - [ ] 対策を選ぶ: B4（slice-flush のオプション、今のバイナリで可能）／C7（block mode の commit の閾値を設定可能に）／C8（record の少ないブロックは書き直さない）／ゲスト側（dirty_expire、lazytime）。
+  - [x] 2026-10-20 A-c（share、share-ratio）と B（demote-unread-first）を実装（設計書 §9、計画 2026-10-20-kaz-cache-2q-share-unread.md、本体 08e6580d..022870ba）。テスト版 ~/.local/bin/kaz-test/juicefs-kaz2q-022870ba。
+  - [x] 2026-10-20 判定（19:46、share＋B）: アプリ 8.7 分、補充 0.90 GiB（未達）。A-c は効いたが B は実績なしを使い切った後に起動のブロックを降格。
+  - [x] 2026-10-20 §10 hot-age を実装（07aaf254）。テスト版 ~/.local/bin/kaz-test/juicefs-kaz2q-07aaf254。
+  - [x] 2026-10-20 軽い検証（約 30 分）: 常連用の compaction の出力の増加が止まった（8.38 → 7.70 GB で横ばい）。判定の再起動は未実施。本番は 07aaf254 で動作中。
+  - [ ] 計測の常駐（sampler PID 359496、key_tracker PID 244411）を止める（ユーザーの判断）。
+  - [ ] feat/kaz-cache-2q の扱い（1.4.1-improve-kaz への merge、リリース）をユーザーが決める。
+  - [ ] 旧項目（参考）: 判定: テスト版を share 0.5＋demote-unread-first で mount（前に管理ファイルを複製）→ 入れ替え直後の起動（判定外）→ 流入 30 GiB → VM 再起動。補充 0.35 GiB 以下か。ghost_hit の内訳と demote_unread／demote_read を見る。 入れてから 3 回目の起動で GET の補充が 0.35 GiB 以下か。各起動の前後で metrics（kaz_cache_2q_*）と cache_churn の道具で記録。2 回目と 3 回目の間に demote と protected の bytes を確認し、多ければ probation-ratio を下げる。
+  - [x] 2026-10-19 設計書をユーザーが承認: [設計書](docs/superpowers/specs/2026-10-19-kaz-cache-2q-design.md)。承認後に writing-plans。運用の案内: compaction は `juicefs compact <mount のパス>` を使い、`gc --compact` は使わない。
+  - [x] 対策の設計（brainstorming から）: 2Q などの受け入れ方針、compaction の出力をキャッシュに入れる条件（入れたことが後のヒットにつながるかを先に計測する案もある）。記録の常駐（PID 244409、244411）は、必要がなくなったら止める。
 - [ ] **PUT を減らす: compaction の書き直しと書き込みの偏り（2026-10-13 計測、2026-10-14 記録）:** [報告](docs/inspection/vm_write_hotspot/2026-10-13/report-ja.md)。16 分で compaction が 4.12 GiB を書き直した（ゲストの書き込みの約 28 倍）。最も書かれた chunk は 16 回 compaction され、その書き込みの 76% は journald。
   - **ユーザー方針（2026-10-14）:** ゲスト側の対策（journald など）は別途取るが、基本は**ゲストの設定を変えずに減らせる JuiceFS 側の対策**を入れたい。
   - [x] 2026-10-14 机上比較を実施（報告 §9、`compaction_sim.py`）。わかったこと: Meta.Read のミスでも slice 5 個以上で compaction を要求する（base.go:2139）、実際の 85 回中 54 回は 99 個未満で開始、priority は inode ごとに 1 本で実行。read による起動の下限を 100 にすると PUT 約 −50%（read 時の slice 数はほぼ同じ）。書き込みの多い chunk には cooldown＋強制の個数（700〜1,000）が要り、組み合わせで PUT 約 −90%（read 時の slice 数 p99 206、最大約 1,100）。モデルは今の方式を 105 回と再現（実際は 85 回）。

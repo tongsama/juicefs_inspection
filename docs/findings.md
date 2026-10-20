@@ -216,3 +216,21 @@ writebackの既存stage処理はfile／directory fsyncによるhost power-loss�
 DEBUGはログ容量の約99.7〜99.9%、正常checksum DEBUGだけで60〜72%を占めた。checksum検証維持と成功ログ出力抑制は別に判断する。元ログは変更せず、固定prefix合計7,038,915,328 bytesのSHA・集計・例外証跡を保存した。
 
 旧／新clientが採取時点でともにlogfdを持っていたため、古い名前だけでclosedと決めない。[ログ一覧](inspection/option_effects/2026-10-03/log-inventory.json)は当時のsnapshotで、圧縮・移動・削除前にはproducer状態を再確認する。
+
+## 長時間の稼働でのキャッシュの入れ替わりと kaz-2q（2026-10-19〜20）
+
+詳細は [報告](inspection/cache_churn/2026-10-19/report-ja.md)、[夜間の compaction](inspection/cache_churn/2026-10-20/compaction-overnight-ja.md)、[設計書](superpowers/specs/2026-10-19-kaz-cache-2q-design.md) にある。
+
+- **原因（観測で確認）**: 無効なキャッシュの残留ではない（無効は 5〜7%、dead は 0）。lru では、書き込みと compaction の出力の流入（通常の使用で 2 時間に約 30 GiB）が、起動やアプリで読むブロックを押し出していた。13:10 の再起動で GET した 3.45 GiB は、すべて当日キャッシュにあって追い出されたものだった。
+- **流入の大半は compaction の出力**: block モードの compaction は、小さい書き込みが触れた 4 MiB のブロックを丸ごと書き直す。VM の ext4 の inode table などへの 4〜8 KiB の散らばった書き込みで、書いた量の約 10 倍（夜間 5.0 GiB に対し 32.7 GiB）を書き直していた。起動条件は記録が x99 を通過または 350 超（`base.go` の `compactionWanted`、upstream のまま）。対策の本命は差分 slice 方式で、別の会話・別ブランチで扱う（[引き継ぎ](inspection/delta_slice/2026-10-20/handoff-ja.md)）。
+- **kaz-2q（`--cache-eviction kaz-2q`、本体 `feat/kaz-cache-2q`）の判定の起動（半日・流入 30 GiB の後、アプリが使えるまで／起動中の GET の補充）**:
+
+  | 版 | アプリ | 補充 |
+  |---|---|---|
+  | lru | 30.5 分 | 3.45 GiB |
+  | kaz-2q inherit | 11.4 分 | 1.03 GiB |
+  | kaz-2q probation | 7.9 分 | 0.68 GiB |
+  | kaz-2q share＋demote-unread-first | 8.7 分（ログイン 2.5 分は最速）| 0.90 GiB |
+
+  目標の 0.35 GiB には届いていない。inherit は compaction の出力で常連用が膨らみ、probation は作り直された起動のブロックを失い、share＋B は読まれた実績なしを使い切った後に起動のブロックを降格した。最後の改良（`--kaz-cache-compaction-hot-age`、何度も作り直される範囲の出力を常連用に入れない）は軽い検証のみ。
+- **互換**: キャッシュのファイルの形式は変えていない。管理ファイル `kaz-cache-state.v1`（中身は version 3）は `raw/` の外にあり、無改良の JuiceFS は読まない。古い版は新しい version のファイルを無視する（全部が新入り用で起動、mount は失敗しない）。
