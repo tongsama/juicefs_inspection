@@ -117,10 +117,17 @@ def classify_errors(errors, abandoned, now, window_s=ABANDON_WINDOW_S):
     - 説明できる（explained）: PUT で、同じ key の abandoned が誤りの時刻の ABANDON_SKEW_S 前から window_s 後までにある
       （compaction が staging の slice を retire し、上げ途中の PUT が打ち切られた。試験している効果そのもの）。
     - 待ち中（pending）: PUT で、まだ window_s が過ぎていない。
-    - 説明できない（unexplained）: それ以外（PUT 以外の誤り、窓の中に abandoned が来なかった PUT）。
-    戻り値は {explained, pending, unexplained, first_unexplained（最初の説明できない誤りの文字列 or None）}。"""
-    c = {"explained": 0, "pending": 0, "unexplained": 0, "first_unexplained": None}
+    - 止めない（warned）: PUT と GET 以外（DELETE など）。失敗しても書いたデータは失わない（DELETE の失敗は
+      object が残るだけ）ので、数えて警告にする（Ruling 13。実の確かめで rclone／Drive の一時的な HTTP 500 の DELETE が出た）。
+    - 説明できない（unexplained）: GET の誤りと、窓の中に abandoned が来なかった PUT。
+    戻り値は {explained, pending, unexplained, warned, first_unexplained, first_warned（最初の誤りの文字列 or None）}。"""
+    c = {"explained": 0, "pending": 0, "unexplained": 0, "warned": 0, "first_unexplained": None, "first_warned": None}
     for method, key, t in errors:
+        if method not in ("PUT", "GET"):
+            c["warned"] += 1
+            if c["first_warned"] is None:
+                c["first_warned"] = "%s %s（%s）" % (method, key, time.strftime("%H:%M:%S", time.localtime(t)))
+            continue
         if method == "PUT":
             if any(t - ABANDON_SKEW_S <= a <= t + window_s for a in abandoned.get(key, ())):
                 c["explained"] += 1
@@ -229,8 +236,8 @@ class Guard:
             unlogged = self._unlogged(self.clock())
             unexplained, pending = self.last["unexplained"] + unlogged, self.last["pending"]
         return {"errors_total": self.total, "logged": len(self.errors), "abandoned_explained": self.last["explained"],
-                "pending": pending, "unexplained": unexplained, "unlogged": unlogged, "tolerance": self.tolerance,
-                "finalized": self.final}
+                "pending": pending, "unexplained": unexplained, "unlogged": unlogged, "warned": self.last["warned"],
+                "tolerance": self.tolerance, "finalized": self.final}
 
     def _refresh(self):
         """ログと試験の metrics を読み直して分類を更新する（mount の確かめはしない）。rate limit の行があれば返す。"""
@@ -865,6 +872,9 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
                 pend = gg.counts()["pending"]
                 if gg.finalize(wait=False) and pend:
                     res["warnings"].append("途中で止まったため、abandoned を待ち切れなかった PUT の誤り %d 件を説明できない誤りに数えた" % pend)
+                if gg.last["warned"]:
+                    res["warnings"].append("試験の object の要求に PUT／GET 以外の誤りが %d 件（止めない）: %s"
+                                           % (gg.last["warned"], gg.last["first_warned"]))
         res["object_errors"] = sum_counts(guards)
         if guards and not any(g.prod_seen for g in guards):
             res["warnings"].append("本番の metrics（%s）を読めなかったので、本番の object_request_errors は見張れていない"
@@ -881,8 +891,12 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
 
 
 def _warn_tolerated(res, g):
-    """説明できない誤りが許容（object_error_tolerance）以内で止めなかったとき、その数を warnings に残す（隠さない）。"""
+    """止めなかった誤りを warnings に残す（隠さない）: 許容（object_error_tolerance）以内の説明できない誤りと、
+    止める理由にしない PUT／GET 以外の誤り（DELETE など。Ruling 13）。"""
     c = g.counts()
+    if c["warned"]:
+        res["warnings"].append("試験の object の要求に PUT／GET 以外の誤り（DELETE など。データは失わず、object が残り得るだけ）が"
+                               " %d 件（止めない）: %s" % (c["warned"], g.last["first_warned"]))
     if c["unexplained"]:
         res["warnings"].append("試験の object_request_errors に説明できない誤りが %d 件（許容 %d 以内なので続けた）: %s"
                                % (c["unexplained"], c["tolerance"], g.last["first_unexplained"] or "ログに行の無い誤り"))

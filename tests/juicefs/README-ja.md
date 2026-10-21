@@ -72,7 +72,8 @@ compaction が staging の slice を retire すると、上げ途中の PUT が�
 
 - `abandoned_explained`: PUT の誤りで、同じ key の abandoned が誤りの後 `abandon_window_seconds`（既定 30 秒）以内に出た。数えない。
 - `pending`: PUT の誤りで、まだ窓の中。待つ。
-- `unexplained`: PUT 以外の誤り、窓の中に abandoned が来なかった PUT、ログに行の無い誤り（`unlogged`。metrics の増分がログの誤りの行より 5 秒以上多い。JuiceFS は遅い要求だけを `slow request` として書くので、速い誤りはログに出ない）。
+- `warned`: PUT と GET 以外の誤り（DELETE など）。書いたデータは失わない（DELETE の失敗は object が残り得るだけ）ので止めず、`warnings` に残します（実の確かめで rclone／Drive の一時的な HTTP 500 の DELETE が出たため。Ruling 13）。
+- `unexplained`: GET の誤り、窓の中に abandoned が来なかった PUT、ログに行の無い誤り（`unlogged`。metrics の増分がログの誤りの行より 5 秒以上多い。JuiceFS は遅い要求だけを `slow request` として書くので、速い誤りはログに出ない）。
 - `errors_total` は metrics の増分、`logged` はログの誤りの行の数です。説明できない誤りは窓（最大 30 秒）が過ぎてから数えるので、止まるのはその分遅れます。
 - 1 つの Guard を、育てる全ての回とその後の待ち、計測する流し直しとその後の待ちで使い回します（回の境目の誤りを見落とさない）。終わり（待ちが「未収束」で上限に達した場合も）には確定（finalize）として、窓と猶予が過ぎるまで（上限 30＋5＋1 秒）読み直し、残った待ち中・ログに行の無い誤りを説明できない誤りに数えて許容と比べます（超えれば失敗、許容以内でも 1 件以上なら `warnings` に残す）。例外で途中で止まった回は待たずに確定します（`object_errors.finalized`）。
 
@@ -118,7 +119,7 @@ flags = { "kaz-compaction-delta-trigger" = 30 }
 - **Drive の rate limit のパターンは未検証**です。`RATE_LIMIT_RE`（429／403 の rate limit）が本物の Drive のログと合うかは、最初の本番の試験で `~/.juicefs/test-suite/juicefs.log` を確かめます。
 - **種の形は、4 MiB ごとの fsync で決まります**（各 block が別の slice）。block モードの `juicefs compact` は 1 つの 64 MiB の record を保つので、compact は安全のための手順にすぎません。形は LRANGE で確認します。
 - 試験の RTT は片道 5 ms の中継（合計約 10 ms）で、本番の揺らぎは再現しません。
-- 流し直しは pid ごとの thread（初回の trace で 163）が予定の時刻まで眠って待ちます（回して待たない。旧版は最後の 2 ms を回して GIL を取り合い、write の p50 が 834 ms になった）。Python の thread なので、山の時刻に多くの操作が重なると数 ms の遅れは出ます（`play.json` の `max_lag_ms`）。
+- 流し直しは、pid を複数の worker の process（既定 min(16, pid の数)、pid の crc32 で決めるので同じ pid の順は保つ）に分け、各 process が自分の fd と受け持つ pid ごとの thread を持ちます。各 thread は予定の時刻まで眠って待ち（回して待たない）、worker の switch interval は 0.5 ms です。時刻は全 process で共通の CLOCK_MONOTONIC で合わせ、どこかの process のエラーで全 process を止めます。1 つの process に 163 thread を置いた版は、実の試験の mount で write の p50 が 409 ms、遅れが 29 秒になりました（GIL の取り直し）。それでも山の時刻に多くの操作が重なると数 ms〜数十 ms の遅れは出ます（`play.json` の `max_lag_ms`、`lag` の p50／p99、`procs`）。
 - retire で打ち切られた PUT が速く失敗した場合（`slow request` の行が出ない場合）は、abandoned で説明できず「説明できない誤り」として止まります（初回の実走では 30 秒の時間切れで、全部ログに出ていた）。
 
 ## 6. 結果の置き場所

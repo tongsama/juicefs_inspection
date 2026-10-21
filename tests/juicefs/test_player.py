@@ -67,11 +67,51 @@ class TestPlayer(unittest.TestCase):
                 kind = ("write", "read")[i % 2]
                 ops.append(_op(b * 50_000 + p * 100, 1000 + p, kind, (i * 4096) % (4 * MiB), 4096))
         r = player.play(self.path, ops, time.monotonic() + 1.0)
+        self.assertEqual(r.procs, 16)  # 160 pid を 16 の worker の process に分ける
         self.assertEqual(r.errors, [])
         self.assertEqual(r.ops_done, len(ops))
         self.assertLess(r.latency["write"]["p50_ms"], 1.0, r.latency)
         self.assertLess(r.latency["read"]["p50_ms"], 1.0, r.latency)
         self.assertLessEqual(r.max_lag_ms, 25.0)
+
+    def test_play_simultaneous_bursts_across_processes(self):
+        """160 pid が 20 µs 以内にほぼ同時に動く山（1 process の thread では GIL の取り直しで遅れた形）でも、
+        worker の process に分けると、待ち時間の p50 は小さく、予定からの遅れは ~20 ms に収まる。"""
+        ops = []
+        for b in range(30):
+            for p in range(160):
+                i = b * 160 + p
+                ops.append(_op(b * 50_000 + p * 20 // 160, 2000 + p, ("write", "read")[i % 2], (i * 4096) % (4 * MiB), 4096))
+        r = player.play(self.path, ops, time.monotonic() + 1.0)
+        self.assertEqual((r.errors, r.ops_done), ([], len(ops)))
+        self.assertLess(r.latency["write"]["p50_ms"], 1.0, r.latency)
+        self.assertLess(r.latency["read"]["p50_ms"], 1.0, r.latency)
+        self.assertLess(r.latency["write"]["p99_ms"], 5.0, r.latency)  # 1 process の thread では ~10 ms（GIL の取り直し）
+        self.assertLessEqual(r.lag["p99_ms"], 10.0, r.lag)
+        self.assertLessEqual(r.max_lag_ms, 50.0)  # 160 操作が 20 µs に重なる山なので、最大は WSL の揺れで ~25 ms まで出る
+
+    def test_error_in_one_process_stops_all(self):
+        """1 つの worker の process のエラー（不正な fallocate の mode）で、ほかの process の pid もすぐ止まる。"""
+        ops = [_op(i * 10_000, 1 + i % 8, "write", i * 4096, 4096) for i in range(300)]  # 3 秒、8 pid
+        ops.append(_op(100_000, 99, "fallocate", 0, 4096, mode=0x7FFF))
+        ops.sort(key=lambda o: o.start_us)
+        t = time.monotonic()
+        r = player.play(self.path, ops, time.monotonic() + 0.5, procs=4)
+        self.assertTrue(r.failed)
+        self.assertTrue(r.stopped)
+        self.assertEqual(r.errors[0]["kind"], "fallocate")
+        self.assertLess(r.ops_done, 100)  # 3 秒分（300 操作）を流し切らずに止まる
+        self.assertLess(time.monotonic() - t, 2.5)
+
+    def test_pid_groups_stable(self):
+        """pid → process は安定な hash で決まり、同じ pid の Op は同じ組に順のまま入る。"""
+        by_pid = {p: [p * 10 + i for i in range(3)] for p in range(50)}
+        g1, g2 = player._groups(by_pid, 7), player._groups(by_pid, 7)
+        self.assertEqual(g1, g2)
+        self.assertEqual(sorted(p for g in g1 for p in g), list(range(50)))
+        for g in g1:
+            for p, seq in g.items():
+                self.assertEqual(seq, by_pid[p])
 
     def test_wait_never_spins(self):
         """予定の時刻までは timeout 付きの wait で眠るだけで、timeout 0 の wait を繰り返して回らない
@@ -85,7 +125,7 @@ class TestPlayer(unittest.TestCase):
                 calls.append(timeout)
                 return super().wait(timeout)
         ops = [_op(i * 3_000, 1 + i % 20, "write", 0, 10) for i in range(200)]
-        r = player.play(self.path, ops, time.monotonic() + 0.2, stop=Counting())
+        r = player.play(self.path, ops, time.monotonic() + 0.2, stop=Counting(), procs=0)  # 待ち方は worker でも同じ _sleep_until
         self.assertEqual(r.ops_done, 200)
         self.assertTrue(calls)
         self.assertGreaterEqual(min(calls), player.ISSUE_EARLY_S)  # 0 や極小の timeout で回さない
@@ -126,7 +166,7 @@ class TestPlayer(unittest.TestCase):
             time.sleep(0.5)
             real(fd)
         with mock.patch("os.fsync", side_effect=slow_fsync):
-            r = player.play(self.path, ops, time.monotonic() + 0.05)
+            r = player.play(self.path, ops, time.monotonic() + 0.05, procs=0)  # mock はこの process だけに効く
         self.assertEqual(r.errors, [])
         self.assertGreaterEqual(r.latency["fsync"]["max_ms"], 490)
         self.assertLessEqual(r.max_lag_ms, 20.0)
@@ -141,7 +181,7 @@ class TestPlayer(unittest.TestCase):
                 raise OSError(errno.EIO, "Input/output error")
             return len(data)
         with mock.patch("os.pwrite", side_effect=eio):
-            r = player.play(self.path, ops, time.monotonic())
+            r = player.play(self.path, ops, time.monotonic(), procs=0)  # mock はこの process だけに効く
         self.assertTrue(r.failed)
         self.assertEqual(r.errors[0]["errno"], "EIO")
         self.assertEqual(r.errors[0]["kind"], "write")
@@ -361,6 +401,42 @@ class TestRunParts(unittest.TestCase):
         self.assertIsNone(g.finalize(wait=False))
         c = g.counts()
         self.assertEqual((c["unexplained"], c["unlogged"], c["pending"]), (2, 1, 0))
+
+    def _err_line(self, t, method, key, code=500):
+        """PUT／GET 以外も含む、誤りの slow request の行（実の確かめの DELETE の HTTP 500 の形。URL は含めない）。"""
+        return ('%s juicefs[1] <WARNING>: slow request: %s %s (req_id: "2313DB8D03EB12F4", err: operation error S3: '
+                'DeleteObject, exceeded maximum number of attempts, 1, https response error StatusCode: %d, cost: 12.1s) '
+                '[logRequest@cached_store.go:769]\n' % (self._ts(t), method, key, code))
+
+    def test_classify_delete_is_warned(self):
+        """PUT／GET 以外（DELETE など）の誤りは warned に数え、説明できない誤りに入れない。GET は説明できない。"""
+        t = self.T0
+        c = runmod.classify_errors([("DELETE", "chunks/0/12/12497_0_8192", t), ("HEAD", "x", t), ("GET", "y", t)], {},
+                                   now=t + 100)
+        self.assertEqual((c["warned"], c["unexplained"]), (2, 1))
+        self.assertIn("DELETE chunks/0/12/12497_0_8192", c["first_warned"])
+
+    def test_guard_warns_delete_errors(self):
+        """DELETE の HTTP 500 で object_request_errors が増えても止めない（finalize でも）。数は counts の warned。"""
+        g, log, vals, now = self._guard_env()
+        with open(log, "a") as f:
+            f.write(self._err_line(self.T0 + 1, "DELETE", "chunks/0/12/12497_0_8192"))
+        vals["juicefs_object_request_errors"] = 1.0
+        for dt in (2, 40):
+            now[0] = self.T0 + dt
+            self.assertIsNone(g.check())
+        self.assertIsNone(g.finalize(wait=False))
+        c = g.counts()
+        self.assertEqual((c["warned"], c["unexplained"], c["unlogged"]), (1, 0, 0))
+
+    def test_guard_get_error_still_stops(self):
+        """GET の誤りは（abandoned で説明できないので）止める。"""
+        g, log, vals, now = self._guard_env()
+        with open(log, "a") as f:
+            f.write(self._err_line(self.T0 + 1, "GET", "chunks/0/1/1_0_4096"))
+        vals["juicefs_object_request_errors"] = 1.0
+        now[0] = self.T0 + 2
+        self.assertIn("GET chunks/0/1/1_0_4096", g.check())
 
     def test_guard_stops_on_prod_errors(self):
         d = tempfile.mkdtemp(prefix="jfs-guard-")
@@ -648,7 +724,7 @@ class TestRunFailures(unittest.TestCase):
         self.assertTrue(any("warm --force" in r for r in res["reasons"]), res["reasons"])
         self.assertEqual(self.calls[-1], "umount")
 
-    def _run_with_late_put_error(self, tolerance):
+    def _run_with_late_put_error(self, tolerance, method="PUT"):
         """流し直しの終わりの直前に PUT の誤りが出て abandoned が来ない回を、計測・待ち・metrics を偽にして流す。"""
         log = self.spec.path("juicefs.log")
         os.makedirs(self.spec.state_dir, exist_ok=True)
@@ -660,8 +736,9 @@ class TestRunFailures(unittest.TestCase):
             r = real_play(path, ops, t0, stop=stop)
             ts = time.strftime("%Y/%m/%d %H:%M:%S", time.localtime()) + ".000000"
             with open(log, "a") as f:  # 終わりの直前の PUT の誤り（abandoned の行は来ない）
-                f.write('%s juicefs[1] <WARNING>: slow request: PUT chunks/0/1/1_0_4096 payload_bytes=26 '
-                        '(req_id: "", err: operation error S3: PutObject, cost: 30.0s) [logRequest@cached_store.go:769]\n' % ts)
+                f.write('%s juicefs[1] <WARNING>: slow request: %s chunks/0/1/1_0_4096 payload_bytes=26 '
+                        '(req_id: "", err: operation error S3: PutObject, cost: 30.0s) [logRequest@cached_store.go:769]\n'
+                        % (ts, method))
             errs["juicefs_object_request_errors"] = 1.0
             return r
         common = dict(config.load_common(), abandon_window_seconds=0.5, object_error_tolerance=tolerance)
@@ -691,6 +768,14 @@ class TestRunFailures(unittest.TestCase):
         res = self._run_with_late_put_error(tolerance=1)
         self.assertEqual(res["status"], "ok", res)
         self.assertTrue(any("説明できない誤りが 1 件" in w for w in res["warnings"]), res["warnings"])
+
+    def test_late_delete_error_is_warned_not_failed(self):
+        """流し直しの終わりの直前の DELETE の誤りは、その回を失敗にせず warnings に残す（Ruling 13）。"""
+        res = self._run_with_late_put_error(tolerance=0, method="DELETE")
+        self.assertEqual(res["status"], "ok", res)
+        self.assertTrue(any("PUT／GET 以外の誤り" in w and "1 件" in w for w in res["warnings"]), res["warnings"])
+        rj = self._results()[0]
+        self.assertEqual((rj["object_errors"]["warned"], rj["object_errors"]["unexplained"]), (1, 0))
 
     def test_clone_timeout_is_runerror(self):
         import subprocess
