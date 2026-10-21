@@ -1,4 +1,4 @@
-"""jfsreplay の sub-command（record／stop／mark／verify）。
+"""jfsreplay の sub-command（record／stop／mark／verify／testvol）。
 
 record は <mountpoint>/.accesslog を読むだけで、mount には何も書かない。"""
 import argparse
@@ -183,6 +183,52 @@ def _meta_lines(out):
     return [msg + (" ← 0 でないので内容を確認すること" if m["unknown"] else "")]
 
 
+def _parse_value(v):
+    """--set の値を bool／int／float／文字列にする。"""
+    if v.lower() in ("true", "false"):
+        return v.lower() == "true"
+    for t in (int, float):
+        try:
+            return t(v)
+        except ValueError:
+            pass
+    return v
+
+
+def _testvol(a):
+    """jfsreplay testvol の本体。安全の確かめで止まったら終了 3、失敗は 2。"""
+    from replay import testvol
+    profile = config.load_profile("test")
+    try:
+        if a.action == "up":
+            flags = {}
+            for kv in a.set:
+                k, sep, v = kv.partition("=")
+                if not sep:
+                    print("エラー: --set は 名前=値 の形にする: %s" % kv, file=sys.stderr)
+                    return 2
+                flags[k.lstrip("-")] = _parse_value(v)
+            info = testvol.up(profile, {"name": "cli", "mode": a.mode, "flags": flags})
+            for k in ("meta", "mountpoint", "metrics", "started_redis", "started_proxy", "formatted"):
+                print("%s: %s" % (k, info[k]))
+            print("mount のオプション: %s" % " ".join(info["mount_args"]))
+        elif a.action == "down":
+            testvol.down(profile=profile)
+            print("試験の mount を外し、中継を止めました（Redis は残しています）")
+        elif a.action == "status":
+            st = testvol.status()
+            print("  ".join("%s=%s" % (k, "yes" if v else "no") for k, v in st.items()))
+        else:
+            print("消しました" if testvol.destroy(profile) else "何もしませんでした")
+    except testvol.SafetyError as e:
+        print("停止: %s" % e, file=sys.stderr)
+        return 3
+    except (RuntimeError, OSError, ValueError) as e:
+        print("エラー: %s" % e, file=sys.stderr)
+        return 2
+    return 0
+
+
 def main(argv=None):
     """jfsreplay の入口。"""
     ap = argparse.ArgumentParser(prog="jfsreplay", description="JuiceFS の write の記録と流し直し")
@@ -203,7 +249,14 @@ def main(argv=None):
     v = sp.add_parser("verify", help="記録の write のバイトを計測の staging_write_bytes と比べる")
     v.add_argument("out")
     v.add_argument("outdir")
+    tv = sp.add_parser("testvol", help="試験の volume（一時の Redis、RTT の中継、format／mount）を操作する")
+    tv.add_argument("action", choices=("up", "down", "status", "destroy"))
+    tv.add_argument("--mode", help="up: compaction の mode（delta／block など）")
+    tv.add_argument("--set", action="append", default=[], metavar="名前=値",
+                    help="up: compaction の値（例 kaz-compaction-delta-trigger=30）。何回でも指定できる")
     a = ap.parse_args(argv)
+    if a.cmd == "testvol":
+        return _testvol(a)
     if a.cmd == "record":
         path = a.accesslog or os.path.join(os.path.expanduser(a.mountpoint), ".accesslog")
         url = a.metrics_url if a.metrics_url is not None else config.load_profile(a.profile).metrics_url

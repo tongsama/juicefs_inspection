@@ -1,0 +1,67 @@
+# 試験の mount のオプション（1 行に 1 つ。# 以降は注釈）。
+#
+# 出どころ:
+#   - 本番の mount の実効値: docs/inspection/delta_slice/2026-10-21-t50/config.json
+#     （~/mnt_juicefs/.config を伏せた写し、2026-10-21、version 1.4.1+2026-10-21.7336466c）
+#   - 本番の mount スクリプトの JUICEFS_CUSTOM_OPTIONS（2026-10-21 時点）
+#   スクリプトの既定値と実効値が違う項目（cache-size、cache-eviction など）は、実効値（.config）に合わせた。
+#
+# 印:
+#   [compaction] … settings（mode／flags）の値で置き換えてよい行。それ以外の行は置き換えない。
+#   [test]       … 試験の volume の値（本番と別にする）。testvol が spec の値で置き換える。
+#
+# 試験では入れないもの: --log、--cache-dir、mountpoint、--background（testvol が試験の path で足す）。
+# 本番の --check-storage は実効値で確かめられないので入れない。
+
+--no-usage-report
+--backup-meta 3607s
+-o allow_other
+--metrics 127.0.0.1:9568                                     # [test]
+
+# 読み書きの buffer、キャッシュ（実効値）
+--prefetch 0
+--buffer-size 1024
+--entry-cache 1s
+--dir-entry-cache 1s
+--writeback
+--writeback-threshold-size 4194305
+--cache-size 20480
+--cache-eviction kaz-2q
+--cache-expire 0
+--cache-large-write
+--verify-cache-checksum extend
+--free-space-ratio 0.2
+--upload-delay 0
+--max-uploads 18
+--max-stage-write 0
+--max-downloads 60
+--get-timeout 60s
+--put-timeout 60s
+--max-deletes 10
+--io-retries 5
+
+# 本番の JUICEFS_CUSTOM_OPTIONS
+--slice-flush-wait 30s
+--slice-flush-idle 16s
+--writer-flush-timeout 0s
+--compaction-gc-mode deferred
+--compaction-scheduler priority
+--writer-reuse-window 32
+--writeback-fsync
+--writer-flush-scope=range
+--meta-write-batch=64
+--kaz-finish-canceled-get
+--kaz-get-header-timeout 10s
+--kaz-compaction-read-min 100                                # [compaction]
+--kaz-cache-probation-ratio 0.25
+--kaz-cache-compaction-placement share
+--kaz-cache-compaction-placement-share-ratio 0.5
+--kaz-cache-demote-unread-first
+--kaz-cache-compaction-hot-age 30m
+--kaz-compaction-mode delta                                  # [compaction]
+--kaz-compaction-delta-min-file-size 1G                      # [compaction]
+--kaz-compaction-delta-trigger 50                            # [compaction]
+--kaz-compaction-delta-block-ratio 0.5                       # [compaction]
+--kaz-compaction-delta-tiers 8                               # [compaction]
+--kaz-compaction-delta-max-records 500                       # [compaction]
+--kaz-compaction-delta-gap 16K                               # [compaction]
