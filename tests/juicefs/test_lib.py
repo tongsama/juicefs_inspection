@@ -94,6 +94,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual((t.redis_addr, t.metrics_url, t.bucket),
                          ("127.0.0.1:16379", "http://127.0.0.1:9568/metrics", "juicefs-kaz-test"))
         self.assertTrue(t.mountpoint.endswith("/mnt_juicefs_test"))
+        self.assertIn("diagnostics/vm-io-", p.log_glob)
         self.assertTrue(config.load_common()["redis_server"].endswith("redis-8.0.5/redis-server"))
         with self.assertRaises(KeyError):
             config.load_profile("nope")

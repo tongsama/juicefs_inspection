@@ -7,7 +7,7 @@ cache_dir = "~/.juicefs/cache/73e74f7b-6f95-4155-adea-d9ef1e669c20"
 mountpoint = "~/mnt_juicefs"
 redis_source = "mount_script"
 redis_addr = ""
-log_glob = "~/.juicefs/*.log"
+log_glob = "~/.juicefs/diagnostics/vm-io-*.log"
 bucket = "buckets"
 
 [test]
