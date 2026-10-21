@@ -66,7 +66,7 @@ JuiceFS（kaz 改修版）の compaction の設定を、本番と同じ形の書
 - 試験の mount のログに Drive の rate limit の行（429、403 の rate limit）が出た。
 - 本番の `juicefs_object_request_errors` が増えた（試験の負荷が本番に影響した）。
 - 試験の mount が落ちた、または試験の metrics を 3 回続けて取れない。
-- 試験の object の要求の誤りのうち、**説明できない誤り**の数が `profiles.toml` の `object_error_tolerance`（既定 0）を超えた。
+- `profiles.toml` の `object_errors_stop = true` のときだけ: 試験の object の要求の誤りのうち、**説明できない誤り**の数が `object_error_tolerance`（20）を超えた。既定は `object_errors_stop = false` で、説明できない PUT／GET の誤りは止めずに数えて警告に出します。2026-10-21 の実走では、apt upgrade の大量のアップロードの間に、Drive の応答待ちの時間切れ（`timeout awaiting response headers`、30 秒）が 21 件出ました。JuiceFS は staging のアップロードを再試行するので、1 回ごとの失敗はデータの失敗ではありません。
 
 compaction が staging の slice を retire すると、上げ途中の PUT が打ち切られて `slow request: PUT <key> … err: …` が出て、続けて同じ key の `Key <key> is not needed, abandoned` が出ます（初回の実走で `object_request_errors` が 0 → 1 になって止まった原因。試験している効果そのもので、失敗ではない）。そこで、試験の mount のログの誤りの行を次のように分けます（`run.json` の `object_errors` に数が残ります）。
 
@@ -103,7 +103,7 @@ flags = { "kaz-compaction-delta-trigger" = 30 }
 - 本番の Redis、本番のバケット（`buckets`）、本番の mountpoint（`~/mnt_juicefs`）、本番のキャッシュ（`~/.juicefs/cache/…`）には、試験の道具は書き込みません。試験の Redis は `127.0.0.1:16379`（db 1）、バケットは `juicefs-kaz-test`、mountpoint は `~/mnt_juicefs_test`、キャッシュは `~/.juicefs/cache-test`。プロファイルの書き間違い（本番と同じ host、バケット名、path）は、書き込みの前に止まります。
 - 本番の Redis には読み取りの命令（LLEN、LRANGE、HGET、DBSIZE、SCAN）だけを送ります。接続先や鍵は表示せず、`config.json` や `run.json` にも書きません（実行時に mount スクリプトから読みます）。
 - **`--create-bucket`**: 試験の volume がまだ無いとき、本物の Drive（`rclone serve s3`）にバケットと volume を作る操作です。**この旗を付けたときだけ**行います。付けずに volume が無ければ、何も作らず止まります。作ってよいかをユーザーが確かめてから付けてください。
-- 試験の並列のアップロードは本番以下にし、本番の VM は idle にしておきます（本番と試験の upload は同じ rclone と Drive に足し合わさる）。Drive の rate limit（429、403 の rate limit）か、本番の `juicefs_object_request_errors` の増加か、試験の説明できない object の要求の誤りが出たら、その回を止めて表に出します（§2 の「見張りの規則」）。
+- 試験の並列のアップロードは本番以下にし、本番の VM は idle にしておきます（本番と試験の upload は同じ rclone と Drive に足し合わさる）。Drive の rate limit（429、403 の rate limit）か、本番の `juicefs_object_request_errors` の増加が出たら、その回を止めて表に出します。試験の説明できない object の要求の誤りは、既定では止めずに数えて警告に出します（§2 の「見張りの規則」）。
 - 温めたキャッシュの写し（`~/.juicefs/test-suite/warm-cache/`）は試験のキャッシュの複製で、本番のキャッシュとは重なりません（写す・戻すの前に確かめます）。
 - **試験の Redis は docker compose で動かします**（`replay/docker-compose.yml`、project 名 `jfs-kaz-test`、image `redis:8.0.5` の固定 tag、`127.0.0.1:16379` だけに公開、AOF は `~/.juicefs/test-suite/redis` を `/data` に bind mount、container は自分の UID:GID）。`jfsreplay testvol up` が `docker compose up -d redis` で起動し、応答を待ちます（docker が無い、または image が無いと止まります。image は `docker pull redis:8.0.5` で事前に取得）。`down` は Redis を残します。止めるだけなら `docker compose -p jfs-kaz-test -f replay/docker-compose.yml down`（AOF のデータは残る。UID、GID、JFS_TEST_REDIS_DIR は env で渡す）、データごと消すなら `jfsreplay testvol destroy`（確認の後に compose down と AOF の削除）。
 - clone は各回の終わりに消します。試験のバケットと Redis は次の回のために残します。全部消す `jfsreplay testvol destroy` は確認を求めます。
