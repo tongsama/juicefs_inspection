@@ -9,10 +9,10 @@ MOUNT_SCRIPT = os.path.expanduser("~/utilities/cloudfs/juicefs_mount.sh")
 
 def connect_profile(profile):
     """プロファイルの redis_source に従い、読み取り専用で接続する。
-    mount_script は本番（MOUNT_FROM）、test は profile.redis_addr（host:port、認証なし）。"""
+    mount_script は本番（MOUNT_FROM）、test は profile.redis_addr（host:port、認証なし）の profile.redis_db。"""
     if profile.redis_source == "mount_script":
         return connect_from_script(MOUNT_SCRIPT, readonly=True)
     if profile.redis_source == "test":
         host, _, port = profile.redis_addr.rpartition(":")
-        return Resp(host, int(port), readonly=True)
+        return Resp(host, int(port), db=profile.redis_db, readonly=True)
     raise ValueError("未知の redis_source: %s" % profile.redis_source)

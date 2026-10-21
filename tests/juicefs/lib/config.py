@@ -18,6 +18,7 @@ class Profile:
     redis_addr: str
     log_glob: str
     bucket: str = ""
+    redis_db: int = 0  # redis_source が test のときの db の番号（試験の volume は 1）
 
 
 def _load(path=None):

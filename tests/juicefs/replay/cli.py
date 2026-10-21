@@ -1,4 +1,4 @@
-"""jfsreplay の sub-command（record／stop／mark／verify／testvol）。
+"""jfsreplay の sub-command（record／stop／mark／verify／testvol／seed／run）。
 
 record は <mountpoint>/.accesslog を読むだけで、mount には何も書かない。"""
 import argparse
@@ -248,6 +248,27 @@ def _seed(a):
     return 0
 
 
+def _run(a):
+    """jfsreplay run の本体。成功は 0、失敗（EIO、rate limit、mount の停止など）は 1、続けられないエラーは 2、
+    安全の確かめで止まったら 3。"""
+    from replay import run as runmod, testvol
+    out = a.out or os.path.join(runmod.SUITE_DIR, "results", time.strftime("%Y%m%d-%H%M%S"), a.settings)
+    try:
+        res = runmod.run(a.trace, a.settings, out, config.load_profile("test"), age=a.age)
+    except testvol.SafetyError as e:
+        print("停止: %s" % e, file=sys.stderr)
+        return 3
+    except (KeyError, runmod.RunError, RuntimeError, OSError, ValueError) as e:
+        print("エラー: %s" % e, file=sys.stderr)
+        return 2
+    print("結果: %s（%s）" % ("成功" if res["status"] == "ok" else "失敗", out))
+    if res.get("settle"):
+        print("落ち着きの判定: %s（%s 秒）" % (res["settle"]["state"], res["settle"]["seconds"]))
+    for r in res["reasons"]:
+        print("理由: %s" % r, file=sys.stderr)
+    return 0 if res["status"] == "ok" else 1
+
+
 def main(argv=None):
     """jfsreplay の入口。"""
     ap = argparse.ArgumentParser(prog="jfsreplay", description="JuiceFS の write の記録と流し直し")
@@ -280,7 +301,14 @@ def main(argv=None):
     sd.add_argument("--limit", default=None, help="種の上限（既定は profiles.toml の seed_limit_gib、例 32G）")
     sd.add_argument("--length", default=None, help="種の長さ（既定は trace の最大 off+size を 64 MiB に切り上げ）")
     sd.add_argument("--create-bucket", action="store_true", help="試験の volume が無いとき、本物の Drive に作ってよい")
+    rn = sp.add_parser("run", help="1 つの compaction の設定で、記録を試験の volume に 1 回流す（設計書 §5.4）")
+    rn.add_argument("trace")
+    rn.add_argument("--settings", required=True, help="settings.toml の設定の名前（default は mount_flags.txt のまま）")
+    rn.add_argument("--age", type=int, default=0, help="計測の前に既定の設定で記録を流して差分を育てる回数（既定 0）")
+    rn.add_argument("--out", help="結果の置き場所（既定 tests/juicefs/results/<日時>/<設定の名前>）")
     a = ap.parse_args(argv)
+    if a.cmd == "run":
+        return _run(a)
     if a.cmd == "testvol":
         return _testvol(a)
     if a.cmd == "seed":

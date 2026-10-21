@@ -17,6 +17,7 @@ cache_dir = "~/.juicefs/cache-test"
 mountpoint = "~/mnt_juicefs_test"
 redis_source = "test"
 redis_addr = "127.0.0.1:16379"
+redis_db = 1
 log_glob = "~/.juicefs/test-suite/*.log"
 bucket = "juicefs-kaz-test"
 
