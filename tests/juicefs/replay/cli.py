@@ -230,6 +230,24 @@ def _testvol(a):
     return 0
 
 
+def _seed(a):
+    """jfsreplay seed の本体。安全の確かめで止まったら 3、それ以外の失敗は 2。"""
+    from replay import seed, testvol
+    try:
+        limit = seed.parse_size(a.limit) if a.limit else None
+        length = seed.parse_size(a.length) if a.length else None
+        info = seed.seed(a.trace, config.load_profile("test"), limit=limit, length=length, create_bucket=a.create_bucket)
+    except testvol.SafetyError as e:
+        print("停止: %s" % e, file=sys.stderr)
+        return 3
+    except (seed.SeedError, RuntimeError, OSError, ValueError) as e:
+        print("エラー: %s" % e, file=sys.stderr)
+        return 2
+    print("seed inode: %d" % info["inode"])
+    print("seed path: %s" % info["path"])
+    return 0
+
+
 def main(argv=None):
     """jfsreplay の入口。"""
     ap = argparse.ArgumentParser(prog="jfsreplay", description="JuiceFS の write の記録と流し直し")
@@ -257,9 +275,16 @@ def main(argv=None):
                     help="up: compaction の値（例 kaz-compaction-delta-trigger=30）。何回でも指定できる")
     tv.add_argument("--create-bucket", action="store_true",
                     help="up: 試験の volume が無いとき、本物の Drive（rclone serve s3）にバケットと volume を作ってよい")
+    sd = sp.add_parser("seed", help="流し直しが clone する種のファイルを試験の volume に作る")
+    sd.add_argument("trace")
+    sd.add_argument("--limit", default=None, help="種の上限（既定は profiles.toml の seed_limit_gib、例 32G）")
+    sd.add_argument("--length", default=None, help="種の長さ（既定は trace の最大 off+size を 64 MiB に切り上げ）")
+    sd.add_argument("--create-bucket", action="store_true", help="試験の volume が無いとき、本物の Drive に作ってよい")
     a = ap.parse_args(argv)
     if a.cmd == "testvol":
         return _testvol(a)
+    if a.cmd == "seed":
+        return _seed(a)
     if a.cmd == "record":
         path = a.accesslog or os.path.join(os.path.expanduser(a.mountpoint), ".accesslog")
         url = a.metrics_url if a.metrics_url is not None else config.load_profile(a.profile).metrics_url
