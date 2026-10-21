@@ -284,6 +284,28 @@ class TestCheck(MeasureTestBase):
         self.assertIn("metrics.tsv", out)
         self.assertIn("古い", out)
 
+    def _start_and_wait(self):
+        self.assertEqual(self.jfs("start", "test", self.out)[0], 0)
+        self.assertTrue(self.wait_for(os.path.join(self.out, "metrics.tsv")))
+        self.assertTrue(self.wait_for(os.path.join(self.out, "llen.tsv")))
+
+    def test_check_latest_scrape_error(self):
+        self._start_and_wait()
+        now = int(time.time())
+        with open(os.path.join(self.out, "metrics.tsv"), "a") as f:
+            f.write("%d\tiso\t_scrape_error\t1\n" % (now + 1))
+        rc, out = self.jfs("check", self.out)
+        self.assertNotEqual(rc, 0)
+        self.assertIn("_scrape_error", out)
+
+    def test_check_latest_llen_error(self):
+        self._start_and_wait()
+        with open(os.path.join(self.out, "llen.tsv"), "a") as f:
+            f.write("%d\tiso\terror\tConnectionError\n" % int(time.time()))
+        rc, out = self.jfs("check", self.out)
+        self.assertNotEqual(rc, 0)
+        self.assertIn("llen.tsv の最新の記録が取得の失敗", out)
+
     def test_check_missing_run_json(self):
         os.makedirs(self.out)
         rc, out = self.jfs("check", self.out)
@@ -329,6 +351,13 @@ class TestRedact(unittest.TestCase):
         got = redact_config({"a": "http://x", "token_ttl": 5, "k": [{"URL": "z"}, "plain"], "ok": "fine"})
         self.assertEqual(got, {"a": "<redacted>", "token_ttl": "<redacted>",
                                "k": [{"URL": "<redacted>"}, "plain"], "ok": "fine"})
+        # 敏感な名前の下は、dict や list でも丸ごと伏せる
+        got = redact_config({"Bucket": {"name": "x"}, "Keys": ["a", {"b": 1}], "keep": {"n": 1}})
+        self.assertEqual(got, {"Bucket": "<redacted>", "Keys": "<redacted>", "keep": {"n": 1}})
+        # 名前に :// を含む項目は、名前も値も伏せる
+        got = redact_config({"redis://h:1/0": {"x": 1}, "ok": 2})
+        self.assertEqual(got, {"<redacted:0>": "<redacted>", "ok": 2})
+        self.assertNotIn("redis", json.dumps(got))
 
 
 class TestSamplerFormats(unittest.TestCase):
@@ -358,6 +387,35 @@ class TestSamplerFormats(unittest.TestCase):
             self.assertEqual(len(lines), 2)
             self.assertTrue(lines[1].startswith("1_0_10\t") and lines[1].endswith("\t10"))
             self.assertEqual(samplers.scan_cache(cache).keys(), {"1_0_10"})
+
+    def test_keys_scan_oserror_logged_and_continues(self):
+        from unittest import mock
+        from measure import samplers
+        calls = []
+
+        def fake_scan(root):
+            calls.append(1)
+            if len(calls) == 2:
+                raise PermissionError("denied")
+            return {"1_0_1": (1, 1, 1)} if len(calls) == 1 else {"1_0_1": (1, 1, 1), "2_0_1": (2, 2, 2)}
+
+        sleeps = []
+
+        def fake_sleep(n):
+            sleeps.append(n)
+            if len(sleeps) == 3:
+                raise KeyboardInterrupt
+
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(samplers, "scan_cache", fake_scan), \
+                mock.patch.object(samplers.time, "sleep", fake_sleep), \
+                mock.patch("sys.stderr", new_callable=__import__("io").StringIO) as err:
+            with self.assertRaises(KeyboardInterrupt):
+                samplers.run_keys("x", d, 1)
+            with open(os.path.join(d, "keys-events.tsv")) as f:
+                ev = f.read().splitlines()
+        self.assertIn("PermissionError", err.getvalue())
+        self.assertEqual(len(ev), 1)  # 失敗の回は偽の del を出さず、次の回の add だけ
+        self.assertIn("\tadd\t2_0_1\t", ev[0])
 
 
 if __name__ == "__main__":

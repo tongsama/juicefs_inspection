@@ -128,6 +128,22 @@ def cmd_start(a, profile, common):
     return 0
 
 
+def latest_is_error(path, kind, tail=65536):
+    """記録の末尾を読み、最新の標本が失敗の行か。metrics は最後の時刻の行に _scrape_error があるか、
+    llen は最後の行の 3 列目が error か。"""
+    with open(path, "rb") as f:
+        f.seek(0, os.SEEK_END)
+        f.seek(max(0, f.tell() - tail))
+        lines = f.read().decode("utf-8", "replace").splitlines()
+    rows = [l.split("\t") for l in lines if l.count("\t") >= 2]
+    if not rows:
+        return False
+    if kind == "llen":
+        return rows[-1][2] == "error"
+    last = rows[-1][0]
+    return any(r[0] == last and r[2] == "_scrape_error" for r in rows)
+
+
 def cmd_check(a, profile, common):
     """常駐が全部生きているか、各記録の最後の更新、足りない材料を出す。足りなければ 1。"""
     run = read_run(a.outdir)
@@ -149,6 +165,9 @@ def cmd_check(a, profile, common):
             print("%s: 最後の更新は %d 秒前" % (fn, age))
             if age > lim:
                 problems.append("%s の更新が古い（%d 秒前、間隔の %d 倍 = %d 秒を超えた）" % (fn, age, STALE_FACTOR, lim))
+            if latest_is_error(path, kind):
+                problems.append("%s の最新の記録が取得の失敗（%s）" % (
+                    fn, "_scrape_error" if kind == "metrics" else "error"))
     names = os.listdir(a.outdir)
     for pre in ("keys-snapshot-", "metrics-start-", "breakdown-start-"):
         if not any(n.startswith(pre) for n in names):

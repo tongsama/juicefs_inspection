@@ -107,7 +107,12 @@ def run_keys(root, outdir, interval, once=False):
                 return
             time.sleep(interval)
             now = int(time.time())
-            cur = scan_cache(root)
+            try:
+                cur = scan_cache(root)
+            except OSError as e:  # 走査の失敗は記録し、前回の状態を保ったまま次の回へ（偽の del を出さない）
+                print("%s keys: キャッシュの走査に失敗（%s）、次の回で再試行" % (now_iso(now), type(e).__name__),
+                      file=sys.stderr, flush=True)
+                continue
             for k in cur.keys() - prev.keys():
                 a, c, s = cur[k]
                 ev.write("%d\tadd\t%s\t%d\t%d\t%d\n" % (now, k, a, c, s))

@@ -22,13 +22,20 @@ CATS = ("full", "partial", "hidden", "dead", "new")
 
 def redact_config(obj, key=""):
     """mount の設定（JSON を読んだもの）を再帰的に走査し、接続先や鍵らしい項目を <redacted> にして返す。
-    項目名（大小文字を無視）に key／secret／pass／token／addr／url／bucket を含む、または文字列の値に :// を含むものが対象。"""
-    if isinstance(obj, dict):
-        return {k: redact_config(v, k) for k, v in obj.items()}
-    if isinstance(obj, list):
-        return [redact_config(v, key) for v in obj]
+    項目名（大小文字を無視）に key／secret／pass／token／addr／url／bucket を含む項目は、値が何の型でも丸ごと伏せる。
+    文字列の値に :// を含むものも伏せる。項目名に :// を含むものは、名前自体を <redacted:N> に替えて値も伏せる。"""
     if any(w in key.lower() for w in REDACT_KEY_WORDS):
         return REDACTED
+    if isinstance(obj, dict):
+        out = {}
+        for n, (k, v) in enumerate(obj.items()):
+            if "://" in k:
+                out["<redacted:%d>" % n] = REDACTED
+            else:
+                out[k] = redact_config(v, k)
+        return out
+    if isinstance(obj, list):
+        return [redact_config(v, key) for v in obj]
     if isinstance(obj, str) and "://" in obj:
         return REDACTED
     return obj
