@@ -1,6 +1,8 @@
 """replay の accesslog 解析、trace、record、verify の試験。testdata と一時ファイルだけを使い、本番の mount には触れない。"""
+import http.server
 import json
 import os
+import threading
 import tempfile
 import time
 import unittest
@@ -15,6 +17,32 @@ INO = 627902
 
 def _line(ts, pid, body, dur="0.001000"):
     return "2026.10.14 %s [uid:0,gid:0,pid:%d] %s - OK <%s>\n" % (ts, pid, body, dur)
+
+
+class _FakeMetrics:
+    """/metrics を返す偽の HTTP server。呼ぶたびに values の次の (count, sum) を返す。"""
+
+    def __init__(self, values):
+        self.values = list(values)
+        outer = self
+
+        class H(http.server.BaseHTTPRequestHandler):
+            def do_GET(self):
+                c, s = outer.values.pop(0)
+                body = ("juicefs_fuse_written_size_bytes_count %r\njuicefs_fuse_written_size_bytes_sum %r\n" % (c, s)).encode()
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(body)
+
+            def log_message(self, *a):
+                pass
+        self.srv = http.server.HTTPServer(("127.0.0.1", 0), H)
+        self.url = "http://127.0.0.1:%d/metrics" % self.srv.server_port
+        threading.Thread(target=self.srv.serve_forever, daemon=True).start()
+
+    def close(self):
+        self.srv.shutdown()
+        self.srv.server_close()
 
 
 class ParseTest(unittest.TestCase):
@@ -114,6 +142,37 @@ class VerifyTest(unittest.TestCase):
             with tempfile.TemporaryDirectory() as d:
                 t, out = self._setup(d, c, b)
                 self.assertEqual(cli.main(["verify", t, out]), code, (c, b))
+
+    def _record_with_metrics(self, d, stop_vals):
+        """write 2 回（全 inode で 4196 バイト）を記録し、開始・終了の metrics を偽 server から取る。"""
+        src = os.path.join(d, "src")
+        with open(src, "w") as f:
+            f.write(_line("13:00:10.500000", 5, "write (627902,4096,0,9)") + _line("13:00:11.500000", 5, "write (1,100,0,9)"))
+        fake = _FakeMetrics([(1000.0, 500000.0), stop_vals])
+        try:
+            cli.record(os.path.join(d, "o.tsv"), INO, src, exit_at_eof=True, metrics_url=fake.url)
+        finally:
+            fake.close()
+        return os.path.join(d, "o.tsv")
+
+    def test_record_stores_exact_metrics_and_verify_uses_them(self):
+        for stop, code in (((1002.0, 504196.0), 0), ((1002.0, 504196.0 + 4200), 1), ((1010.0, 504196.0), 1)):
+            with tempfile.TemporaryDirectory() as d:
+                t = self._record_with_metrics(d, stop)
+                with open(t + ".meta.json") as f:
+                    meta = json.load(f)
+                self.assertEqual(meta["metrics_start"]["count"], 1000.0)
+                self.assertEqual(meta["metrics_stop"]["sum"], stop[1])
+                out = os.path.join(d, "m")
+                os.mkdir(out)  # metrics.tsv なし: meta の値だけで判定できる
+                self.assertEqual(cli.main(["verify", t, out]), code, stop)
+
+    def test_verify_falls_back_to_interpolation_without_meta_metrics(self):
+        with tempfile.TemporaryDirectory() as d:
+            t, out = self._setup(d, 100, 100000)
+            ratio, lines = cli.verify(t, out, 0.01)
+            self.assertLess(ratio, 0.01)
+            self.assertIn("線形補間", lines[0])
 
     def test_keepalive_excluded(self):
         """idle 時の "#" 行は、行の総数にも Unknown にも入れず keepalive として数える。"""

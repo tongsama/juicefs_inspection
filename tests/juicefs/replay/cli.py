@@ -4,6 +4,7 @@ record は <mountpoint>/.accesslog を読むだけで、mount には何も書か
 import argparse
 import json
 import os
+import re
 import signal
 import sys
 import time
@@ -13,19 +14,34 @@ from replay import accesslog, trace
 
 FUSE_COUNT = "juicefs_fuse_written_size_bytes_count"
 FUSE_SUM = "juicefs_fuse_written_size_bytes_sum"
+FUSE_INCLUDE = re.compile(r"^juicefs_fuse_written_size_bytes_(sum|count)")
+
+
+def _scrape_fuse(url):
+    """url の /metrics から fuse_written_size_bytes の _count／_sum を {"count":, "sum":} で返す。取れなければ None。"""
+    if not url:
+        return None
+    try:
+        m = metrics_io.scrape(url, FUSE_INCLUDE, timeout=10)
+        return {"count": m[FUSE_COUNT], "sum": m[FUSE_SUM], "t": time.time()}
+    except (OSError, KeyError, ValueError) as e:
+        print("警告: metrics を取得できません（%s）。verify は metrics.tsv の補間に切り替わります" % type(e).__name__, file=sys.stderr)
+        return None
 
 
 class _Stop(Exception):
     """signal で記録を止めるための内部の例外。"""
 
 
-def record(out, inode, accesslog_path, exit_at_eof=False, poll_s=0.1):
+def record(out, inode, accesslog_path, exit_at_eof=False, poll_s=0.1, metrics_url=None):
     """accesslog_path を読み続け、対象 inode の Op だけを out に追記する。行を読んだらすぐ絞って書く
-    （mount 側の buffer 10,240 行を溢れさせないため）。止まるときに out.meta.json へ行の総数と Unknown の数を書く。
+    （mount 側の buffer 10,240 行を溢れさせないため）。metrics_url があれば、.accesslog を開いた直後と閉じる直前の fuse_written_size_bytes を meta に保存する（verify の厳密な突き合わせ用）。
+    止まるときに out.meta.json へ行の総数と Unknown の数を書く。
     戻り値は meta の dict。"""
     f = open(accesslog_path, "rb")  # 開けること自体が開始時の確認になる（失敗は OSError）
     meta = {"inode": inode, "lines_total": 0, "keepalive": 0, "unknown": 0, "ops": 0, "unknown_samples": [],
             "all_write_ops": 0, "all_write_bytes": 0, "started": time.time()}
+    meta["metrics_start"] = _scrape_fuse(metrics_url)
     pidfile = out + ".pid"
     with open(pidfile, "w") as pf:
         pf.write(str(os.getpid()))
@@ -69,6 +85,7 @@ def record(out, inode, accesslog_path, exit_at_eof=False, poll_s=0.1):
     finally:
         for s, h in old.items():
             signal.signal(s, h)
+        meta["metrics_stop"] = _scrape_fuse(metrics_url)
         f.close()
         meta["stopped"] = time.time()
         with open(out + ".meta.json", "w", encoding="utf-8") as m:
@@ -128,13 +145,21 @@ def verify(out, outdir, limit):
     if not meta.get("all_write_ops"):
         return None, ["記録に全 inode の write がありません（all_write_ops が 0）"]
     t0, t1 = meta["started"], meta["stopped"]
-    m = metrics_io.load(os.path.join(outdir, "metrics.tsv"))
-    dc = _delta_between(m.get(FUSE_COUNT, []), t0, t1)
-    ds = _delta_between(m.get(FUSE_SUM, []), t0, t1)
+    ms, me = meta.get("metrics_start"), meta.get("metrics_stop")
+    if ms and me:
+        dc, ds = me["count"] - ms["count"], me["sum"] - ms["sum"]
+        if dc < 0 or ds < 0:
+            return None, ["記録中に mount が再起動した可能性があります（counter が減少）。取り直してください"]
+        src = "record の開始・終了時に取得した値"
+    else:
+        m = metrics_io.load(os.path.join(outdir, "metrics.tsv"))
+        dc = _delta_between(m.get(FUSE_COUNT, []), t0, t1)
+        ds = _delta_between(m.get(FUSE_SUM, []), t0, t1)
+        src = "metrics.tsv のサンプル間の線形補間（meta に開始・終了の値なし）"
     if dc is None or ds is None:
         return None, ["記録の区間 [%d, %d] が %s／%s のサンプルの範囲に収まりません" % (t0, t1, FUSE_COUNT, FUSE_SUM)]
     ops = [o for o in trace.load(out) if o.kind == "write" and o.status == "OK"]
-    lines = ["区間 %.0f - %.0f（%.0f 秒）" % (t0, t1, t1 - t0)]
+    lines = ["区間 %.0f - %.0f（%.0f 秒）、metrics の出所: %s" % (t0, t1, t1 - t0, src)]
     ratios = []
     for name, rec, met in (("回数", meta["all_write_ops"], dc), ("バイト", meta["all_write_bytes"], ds)):
         r = abs(met - rec) / rec if rec else None
@@ -166,6 +191,8 @@ def main(argv=None):
     r.add_argument("out")
     r.add_argument("--inode", type=int, required=True)
     r.add_argument("--mountpoint", default="~/mnt_juicefs")
+    r.add_argument("--profile", default="prod", help="metrics URL を取るプロファイル（既定 prod）")
+    r.add_argument("--metrics-url", help="metrics URL を直接指定（'' で取得しない）")
     r.add_argument("--accesslog", help="（試験用）.accesslog の代わりに読む path")
     r.add_argument("--exit-at-eof", action="store_true", help="（試験用）EOF で止まる")
     s = sp.add_parser("stop", help="動いている record を止める")
@@ -179,8 +206,9 @@ def main(argv=None):
     a = ap.parse_args(argv)
     if a.cmd == "record":
         path = a.accesslog or os.path.join(os.path.expanduser(a.mountpoint), ".accesslog")
+        url = a.metrics_url if a.metrics_url is not None else config.load_profile(a.profile).metrics_url
         try:
-            meta = record(a.out, a.inode, path, a.exit_at_eof)
+            meta = record(a.out, a.inode, path, a.exit_at_eof, metrics_url=url)
         except OSError as e:
             print("エラー: %s を開けません（%s）" % (path, e), file=sys.stderr)
             return 2
