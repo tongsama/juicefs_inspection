@@ -122,6 +122,24 @@ class ProgressTest(unittest.TestCase):
         self.assertEqual(new.splitlines()[0], old.stdout.splitlines()[0])  # 期間の行
 
 
+    def test_progress_counter_reset_matches_old_script(self):
+        """3 点目で counter が戻った（mount のし直し）入力でも、旧スクリプトと共通の項目が行単位で一致する。"""
+        os.remove(os.path.join(self.d, "metrics.tsv"))
+        for i, f in enumerate((0, 1, 0.5)):
+            metrics_io.append_sample(os.path.join(self.d, "metrics.tsv"), T0 + 600 * i, sample(i, f))
+        a, b = T0, T0 + 1200
+        old = subprocess.run(["bash", os.path.join(OLD, "progress_kaz.sh"), "-f", os.path.join(self.d, "metrics.tsv"),
+                              "@%d" % a, "@%d" % b], capture_output=True, text=True, env=dict(os.environ, TZ="Asia/Tokyo"))
+        self.assertEqual(old.returncode, 0, old.stderr)
+        new = report.progress(self.d, str(a), str(b))
+        want = [l for l in old.stdout.splitlines() if l.strip()]
+        want = want[want.index("[流入]"):]
+        self.assertEqual(numbers_block(new), want)
+        # 戻った分は足し合わせ: staging は 1 + 0.5 = 1.5 GiB
+        self.assertIn("書き込み（staging）    1.5 GiB", new)
+        self.assertEqual(new.splitlines()[0], old.stdout.splitlines()[0])
+
+
 class CompareTest(unittest.TestCase):
     def test_compare_reads_old_gz(self):
         gz = os.path.join(OLD, "metrics.tsv.gz")
@@ -161,13 +179,18 @@ class BootTest(unittest.TestCase):
         t = lambda hms: int(time.mktime(time.strptime("2026-10-21 " + hms, "%Y-%m-%d %H:%M:%S")))
         with tempfile.TemporaryDirectory() as d:
             make_dir(d)
-            with open(os.path.join(d, "keys-snapshot-%d.tsv" % (T0 - 10)), "w") as f:
-                f.write("key\tatime\tctime\tsize\n100_0_4096\t1\t1\t4100\n")
+            hdr = "key\tatime\tctime\tsize\n"
+            with open(os.path.join(d, "keys-snapshot-%d.tsv" % (T0 - 1000)), "w") as f:  # 古い snapshot
+                f.write(hdr + "70_0_4096\t1\t1\t4100\n")
+            with open(os.path.join(d, "keys-snapshot-%d.tsv" % (T0 - 10)), "w") as f:  # 直前の snapshot（最大 id 100）
+                f.write(hdr + "100_0_4096\t1\t1\t4100\n")
             with open(os.path.join(d, "keys-events.tsv"), "w") as f:
-                f.write("%d\tadd\t50_0_4096\t5\t5\t1000\n" % (T0 + 100))   # 以前あって消えた
-                f.write("%d\tdel\t50_0_4096\t5\t5\t1000\n" % (T0 + 50))
-                f.write("%d\tadd\t60_0_4096\t5\t5\t2000\n" % (T0 + 200))   # 追跡前に消えた/見ていない
-                f.write("%d\tadd\t900_0_4096\t5\t5\t3000\n" % (T0 + 300))  # 新しい slice は補充ではない
+                f.write("%d\tdel\t50_0_4096\t5\t5\t%d\n" % (T0 + 50, G))
+                f.write("%d\tadd\t50_0_4096\t5\t5\t%d\n" % (T0 + 100, G))        # 消えた後に補充: evicted 1 GiB
+                f.write("%d\tadd\t70_0_4096\t5\t5\t%d\n" % (T0 + 200, 2 * G))    # 古い snapshot にだけある: before-tracking 2 GiB
+                f.write("%d\tadd\t60_0_4096\t5\t5\t%d\n" % (T0 + 250, G // 2))   # 旧スクリプトの規則では add は seen: before-tracking 0.5 GiB
+                f.write("%d\tadd\t100_0_4096\t5\t5\t%d\n" % (T0 + 260, 7 * G))   # 直前の snapshot にある: 除外
+                f.write("%d\tadd\t900_0_4096\t5\t5\t%d\n" % (T0 + 300, 9 * G))   # 最大 id より新しい: 除外
                 f.write("broken line\n")
             marks = {"起動開始": "10:00:00", "ログイン画面": "10:01:18", "ログイン完了": "10:01:48", "アプリ": "10:04:30"}
             out = boot.analyze(d, "2026-10-21 10:00:00", "2026-10-21 10:10:00", marks)
@@ -175,9 +198,16 @@ class BootTest(unittest.TestCase):
         self.assertIn("| ログイン画面 | 10:01:18 | 1.3 |", out)
         self.assertIn("| ログイン完了 | 10:01:48 | 1.8 |", out)
         self.assertIn("| アプリ | 10:04:30 | 4.5 |", out)
-        self.assertIn("GET の補充: 2 ファイル", out)
-        self.assertIn("evicted ", out)
-        self.assertIn("never-seen", out)
+        self.assertIn("最大 slice id: 100", out)
+        self.assertIn("GET の補充: 3 ファイル、3.50 GiB", out)
+        self.assertIn("  evicted                    1.00 GiB   28.6%", out)
+        self.assertIn("  evicted-before-tracking    2.50 GiB   71.4%", out)
+        self.assertIn("  never-seen                 0.00 GiB    0.0%", out)
+        self.assertIn("{'%s': 1.0}" % time.strftime("%H:00", time.localtime(T0 + 50)), out)  # 消された時間帯
+        # 補充の分ごと: T0+100 と T0+200 と T0+250 は 10:01 と 10:03 と 10:04
+        self.assertIn("10:01   1.00   0.00   0.00", out)
+        self.assertIn("10:03   0.00   2.00   0.00", out)
+        self.assertIn("10:04   0.00   0.50   0.00", out)
 
     def test_boot_without_snapshot(self):
         with tempfile.TemporaryDirectory() as d:
