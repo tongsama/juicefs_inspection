@@ -208,7 +208,8 @@ def _testvol(a):
                     print("エラー: --set は 名前=値 の形にする: %s" % kv, file=sys.stderr)
                     return 2
                 flags[k.lstrip("-")] = _parse_value(v)
-            info = testvol.up(profile, {"name": "cli", "mode": a.mode, "flags": flags})
+            info = testvol.up(profile, {"name": "cli", "mode": a.mode, "flags": flags},
+                              create_bucket=a.create_bucket)
             for k in ("meta", "mountpoint", "metrics", "started_redis", "started_proxy", "formatted"):
                 print("%s: %s" % (k, info[k]))
             print("mount のオプション: %s" % " ".join(info["mount_args"]))
@@ -254,6 +255,8 @@ def main(argv=None):
     tv.add_argument("--mode", help="up: compaction の mode（delta／block など）")
     tv.add_argument("--set", action="append", default=[], metavar="名前=値",
                     help="up: compaction の値（例 kaz-compaction-delta-trigger=30）。何回でも指定できる")
+    tv.add_argument("--create-bucket", action="store_true",
+                    help="up: 試験の volume が無いとき、本物の Drive（rclone serve s3）にバケットと volume を作ってよい")
     a = ap.parse_args(argv)
     if a.cmd == "testvol":
         return _testvol(a)

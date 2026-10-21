@@ -174,6 +174,77 @@ class TestSafety(unittest.TestCase):
         self.assertEqual(calls, [])
 
 
+class TestFixRound1(unittest.TestCase):
+    """Ruling 8（state の置き場所は 0700）と Ruling 9（s3 の新規 format は --create-bucket が要る）。"""
+
+    def setUp(self):
+        self.prod, self.test = _profiles()
+        self.kw = dict(prod=self.prod, prod_redis=PROD_REDIS)
+        self.tmp = tempfile.mkdtemp(prefix="jfs-fix1-")
+        self.addCleanup(shutil.rmtree, self.tmp, ignore_errors=True)
+
+    def spec(self, **kw):
+        """一時の path と空いた port（Redis は動いていない）の Spec。"""
+        base = dict(state_dir=os.path.join(self.tmp, "state"), mountpoint=os.path.join(self.tmp, "mnt"),
+                    cache_dir=os.path.join(self.tmp, "cache"), redis_addr=("127.0.0.1", _free_port()),
+                    proxy_addr=("127.0.0.1", _free_port()))
+        base.update(kw)
+        return dataclasses.replace(testvol.spec_from_profile(self.test), **base)
+
+    def test_state_dir_private(self):
+        spec = self.spec()
+        os.makedirs(spec.path("redis"), mode=0o755)
+        os.chmod(spec.state_dir, 0o755)
+        os.chmod(spec.path("redis"), 0o755)
+        testvol.prepare_state_dir(spec)
+        for d in (spec.state_dir, spec.path("redis")):
+            self.assertEqual(os.stat(d).st_mode & 0o777, 0o700, d)
+        spec2 = self.spec(state_dir=os.path.join(self.tmp, "new", "state"))
+        testvol.prepare_state_dir(spec2)
+        for d in (spec2.state_dir, spec2.path("redis")):
+            self.assertEqual(os.stat(d).st_mode & 0o777, 0o700, d)
+
+    def test_up_s3_unformatted_requires_create_bucket(self):
+        spec = self.spec(storage="s3")
+        calls = []
+        with self.assertRaises(testvol.CreateBucketRequired) as cm:
+            testvol.up(self.test, {"name": "default"}, spec=spec, run=lambda *a, **k: calls.append(a), **self.kw)
+        msg = str(cm.exception)
+        self.assertIn("--create-bucket", msg)
+        self.assertIn("Drive", msg)
+        self.assertEqual(calls, [])
+        for d in (spec.state_dir, spec.mountpoint, spec.cache_dir):  # mkdir もしていない
+            self.assertFalse(os.path.exists(d), d)
+        self.assertIsNone(testvol._redis_dbsize(spec.redis_addr, spec.db))  # Redis も起動していない
+        # ensure_format 単独でも、フラグなしの s3 は鍵を読む前に止まる
+        with self.assertRaises(testvol.CreateBucketRequired):
+            testvol.ensure_format(spec, prod_format=(4096, "zstd"), run=lambda *a, **k: calls.append(a))
+        self.assertEqual(calls, [])
+
+    def test_create_bucket_passes_keys_by_env(self):
+        script = os.path.join(self.tmp, "rclone.sh")
+        with open(script, "w") as f:
+            f.write('RCLONE_SERVE_S3_ACCESS_KEY="fake-ak"\nRCLONE_SERVE_S3_SECRET="fake-sk"\nRCLONE_SERVE_S3_PORT=18080\n')
+        old = testvol.RCLONE_SCRIPT
+        testvol.RCLONE_SCRIPT = script
+        self.addCleanup(setattr, testvol, "RCLONE_SCRIPT", old)
+        got = []
+        spec = self.spec(storage="s3")
+        self.assertTrue(testvol.ensure_format(spec, prod_format=(4096, "zstd"), create_bucket=True,
+                                              run=lambda cmd, **k: got.append((cmd, k))))
+        cmd, k = got[0]
+        self.assertNotIn("fake-ak", " ".join(cmd))
+        self.assertNotIn("fake-sk", " ".join(cmd))
+        self.assertIn("http://127.0.0.1:18080/juicefs-kaz-test", cmd)
+        self.assertEqual((k["env"]["ACCESS_KEY"], k["env"]["SECRET_KEY"]), ("fake-ak", "fake-sk"))
+
+    def test_file_storage_needs_no_flag(self):
+        got = []
+        spec = self.spec(storage="file", bucket=os.path.join(self.tmp, "bucket") + "/")
+        self.assertTrue(testvol.ensure_format(spec, prod_format=(4096, "zstd"), run=lambda cmd, **k: got.append(cmd)))
+        self.assertEqual(got[0][:4], [spec.binary, "format", "--storage", "file"])
+
+
 class TestMountFlags(unittest.TestCase):
     def test_mount_flags_override_compaction(self):
         base = testvol.read_mount_flags(FLAGS)
@@ -265,6 +336,8 @@ class TestIntegration(unittest.TestCase):
         try:
             info = testvol.up(test, settings, spec=spec, **kw)
             self.assertTrue(os.path.ismount(spec.mountpoint))
+            for d in (spec.state_dir, spec.path("redis")):  # Ruling 8: 鍵が AOF に入るので 0700
+                self.assertEqual(os.stat(d).st_mode & 0o777, 0o700, d)
             self.assertNotIn("password", repr(info).lower())
             p = os.path.join(spec.mountpoint, "hello.bin")
             data = os.urandom(1 << 20)

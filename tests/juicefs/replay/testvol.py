@@ -39,6 +39,16 @@ class SafetyError(Exception):
     """試験の設定が本番と重なるときの例外。これが出たら何も変えずに止まる。"""
 
 
+class CreateBucketRequired(SafetyError):
+    """s3（本物の Drive）の上に volume を新しく作るのに、--create-bucket が無いときの例外（Ruling 9）。
+    何も起動・作成する前に投げる。"""
+
+
+CREATE_BUCKET_MSG = ("試験の volume がまだ無いので、up は本物の Google Drive（rclone serve s3）の上に"
+                     "バケット %s と volume を新しく作ることになります。作ってよいときだけ "
+                     "`jfsreplay testvol up --create-bucket` で実行してください（local の file storage では不要）")
+
+
 @dataclasses.dataclass(frozen=True)
 class Spec:
     """試験の volume の資源の置き場所と port。既定は profiles.toml の test と common から作る（spec_from_profile）。
@@ -328,9 +338,23 @@ def _stop_pid(pidfile, expect, timeout=10):
 _CHILDREN = {}
 
 
+def _private_dir(path):
+    """path を mode 0700 で作る。既にあれば 0700 に直す。"""
+    os.makedirs(path, mode=0o700, exist_ok=True)
+    if os.stat(path).st_mode & 0o777 != 0o700:
+        os.chmod(path, 0o700)
+
+
+def prepare_state_dir(spec):
+    """state_dir と Redis のデータの置き場所を 0700 にする（Ruling 8: juicefs format が rclone の鍵を
+    volume の Format に保存し、それが試験の Redis の AOF に入るため、他の user から読めないようにする）。"""
+    _private_dir(spec.state_dir)
+    _private_dir(spec.path("redis"))
+
+
 def _spawn(cmd, pidfile, log):
     """cmd を session を分けて起動し、pid を pidfile に書いて Popen を返す（出力は log へ）。"""
-    os.makedirs(os.path.dirname(pidfile), exist_ok=True)
+    _private_dir(os.path.dirname(pidfile))
     with open(log, "ab") as lf:
         p = subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=lf, stderr=subprocess.STDOUT,
                              start_new_session=True, cwd=SUITE_DIR)
@@ -376,8 +400,8 @@ def ensure_redis(spec):
     """試験の Redis が動いていなければ起動する（AOF で state_dir/redis に保存）。起動したら True。"""
     if _redis_dbsize(spec.redis_addr, spec.db) is not None:
         return False
+    prepare_state_dir(spec)
     d = spec.path("redis")
-    os.makedirs(d, exist_ok=True)
     log = spec.path("redis.log")
     host, port = spec.redis_addr
     p = _spawn([spec.redis_server, "--bind", host, "--port", str(port), "--dir", d, "--save", "",
@@ -422,11 +446,26 @@ def is_formatted(spec):
     return bool(_redis_dbsize(spec.redis_addr, spec.db))
 
 
-def ensure_format(spec, prod_format=None, run=_run):
+def _likely_formatted(spec):
+    """副作用なしで volume があるかを推す: Redis が動いていれば DBSIZE > 0、止まっていれば AOF に中身があるか。"""
+    n = _redis_dbsize(spec.redis_addr, spec.db)
+    if n is not None:
+        return n > 0
+    d = os.path.join(spec.path("redis"), "appendonlydir")
+    try:
+        return any(os.path.getsize(os.path.join(d, f)) > 0 for f in os.listdir(d))
+    except OSError:
+        return False
+
+
+def ensure_format(spec, prod_format=None, run=_run, create_bucket=False):
     """volume が無ければ juicefs format する（block size と圧縮は本番の値、trash-days は 0）。
-    s3 なら rclone の鍵を環境変数で渡し、バケットが無ければ juicefs format が作る。format したら True。"""
+    s3 は create_bucket=True のときだけ（無ければ鍵を読む前に CreateBucketRequired）。s3 なら rclone の鍵を
+    環境変数で渡し、バケットが無ければ juicefs format が作る。format したら True。"""
     if is_formatted(spec):
         return False
+    if spec.storage == "s3" and not create_bucket:
+        raise CreateBucketRequired(CREATE_BUCKET_MSG % spec.bucket_name)
     bs, comp = prod_format or prod_format_values()
     env, hidden, bucket = None, (), spec.bucket
     if spec.storage == "s3":
@@ -450,7 +489,8 @@ def mount(spec, settings, run=_run, flags_path=FLAGS_PATH, args=None):
     args = args if args is not None else mount_args(spec, settings, flags_path)
     if os.path.ismount(spec.mountpoint):
         raise RuntimeError("試験の mountpoint は既に mount されている（down してから up する）: %s" % spec.mountpoint)
-    for d in (spec.mountpoint, spec.cache_dir, spec.state_dir):
+    prepare_state_dir(spec)
+    for d in (spec.mountpoint, spec.cache_dir):
         os.makedirs(d, exist_ok=True)
     cmd = ([spec.binary, "mount", "--background", "--log", spec.path("juicefs.log"), "--cache-dir", spec.cache_dir]
            + args + [spec.meta_url(), spec.mountpoint])
@@ -462,18 +502,23 @@ def mount(spec, settings, run=_run, flags_path=FLAGS_PATH, args=None):
 
 # ---- 公開の操作 ----
 
-def up(profile, settings, spec=None, prod=None, prod_redis=None, prod_format=None, run=_run, flags_path=FLAGS_PATH):
+def up(profile, settings, spec=None, prod=None, prod_redis=None, prod_format=None, run=_run, flags_path=FLAGS_PATH,
+       create_bucket=False):
     """試験の volume を立てる: 安全の確かめ → settings の確かめ → Redis → 中継 → (無ければ) format → mount。
-    安全と settings の確かめは、何かを起動・作成する前に行う。戻り値は表示・記録用の dict（鍵は含まない）。"""
+    安全・settings・--create-bucket（s3 で volume が無いとき）の確かめは、何かを起動・作成する前に行う。
+    Redis が止まっていて AOF に中身があるのに volume が無かった場合だけは、Redis の起動の後に止まる。
+    戻り値は表示・記録用の dict（鍵は含まない）。"""
     spec = spec or spec_from_profile(profile)
     safety_check(profile, spec=spec, prod=prod, prod_redis=prod_redis)
     args = mount_args(spec, settings, flags_path)  # 不正な settings はここで ValueError（まだ何も起動していない）
     for label, path in (("試験のバイナリ", spec.binary), ("redis-server", spec.redis_server)):
         if not os.access(path, os.X_OK):
             raise RuntimeError("%s が実行できない: %s" % (label, path))
+    if spec.storage == "s3" and not create_bucket and not _likely_formatted(spec):
+        raise CreateBucketRequired(CREATE_BUCKET_MSG % spec.bucket_name)  # Ruling 9: 副作用の前に止まる
     started_redis = ensure_redis(spec)
     started_proxy = ensure_proxy(spec)
-    formatted = ensure_format(spec, prod_format=prod_format, run=run)
+    formatted = ensure_format(spec, prod_format=prod_format, run=run, create_bucket=create_bucket)
     mount(spec, settings, run=run, args=args)
     return {"meta": spec.meta_url(), "mountpoint": spec.mountpoint, "metrics": "%s:%d" % spec.metrics_addr,
             "started_redis": started_redis, "started_proxy": started_proxy, "formatted": formatted,
