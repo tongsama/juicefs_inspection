@@ -234,3 +234,13 @@ DEBUGはログ容量の約99.7〜99.9%、正常checksum DEBUGだけで60〜72%�
 
   目標の 0.35 GiB には届いていない。inherit は compaction の出力で常連用が膨らみ、probation は作り直された起動のブロックを失い、share＋B は読まれた実績なしを使い切った後に起動のブロックを降格した。最後の改良（`--kaz-cache-compaction-hot-age`、何度も作り直される範囲の出力を常連用に入れない）は軽い検証のみ。
 - **互換**: キャッシュのファイルの形式は変えていない。管理ファイル `kaz-cache-state.v1`（中身は version 3）は `raw/` の外にあり、無改良の JuiceFS は読まない。古い版は新しい version のファイルを無視する（全部が新入り用で起動、mount は失敗しない）。
+
+## 差分 slice 方式の compaction（2026-10-20〜21、本体 feat/kaz-delta-compaction 67c5c96d）
+
+- 設計は [設計書](superpowers/specs/2026-10-20-kaz-delta-compaction-design.md)、実機の計測は [計測](inspection/delta_slice/2026-10-21/README-ja.md)。
+- [観測、1 晩] 本番の VM のディスクで、staging 1 GiB あたりの compaction の出力（非圧縮）は 6.53 から 0.56 になった（前回の block モードの夜間との比較）。PUT のバイトは 1.54 から 0.37、cache への書き込みは 37.35 GiB から 5.07 GiB。
+- [観測] meta ops は 1 時間あたり約 1.3 倍、平均の所要時間は 17.4 ms から 14.0 ms。record の上限（500）に達した chunk はなかった。
+- [観測、1 回] 一晩たった後の起動で、アプリが使えるまで約 4.5 分（前回の block の判定は 7.9 分）。GET で補充した量 0.33 GiB（前回 0.68 GiB、基準 0.35 GiB。今回はキャッシュのファイルの作成時刻から数えたもので、前回の key_tracker による数え方とは違う）、ghost_hit のうち compaction の出力によるものが 110 から 5 に減った。
+- [未検証] 複数の晩での再現、ゲストの書き込みの場所が違うときの差。
+- [観測、試験 1 回ずつ] 本番の書き込みを記録して流し直す試験で、`--kaz-compaction-delta-trigger` を 99 から 30 に下げると、PUT の回数が約 16% 減った（7,493 → 6,305）。アップロード前に片付けた slice は 13,151 から 14,161 に増え、DELETE の回数は少し増えた。block モードの compaction の出力は、delta の約 4.5 倍（[比較](inspection/delta_slice/2026-10-21-suite/README-ja.md)）。
+- **訂正（2026-10-21）**: 差分 slice 方式の「PUT 約 9 割減」は compaction の出力の PUT だけの見積もりだった。PUT の回数の約 93% は staging のアップロード（ゲストの書き込みの slice）で、compaction は約 7%（10/20 12:28〜14:03 の本番、28,002 回中 1,887 回）。差分方式は compaction のバイトと回数を減らすが、PUT 全体の回数はほとんど変えない。回数を減らすには、アップロード前の片付け（retire）を増やすか、staging のアップロードを減らす手が要る。
