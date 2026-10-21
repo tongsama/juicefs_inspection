@@ -12,6 +12,8 @@ import tempfile
 import threading
 import time
 import signal
+import sys
+import json
 import unittest
 from unittest import mock
 
@@ -542,19 +544,24 @@ class TestUmountWaitsForExit(unittest.TestCase):
             s.close()
         self.assertTrue(testvol.port_free(addr))
 
-    def test_umount_waits_until_process_ends(self):
-        spec = mock.Mock(mountpoint="/nonexistent/mnt", binary="/bin/juicefs", metrics_addr=("127.0.0.1", 1))
-        calls = []
-        pids = [[123], [123], []]
-        with mock.patch("replay.testvol.os.path.ismount", side_effect=[True, False]), \
-                mock.patch("replay.testvol.mount_pids", side_effect=lambda s: pids.pop(0) if pids else []), \
-                mock.patch("replay.testvol.port_free", return_value=True):
-            self.assertTrue(testvol.umount(spec, run=lambda a, **k: calls.append(a)))
-        self.assertEqual(calls[0][:2], ["/bin/juicefs", "umount"])
-        self.assertEqual(pids, [])
+    def _cfg(self, d, pid, ppid):
+        """偽の mountpoint に `.config` を置く。"""
+        os.makedirs(d, exist_ok=True)
+        with open(os.path.join(d, ".config"), "w") as f:
+            json.dump({"Pid": pid, "PPid": ppid}, f)
+
+    def test_pids_from_config_exclude_production(self):
+        """試験の mount の Pid／PPid を `.config` から取り、本番の mount の Pid／PPid は除く。"""
+        d = tempfile.mkdtemp()
+        test_mp, prod_mp = os.path.join(d, "t"), os.path.join(d, "p")
+        self._cfg(test_mp, 200, 100)
+        self._cfg(prod_mp, 100, 50)  # 書き間違いで本番と同じ pid を持つ場合も除く
+        spec = mock.Mock(mountpoint=test_mp)
+        with mock.patch("replay.testvol.PROD_MOUNTPOINTS", (prod_mp,)):
+            self.assertEqual(testvol.mount_pids_from_config(spec), [200])
 
     def test_umount_kills_leftover_test_mount_only(self):
-        """待っても残る試験の mount の process は SIGTERM → SIGKILL で止める。対象は直前に確かめ直した pid だけ。"""
+        """待っても残る試験の mount の process は SIGTERM → SIGKILL で止める。対象は試験のバイナリで動く pid だけ。"""
         spec = mock.Mock(mountpoint="/nonexistent/mnt", binary="/bin/juicefs", metrics_addr=("127.0.0.1", 1))
         alive = {123}
         sent = []
@@ -563,7 +570,9 @@ class TestUmountWaitsForExit(unittest.TestCase):
             if sig == signal.SIGKILL:
                 alive.discard(pid)
         with mock.patch("replay.testvol.os.path.ismount", side_effect=[True, False]), \
-                mock.patch("replay.testvol.mount_pids", side_effect=lambda s: sorted(alive)), \
+                mock.patch("replay.testvol.mount_pids_from_config", return_value=[123]), \
+                mock.patch("replay.testvol._alive_test_pids", side_effect=lambda s, p: sorted(alive & set(p))), \
+                mock.patch("replay.testvol._config_pids", return_value=set()), \
                 mock.patch("replay.testvol.port_free", return_value=True), \
                 mock.patch("replay.testvol.UMOUNT_EXIT_WAIT_S", 0.2), \
                 mock.patch("replay.testvol.KILL_WAIT_S", 0.2), \
@@ -571,13 +580,18 @@ class TestUmountWaitsForExit(unittest.TestCase):
             self.assertTrue(testvol.umount(spec, run=lambda a, **k: None))
         self.assertEqual(sent, [(123, signal.SIGTERM), (123, signal.SIGKILL)])
 
-    def test_mount_pids_matches_only_the_test_mountpoint(self):
-        """mountpoint の引数が完全に一致し、本番の mountpoint を含まない juicefs mount だけを拾う。"""
-        cmd = {"10": [b"/bin/juicefs-delta", b"mount", b"redis://x", b"/home/u/mnt_juicefs_test"],
-               "11": [b"/bin/juicefs", b"mount", b"redis://y", b"/home/u/mnt_juicefs"],
-               "12": [b"/bin/juicefs", b"mount", b"redis://z", b"/home/u/mnt_juicefs_test2"],
-               "13": [b"/usr/bin/python3", b"x.py", b"mount", b"/home/u/mnt_juicefs_test"]}
-        spec = mock.Mock(mountpoint="/home/u/mnt_juicefs_test")
-        with mock.patch("replay.testvol._proc_cmdlines", return_value=cmd), \
-                mock.patch("replay.testvol.PROD_MOUNTPOINTS", ("/home/u/mnt_juicefs",)):
-            self.assertEqual(testvol.mount_pids(spec), [10])
+    def test_never_signals_production_pid(self):
+        """本番の mount の Pid は、試験の pid の一覧に紛れていても signal を送らない。"""
+        spec = mock.Mock(mountpoint="/nonexistent/mnt", binary="/bin/juicefs")
+        with mock.patch("replay.testvol._alive_test_pids", return_value=[100]), \
+                mock.patch("replay.testvol._config_pids", return_value={100}), \
+                mock.patch("replay.testvol.os.kill") as k:
+            testvol._kill_test_mount(spec, [100])
+        k.assert_not_called()
+
+    def test_alive_test_pids_checks_the_binary(self):
+        """実行ファイルが試験のバイナリでない pid（使い回された pid など）は対象にしない。"""
+        spec = mock.Mock(binary=os.path.realpath(sys.executable))
+        self.assertEqual(testvol._alive_test_pids(spec, [os.getpid()]), [os.getpid()])
+        spec2 = mock.Mock(binary="/bin/juicefs-not-this")
+        self.assertEqual(testvol._alive_test_pids(spec2, [os.getpid()]), [])

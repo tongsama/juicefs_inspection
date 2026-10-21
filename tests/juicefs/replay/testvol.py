@@ -538,17 +538,19 @@ def up(profile, settings, spec=None, prod=None, prod_redis=None, prod_format=Non
 
 
 def umount(spec, run=_run):
-    """試験の mount を外す（staging の書き出しを待つ）。mount されていなければ何もしない。"""
+    """試験の mount を外す（staging の書き出しを待つ）。mount されていなければ何もしない。
+    外した後も mount の process は残ることがあり（後始末で長く残る、または待っても終わらない。ユーザーも手動の umount の後に
+    いつも kill している）、metrics の port を持ち続けて次の mount が metrics を出せなくなる（2026-10-21 の実走）。
+    そこで外す前に、試験の mount 自身の `.config` から Pid／PPid を読み、外した後も残ればその pid だけを止める。
+    juicefs の mount の process は cmdline を 1 つの文字列に書き換え 255 文字で切るので、cmdline では mountpoint が分からない。"""
     if not os.path.ismount(spec.mountpoint):
         return False
+    pids = mount_pids_from_config(spec)
     run([spec.binary, "umount", "--flush", spec.mountpoint], timeout=600)
     if not _wait(lambda: not os.path.ismount(spec.mountpoint), 30):
         raise RuntimeError("試験の mount が外れない: %s" % spec.mountpoint)
-    # mount が外れても、mount の process は後始末でしばらく、または待っても終わらずに残り、metrics の port を持ち続ける
-    # （2026-10-21 の実走で次の mount が port を取れなかった。ユーザーも手動の umount の後にいつも kill している）。
-    # 区切った時間だけ待ち、残れば試験の mount の process だけを SIGTERM → SIGKILL で止める。
-    if not _wait(lambda: not mount_pids(spec), UMOUNT_EXIT_WAIT_S):
-        _kill_test_mount(spec)
+    if not _wait(lambda: not _alive_test_pids(spec, pids), UMOUNT_EXIT_WAIT_S):
+        _kill_test_mount(spec, pids)
     if not _wait(lambda: port_free(spec.metrics_addr), 30):
         raise RuntimeError("試験の metrics の port %s:%d が空かない" % spec.metrics_addr)
     return True
@@ -556,52 +558,62 @@ def umount(spec, run=_run):
 
 UMOUNT_EXIT_WAIT_S = 120  # umount の後、試験の mount の process が自分で終わるのを待つ上限
 KILL_WAIT_S = 30  # SIGTERM の後、SIGKILL を送るまで待つ秒数
-PROD_MOUNTPOINTS = (os.path.expanduser("~/mnt_juicefs"),)  # これを引数に持つ process は、決して止めない
+PROD_MOUNTPOINTS = (os.path.expanduser("~/mnt_juicefs"),)  # この mount の Pid／PPid には、決して signal を送らない
 
 
-def _proc_cmdlines():
-    """/proc の各 process の cmdline（引数のリスト、bytes）を {pid の文字列: args} で返す。読めないものは飛ばす。"""
-    out = {}
-    for d in os.listdir("/proc"):
-        if not d.isdigit():
-            continue
+def _config_pids(mountpoint):
+    """mountpoint の `.config`（動いている mount の設定の JSON）の Pid と PPid。読めなければ空の集合。"""
+    try:
+        with open(os.path.join(mountpoint, ".config"), encoding="utf-8") as f:
+            d = json.load(f)
+    except (OSError, ValueError):
+        return set()
+    return {int(d[k]) for k in ("Pid", "PPid") if isinstance(d.get(k), int) and d.get(k) > 1}
+
+
+def mount_pids_from_config(spec):
+    """試験の mount の process の pid（試験の mount の `.config` の Pid／PPid）。本番の mount の Pid／PPid は除く。"""
+    prod = set()
+    for mp in PROD_MOUNTPOINTS:
+        if os.path.realpath(mp) != os.path.realpath(spec.mountpoint):
+            prod |= _config_pids(mp)
+    return sorted(_config_pids(spec.mountpoint) - prod)
+
+
+def _alive_test_pids(spec, pids):
+    """pids のうち、まだ生きていて、実行ファイルが試験のバイナリのもの（pid の使い回しで別の process を止めないため）。"""
+    want = os.path.realpath(spec.binary)
+    out = []
+    for pid in pids:
         try:
-            with open("/proc/%s/cmdline" % d, "rb") as f:
-                out[d] = f.read().rstrip(b"\0").split(b"\0")
+            exe = os.path.realpath(os.readlink("/proc/%d/exe" % pid))
         except OSError:
             continue
+        if exe == want:
+            out.append(pid)
     return out
 
 
-def mount_pids(spec):
-    """試験の mount の process の pid。条件: 実行ファイルの名前が juicefs で始まる、引数に mount がある、
-    引数のどれかが試験の mountpoint と完全に一致する、本番の mountpoint の引数を含まない。"""
-    mp = os.fsencode(spec.mountpoint)
-    prod = {os.fsencode(p) for p in PROD_MOUNTPOINTS}
-    out = []
-    for d, args in _proc_cmdlines().items():
-        if not args or not os.path.basename(args[0]).startswith(b"juicefs"):
-            continue
-        if b"mount" in args and mp in args and not (prod & set(args)):
-            out.append(int(d))
-    return sorted(out)
-
-
-def _kill_test_mount(spec):
-    """待っても終わらない試験の mount の process を止める。送る直前に mount_pids で確かめ直した pid だけに送る。"""
+def _kill_test_mount(spec, pids):
+    """待っても終わらない試験の mount の process を SIGTERM → SIGKILL で止める。送る直前に毎回確かめ直す
+    （生きている、実行ファイルが試験のバイナリ、本番の mount の Pid／PPid ではない）。"""
+    prod = set()
+    for mp in PROD_MOUNTPOINTS:
+        prod |= _config_pids(mp)
     for sig in (signal.SIGTERM, signal.SIGKILL):
-        pids = mount_pids(spec)
-        if not pids:
+        targets = [p for p in _alive_test_pids(spec, pids) if p not in prod]
+        if not targets:
             return
-        for pid in pids:
+        for pid in targets:
             try:
                 os.kill(pid, sig)
             except ProcessLookupError:
                 pass
-        if _wait(lambda: not mount_pids(spec), KILL_WAIT_S):
+        if _wait(lambda: not _alive_test_pids(spec, pids), KILL_WAIT_S):
             return
-    if mount_pids(spec):
-        raise RuntimeError("試験の mount の process が SIGKILL の後も残る（pid %s）" % mount_pids(spec))
+    left = _alive_test_pids(spec, pids)
+    if left:
+        raise RuntimeError("試験の mount の process が SIGKILL の後も残る（pid %s）" % left)
 
 
 def port_free(addr):
