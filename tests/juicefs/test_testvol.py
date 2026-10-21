@@ -11,6 +11,7 @@ import subprocess
 import tempfile
 import threading
 import time
+import signal
 import unittest
 from unittest import mock
 
@@ -524,3 +525,59 @@ class TestIntegration(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestUmountWaitsForExit(unittest.TestCase):
+    """umount の後、mount の process の終わりと metrics の port の空きを待つ（2026-10-21 の実走で port が使用中のまま次の mount が始まった）。"""
+
+    def test_port_free(self):
+        import socket
+        s = socket.socket()
+        s.bind(("127.0.0.1", 0))
+        s.listen(1)
+        addr = s.getsockname()
+        try:
+            self.assertFalse(testvol.port_free(addr))
+        finally:
+            s.close()
+        self.assertTrue(testvol.port_free(addr))
+
+    def test_umount_waits_until_process_ends(self):
+        spec = mock.Mock(mountpoint="/nonexistent/mnt", binary="/bin/juicefs", metrics_addr=("127.0.0.1", 1))
+        calls = []
+        pids = [[123], [123], []]
+        with mock.patch("replay.testvol.os.path.ismount", side_effect=[True, False]), \
+                mock.patch("replay.testvol.mount_pids", side_effect=lambda s: pids.pop(0) if pids else []), \
+                mock.patch("replay.testvol.port_free", return_value=True):
+            self.assertTrue(testvol.umount(spec, run=lambda a, **k: calls.append(a)))
+        self.assertEqual(calls[0][:2], ["/bin/juicefs", "umount"])
+        self.assertEqual(pids, [])
+
+    def test_umount_kills_leftover_test_mount_only(self):
+        """待っても残る試験の mount の process は SIGTERM → SIGKILL で止める。対象は直前に確かめ直した pid だけ。"""
+        spec = mock.Mock(mountpoint="/nonexistent/mnt", binary="/bin/juicefs", metrics_addr=("127.0.0.1", 1))
+        alive = {123}
+        sent = []
+        def kill(pid, sig):
+            sent.append((pid, sig))
+            if sig == signal.SIGKILL:
+                alive.discard(pid)
+        with mock.patch("replay.testvol.os.path.ismount", side_effect=[True, False]), \
+                mock.patch("replay.testvol.mount_pids", side_effect=lambda s: sorted(alive)), \
+                mock.patch("replay.testvol.port_free", return_value=True), \
+                mock.patch("replay.testvol.UMOUNT_EXIT_WAIT_S", 0.2), \
+                mock.patch("replay.testvol.KILL_WAIT_S", 0.2), \
+                mock.patch("replay.testvol.os.kill", side_effect=kill):
+            self.assertTrue(testvol.umount(spec, run=lambda a, **k: None))
+        self.assertEqual(sent, [(123, signal.SIGTERM), (123, signal.SIGKILL)])
+
+    def test_mount_pids_matches_only_the_test_mountpoint(self):
+        """mountpoint の引数が完全に一致し、本番の mountpoint を含まない juicefs mount だけを拾う。"""
+        cmd = {"10": [b"/bin/juicefs-delta", b"mount", b"redis://x", b"/home/u/mnt_juicefs_test"],
+               "11": [b"/bin/juicefs", b"mount", b"redis://y", b"/home/u/mnt_juicefs"],
+               "12": [b"/bin/juicefs", b"mount", b"redis://z", b"/home/u/mnt_juicefs_test2"],
+               "13": [b"/usr/bin/python3", b"x.py", b"mount", b"/home/u/mnt_juicefs_test"]}
+        spec = mock.Mock(mountpoint="/home/u/mnt_juicefs_test")
+        with mock.patch("replay.testvol._proc_cmdlines", return_value=cmd), \
+                mock.patch("replay.testvol.PROD_MOUNTPOINTS", ("/home/u/mnt_juicefs",)):
+            self.assertEqual(testvol.mount_pids(spec), [10])
