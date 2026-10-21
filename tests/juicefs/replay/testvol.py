@@ -54,7 +54,8 @@ class Spec:
     """試験の volume の資源の置き場所と port。既定は profiles.toml の test と common から作る（spec_from_profile）。
     storage は "s3"（rclone serve s3）か "file"（結合の試験用）。bucket は空なら s3 の URL を実行時に組み立てる。"""
     binary: str
-    redis_server: str
+    compose_file: str
+    compose_project: str
     redis_addr: tuple
     proxy_addr: tuple
     one_way_ms: float
@@ -96,7 +97,7 @@ def spec_from_profile(profile, common=None):
     """試験のプロファイルと common の値から Spec を作る。"""
     c = common or config.load_common()
     return Spec(
-        binary=c["test_binary"], redis_server=c["redis_server"],
+        binary=c["test_binary"], compose_file=c["redis_compose_file"], compose_project=c["redis_compose_project"],
         redis_addr=_addr(profile.redis_addr), proxy_addr=_addr(c["rtt_proxy_addr"]),
         one_way_ms=float(c["rtt_one_way_ms"]), metrics_addr=_url_addr(profile.metrics_url),
         mountpoint=profile.mountpoint, cache_dir=profile.cache_dir, state_dir=STATE_DIR,
@@ -396,20 +397,30 @@ def _wait(cond, timeout, proc=None):
     return cond()
 
 
-def ensure_redis(spec):
-    """試験の Redis が動いていなければ起動する（AOF で state_dir/redis に保存）。起動したら True。"""
+# compose で起動した Redis が応答するまでの待ち時間（秒）
+REDIS_START_TIMEOUT = 60
+
+
+def _compose_cmd(spec, *args):
+    """試験の Redis の docker compose の命令の列（固定の project 名と compose file を毎回明示する）。"""
+    return ["docker", "compose", "-p", spec.compose_project, "-f", spec.compose_file] + list(args)
+
+
+def _compose_env(spec):
+    """compose file が読む環境変数（公開 port、AOF の host dir、container の user）。親の環境は引き継ぐ。"""
+    return dict(os.environ, JFS_TEST_REDIS_PORT=str(spec.redis_addr[1]), JFS_TEST_REDIS_DIR=spec.path("redis"),
+                UID=str(os.getuid()), GID=str(os.getgid()))
+
+
+def ensure_redis(spec, run=_run):
+    """試験の Redis が動いていなければ docker compose で起動する（AOF は state_dir/redis に保存）。
+    公開 port 越しに応答するまで待つ。起動したら True。state_dir は compose の前に 0700 で作る。"""
     if _redis_dbsize(spec.redis_addr, spec.db) is not None:
         return False
     prepare_state_dir(spec)
-    d = spec.path("redis")
-    log = spec.path("redis.log")
-    host, port = spec.redis_addr
-    p = _spawn([spec.redis_server, "--bind", host, "--port", str(port), "--dir", d, "--save", "",
-                "--appendonly", "yes", "--appendfsync", "everysec", "--protected-mode", "yes",
-                "--daemonize", "no"], spec.path("redis.pid"), log)
-    if not _wait(lambda: _redis_dbsize(spec.redis_addr, spec.db) is not None, 15, p):
-        p.kill()
-        raise RuntimeError("試験の Redis が起動しない:\n%s" % _tail(log))
+    run(_compose_cmd(spec, "up", "-d", "redis"), env=_compose_env(spec), timeout=180)
+    if not _wait(lambda: _redis_dbsize(spec.redis_addr, spec.db) is not None, REDIS_START_TIMEOUT):
+        raise RuntimeError("試験の Redis（compose project %s）が起動しない" % spec.compose_project)
     return True
 
 
@@ -511,12 +522,13 @@ def up(profile, settings, spec=None, prod=None, prod_redis=None, prod_format=Non
     spec = spec or spec_from_profile(profile)
     safety_check(profile, spec=spec, prod=prod, prod_redis=prod_redis)
     args = mount_args(spec, settings, flags_path)  # 不正な settings はここで ValueError（まだ何も起動していない）
-    for label, path in (("試験のバイナリ", spec.binary), ("redis-server", spec.redis_server)):
-        if not os.access(path, os.X_OK):
-            raise RuntimeError("%s が実行できない: %s" % (label, path))
+    if not os.access(spec.binary, os.X_OK):
+        raise RuntimeError("試験のバイナリが実行できない: %s" % spec.binary)
+    if not os.path.exists(spec.compose_file):
+        raise RuntimeError("試験の Redis の compose file が無い: %s" % spec.compose_file)
     if spec.storage == "s3" and not create_bucket and not _likely_formatted(spec):
         raise CreateBucketRequired(CREATE_BUCKET_MSG % spec.bucket_name)  # Ruling 9: 副作用の前に止まる
-    started_redis = ensure_redis(spec)
+    started_redis = ensure_redis(spec, run=run)
     started_proxy = ensure_proxy(spec)
     formatted = ensure_format(spec, prod_format=prod_format, run=run, create_bucket=create_bucket)
     mount(spec, settings, run=run, args=args)
@@ -544,15 +556,10 @@ def down(spec=None, profile=None, prod=None, prod_redis=None, run=_run):
     _stop_pid(spec.path("rtt_proxy.pid"), "rtt_proxy")
 
 
-def _stop_redis(spec):
-    """試験の Redis を止める（SHUTDOWN NOSAVE、効かなければ pid で止める）。"""
-    try:
-        with Resp(spec.redis_addr[0], spec.redis_addr[1], readonly=False, timeout=5) as r:
-            r.call("SHUTDOWN", "NOSAVE")
-    except (OSError, RuntimeError, ConnectionError):
-        pass  # SHUTDOWN は応答なしで接続が切れる
+def _stop_redis(spec, run=_run):
+    """試験の Redis を止める（自分の compose project だけを docker compose down。data の dir は残る）。"""
+    run(_compose_cmd(spec, "down"), env=_compose_env(spec), timeout=120)
     _wait(lambda: _redis_dbsize(spec.redis_addr, spec.db) is None, 10)
-    _stop_pid(spec.path("redis.pid"), "redis")
 
 
 def destroy(profile, spec=None, confirm=input, prod=None, prod_redis=None, run=_run):
@@ -566,14 +573,14 @@ def destroy(profile, spec=None, confirm=input, prod=None, prod_redis=None, run=_
         print("中止しました")
         return False
     umount(spec, run=run)
-    ensure_redis(spec)
+    ensure_redis(spec, run=run)
     if is_formatted(spec):
         st = json.loads(run([spec.binary, "status", spec.meta_url(direct=True)], timeout=120))
         uuid = st["Setting"]["UUID"]
         run([spec.binary, "destroy", "--yes", spec.meta_url(direct=True), uuid], timeout=3600)
     with Resp(spec.redis_addr[0], spec.redis_addr[1], db=spec.db, readonly=False, timeout=10) as r:
         r.call("FLUSHDB")
-    _stop_redis(spec)
+    _stop_redis(spec, run=run)
     _stop_pid(spec.path("rtt_proxy.pid"), "rtt_proxy")
     d = spec.path("redis")
     if os.path.isdir(d):
@@ -614,5 +621,5 @@ def cleanup(spec, prod=None):
     for fn in (lambda: _stop_pid(spec.path("rtt_proxy.pid"), "rtt_proxy"), lambda: _stop_redis(spec)):
         try:
             fn()
-        except OSError:
+        except (OSError, RuntimeError):
             pass

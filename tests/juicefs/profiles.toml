@@ -23,7 +23,8 @@ bucket = "juicefs-kaz-test"
 
 # 試験の volume 用の資源と上限
 [common]
-redis_server = "~/.local/opt/redis-8.0.5/redis-server"
+redis_compose_file = "replay/docker-compose.yml"  # 試験の Redis の compose（tests/juicefs からの相対）
+redis_compose_project = "jfs-kaz-test"  # 固定の project 名（他の compose と衝突させない）
 test_binary = "~/.local/bin/kaz-test/juicefs-delta-7336466c"
 rtt_proxy_addr = "127.0.0.1:16380"
 rtt_one_way_ms = 5

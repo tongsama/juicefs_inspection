@@ -38,8 +38,9 @@ def load_profile(name, path=None):
 
 
 def load_common(path=None):
-    """共通の資源と上限（redis_server、binary、間隔など）を dict で返す。~ は展開する。"""
+    """共通の資源と上限（redis の compose、binary、間隔など）を dict で返す。~ は展開する。"""
     c = dict(_load(path)["common"])
-    for k in ("redis_server", "test_binary"):
-        c[k] = os.path.expanduser(c[k])
+    c["test_binary"] = os.path.expanduser(c["test_binary"])
+    f = os.path.expanduser(c["redis_compose_file"])  # 相対なら tests/juicefs（このパッケージの親）から
+    c["redis_compose_file"] = f if os.path.isabs(f) else os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), f)
     return c

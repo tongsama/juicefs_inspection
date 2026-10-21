@@ -136,8 +136,10 @@ class TestSeed(unittest.TestCase):
 class TestSeedIntegration(unittest.TestCase):
     def test_seed_local_storage(self):
         common = config.load_common()
-        if not (os.access(common["test_binary"], os.X_OK) and os.access(common["redis_server"], os.X_OK)):
-            self.skipTest("試験のバイナリか redis-server が無い")
+        if not os.access(common["test_binary"], os.X_OK):
+            self.skipTest("試験のバイナリが無い")
+        if not tv._have_docker():
+            self.skipTest("docker compose が使えない")
         if not tv._have_fuse():
             self.skipTest("FUSE が使えない")
         prod, test = tv._profiles()
@@ -148,7 +150,8 @@ class TestSeedIntegration(unittest.TestCase):
             redis_addr=("127.0.0.1", tv._free_port()), proxy_addr=("127.0.0.1", tv._free_port()),
             metrics_addr=("127.0.0.1", tv._free_port()),
             mountpoint=os.path.join(root, "mnt"), cache_dir=os.path.join(root, "cache"),
-            state_dir=os.path.join(root, "state"), storage="file", bucket=os.path.join(root, "bucket") + "/")
+            state_dir=os.path.join(root, "state"), storage="file", bucket=os.path.join(root, "bucket") + "/",
+            compose_project=tv._unique_project())
         t = os.path.join(root, "small.tsv")
         with open(t, "w") as f:
             for o in (_op("write", 64 * MiB - 4096, 8192), _op("read", 3 * 64 * MiB + 5, 100)):

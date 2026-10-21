@@ -135,7 +135,8 @@ log_glob = "%s/vm-io-*.log"
 bucket = "x"
 
 [common]
-redis_server = "/nonexistent"
+redis_compose_file = "/nonexistent/docker-compose.yml"
+redis_compose_project = "jfs-none"
 test_binary = "%s"
 rtt_proxy_addr = "127.0.0.1:1"
 rtt_one_way_ms = 5

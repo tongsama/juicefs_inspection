@@ -95,7 +95,11 @@ class TestConfig(unittest.TestCase):
                          ("127.0.0.1:16379", "http://127.0.0.1:9568/metrics", "juicefs-kaz-test"))
         self.assertTrue(t.mountpoint.endswith("/mnt_juicefs_test"))
         self.assertIn("diagnostics/vm-io-", p.log_glob)
-        self.assertTrue(config.load_common()["redis_server"].endswith("redis-8.0.5/redis-server"))
+        c = config.load_common()
+        self.assertTrue(os.path.isabs(c["redis_compose_file"]) and c["redis_compose_file"].endswith("replay/docker-compose.yml"))
+        self.assertTrue(os.path.exists(c["redis_compose_file"]))
+        self.assertEqual(c["redis_compose_project"], "jfs-kaz-test")
+        self.assertNotIn("redis_server", c)
         with self.assertRaises(KeyError):
             config.load_profile("nope")
 

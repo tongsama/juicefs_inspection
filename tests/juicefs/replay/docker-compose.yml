@@ -1,0 +1,18 @@
+# 試験の volume の Redis（metadata）を docker compose で動かす。replay/testvol.py の ensure_redis が
+# `docker compose -p <project> -f この file up -d redis` で起動する（env は testvol が渡す）。
+# 本番の Redis とは無関係。待ち受けは 127.0.0.1 だけ。
+#   JFS_TEST_REDIS_PORT: 公開する host の port（既定 16379）
+#   JFS_TEST_REDIS_DIR : AOF を置く host の dir（~/.juicefs/test-suite/redis、mode 0700）
+#   UID / GID          : container の user。0700 の host dir を user 自身の権限で読み書きするため
+name: jfs-kaz-test
+services:
+  redis:
+    # 固定の tag。digest は 2026-10-21 時点の sha256:dbd4be0dd40f16bd91486087680fc2d25666e807b937774906dc111a621ce556
+    image: redis:8.0.5
+    user: "${UID:?UID を渡す}:${GID:?GID を渡す}"
+    command: ["redis-server", "--appendonly", "yes", "--save", "", "--databases", "32"]
+    ports:
+      - "127.0.0.1:${JFS_TEST_REDIS_PORT:-16379}:6379"
+    volumes:
+      - "${JFS_TEST_REDIS_DIR:?JFS_TEST_REDIS_DIR を渡す}:/data"
+    restart: "no"

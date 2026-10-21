@@ -12,6 +12,7 @@ import tempfile
 import threading
 import time
 import unittest
+from unittest import mock
 
 from lib import config
 from replay import rtt_proxy, testvol
@@ -311,11 +312,146 @@ def _have_fuse():
     return os.path.exists("/dev/fuse") and bool(shutil.which("fusermount3") or shutil.which("fusermount"))
 
 
+def _have_docker():
+    """docker compose を user で使えるか（試験用に Redis の container を立てられるか）。"""
+    if not shutil.which("docker"):
+        return False
+    try:
+        return subprocess.run(["docker", "compose", "version"], capture_output=True, timeout=30).returncode == 0
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+
+
+def _unique_project():
+    """結合の試験用の compose project 名（実行ごとに別。固定の本番用の名前と衝突しない）。"""
+    return "jfs-kaz-it-%d-%s" % (os.getpid(), os.urandom(3).hex())
+
+
+class TestRedisCompose(unittest.TestCase):
+    """試験の Redis を docker compose で起動する部分。docker の実行は偽の run で確かめる。"""
+
+    def setUp(self):
+        self.prod, self.test = _profiles()
+        self.kw = dict(prod=self.prod, prod_redis=PROD_REDIS)
+        self.tmp = tempfile.mkdtemp(prefix="jfs-compose-")
+        self.addCleanup(shutil.rmtree, self.tmp, ignore_errors=True)
+        self.spec = dataclasses.replace(
+            testvol.spec_from_profile(self.test), state_dir=os.path.join(self.tmp, "state"),
+            mountpoint=os.path.join(self.tmp, "mnt"), cache_dir=os.path.join(self.tmp, "cache"),
+            redis_addr=("127.0.0.1", 17999), proxy_addr=("127.0.0.1", _free_port()),
+            compose_project="jfs-kaz-unit")
+
+    def test_spec_from_profile_has_compose_settings(self):
+        spec = testvol.spec_from_profile(self.test)
+        self.assertEqual(spec.compose_project, "jfs-kaz-test")
+        self.assertTrue(spec.compose_file.endswith("replay/docker-compose.yml"))
+        self.assertTrue(os.path.exists(spec.compose_file))
+        self.assertFalse(hasattr(spec, "redis_server"))
+
+    def test_compose_file_contents(self):
+        with open(self.spec.compose_file, encoding="utf-8") as f:
+            text = f.read()
+        self.assertIn("image: redis:8.0.5", text)
+        self.assertIn('127.0.0.1:${JFS_TEST_REDIS_PORT:-16379}:6379', text)
+        self.assertIn("--appendonly", text)
+        self.assertIn("--databases", text)
+        self.assertNotIn("0.0.0.0", text)
+
+    def test_ensure_redis_runs_compose_up_with_env(self):
+        calls = []
+        answers = iter([None, None, 0])  # 起動前、起動直後はまだ、その後に応答
+
+        def fake_run(cmd, env=None, timeout=300, hidden=()):
+            calls.append((cmd, env))
+            return ""
+
+        with mock.patch.object(testvol, "_redis_dbsize", side_effect=lambda *a, **k: next(answers)), \
+                mock.patch.object(testvol.time, "sleep"):
+            self.assertTrue(testvol.ensure_redis(self.spec, run=fake_run))
+        self.assertEqual(len(calls), 1)
+        cmd, env = calls[0]
+        self.assertEqual(cmd, ["docker", "compose", "-p", "jfs-kaz-unit", "-f", self.spec.compose_file,
+                               "up", "-d", "redis"])
+        self.assertEqual(env["JFS_TEST_REDIS_PORT"], "17999")
+        self.assertEqual(env["JFS_TEST_REDIS_DIR"], self.spec.path("redis"))
+        self.assertEqual((env["UID"], env["GID"]), (str(os.getuid()), str(os.getgid())))
+        self.assertEqual(os.stat(self.spec.path("redis")).st_mode & 0o777, 0o700)  # compose の前に 0700
+
+    def test_ensure_redis_noop_when_running(self):
+        calls = []
+        with mock.patch.object(testvol, "_redis_dbsize", return_value=0):
+            self.assertFalse(testvol.ensure_redis(self.spec, run=lambda *a, **k: calls.append(a)))
+        self.assertEqual(calls, [])
+
+    def test_ensure_redis_timeout_is_error(self):
+        with mock.patch.object(testvol, "_redis_dbsize", return_value=None), \
+                mock.patch.object(testvol.time, "sleep"), mock.patch.object(testvol, "REDIS_START_TIMEOUT", 0):
+            with self.assertRaises(RuntimeError):
+                testvol.ensure_redis(self.spec, run=lambda *a, **k: "")
+
+    def test_no_redis_server_binary_is_spawned(self):
+        with mock.patch.object(testvol.subprocess, "Popen") as popen, \
+                mock.patch.object(testvol, "_redis_dbsize", side_effect=[None, 0, 0]):
+            testvol.ensure_redis(self.spec, run=lambda *a, **k: "")
+        popen.assert_not_called()
+
+    def test_stop_redis_runs_compose_down(self):
+        calls = []
+        with mock.patch.object(testvol, "_redis_dbsize", return_value=None):
+            testvol._stop_redis(self.spec, run=lambda cmd, **k: calls.append((cmd, k.get("env"))))
+        self.assertEqual(calls[0][0], ["docker", "compose", "-p", "jfs-kaz-unit", "-f", self.spec.compose_file, "down"])
+        self.assertEqual(calls[0][1]["JFS_TEST_REDIS_PORT"], "17999")
+
+    def test_safety_failure_runs_no_docker(self):
+        calls = []
+        run = lambda *a, **k: calls.append(a)
+        bad = dataclasses.replace(self.test, bucket="buckets")
+        with self.assertRaises(testvol.SafetyError):
+            testvol.up(bad, {"name": "default"}, spec=self.spec, run=run, **self.kw)
+        with self.assertRaises(testvol.SafetyError):
+            testvol.destroy(bad, spec=self.spec, confirm=lambda p: "destroy", run=run, **self.kw)
+        with self.assertRaises(testvol.SafetyError):
+            testvol.down(spec=self.spec, profile=bad, run=run, **self.kw)
+        bad_spec = dataclasses.replace(self.spec, redis_addr=("127.0.0.1", PROD_REDIS[1]))
+        with self.assertRaises(testvol.SafetyError):
+            testvol.up(self.test, {"name": "default"}, spec=bad_spec, run=run, **self.kw)
+        self.assertEqual(calls, [])
+        self.assertFalse(os.path.exists(self.spec.state_dir))
+
+    def test_destroy_stops_compose_project(self):
+        calls = []
+        # Redis は動いている体で、format 済みではない（DBSIZE 0）。FLUSHDB は偽の接続で受ける
+        spec = self.spec
+
+        class FakeResp:
+            def __init__(self, *a, **k):
+                pass
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *e):
+                return False
+
+            def call(self, *a):
+                return 0
+
+        with mock.patch.object(testvol, "_redis_dbsize", return_value=0), mock.patch.object(testvol, "Resp", FakeResp), \
+                mock.patch.object(testvol, "_wait", return_value=True):
+            os.makedirs(spec.path("redis"))
+            self.assertTrue(testvol.destroy(self.test, spec=spec, confirm=lambda p: "destroy",
+                                            run=lambda cmd, **k: calls.append(cmd), **self.kw))
+        self.assertIn(["docker", "compose", "-p", "jfs-kaz-unit", "-f", spec.compose_file, "down"], calls)
+        self.assertFalse(os.path.exists(spec.path("redis")))  # 従来どおりデータも消す
+
+
 class TestIntegration(unittest.TestCase):
     def test_up_down_local_storage(self):
         common = config.load_common()
-        if not (os.access(common["test_binary"], os.X_OK) and os.access(common["redis_server"], os.X_OK)):
-            self.skipTest("試験のバイナリか redis-server が無い")
+        if not os.access(common["test_binary"], os.X_OK):
+            self.skipTest("試験のバイナリが無い")
+        if not _have_docker():
+            self.skipTest("docker compose が使えない")
         if not _have_fuse():
             self.skipTest("FUSE が使えない")
         prod, test = _profiles()
@@ -328,7 +464,7 @@ class TestIntegration(unittest.TestCase):
             metrics_addr=("127.0.0.1", mport),
             mountpoint=os.path.join(root, "mnt"), cache_dir=os.path.join(root, "cache"),
             state_dir=os.path.join(root, "state"), storage="file",
-            bucket=os.path.join(root, "bucket") + "/")
+            bucket=os.path.join(root, "bucket") + "/", compose_project=_unique_project())
         settings = {"name": "t", "mode": "delta", "flags": {"kaz-compaction-delta-trigger": 30,
                                                            "kaz-compaction-delta-block-ratio": 0.75}}
         skw = dict(prod=prod, prod_redis=PROD_REDIS)

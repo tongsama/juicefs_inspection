@@ -73,6 +73,7 @@ flags = { "kaz-compaction-delta-trigger" = 30 }
 - 本番の Redis には読み取りの命令（LLEN、LRANGE、HGET、DBSIZE、SCAN）だけを送ります。接続先や鍵は表示せず、`config.json` や `run.json` にも書きません（実行時に mount スクリプトから読みます）。
 - **`--create-bucket`**: 試験の volume がまだ無いとき、本物の Drive（`rclone serve s3`）にバケットと volume を作る操作です。**この旗を付けたときだけ**行います。付けずに volume が無ければ、何も作らず止まります。作ってよいかをユーザーが確かめてから付けてください。
 - 試験の並列のアップロードは本番以下にし、本番の VM は idle にしておきます（本番と試験の upload は同じ rclone と Drive に足し合わさる）。Drive の rate limit（429、403 の rate limit）か、本番の `juicefs_object_request_errors` の増加が出たら、その回を止めて表に出します。
+- **試験の Redis は docker compose で動かします**（`replay/docker-compose.yml`、project 名 `jfs-kaz-test`、image `redis:8.0.5` の固定 tag、`127.0.0.1:16379` だけに公開、AOF は `~/.juicefs/test-suite/redis` を `/data` に bind mount、container は自分の UID:GID）。`jfsreplay testvol up` が `docker compose up -d redis` で起動し、応答を待ちます（docker が無い、または image が無いと止まります。image は `docker pull redis:8.0.5` で事前に取得）。`down` は Redis を残します。止めるだけなら `docker compose -p jfs-kaz-test -f replay/docker-compose.yml down`（AOF のデータは残る。UID、GID、JFS_TEST_REDIS_DIR は env で渡す）、データごと消すなら `jfsreplay testvol destroy`（確認の後に compose down と AOF の削除）。
 - clone は各回の終わりに消します。試験のバケットと Redis は次の回のために残します。全部消す `jfsreplay testvol destroy` は確認を求めます。
 - 試験の Redis の state ディレクトリ（`~/.juicefs/test-suite/`）は mode 0700 です。volume の Format には storage の認証情報が JuiceFS の仕様で入ります（本番と同じ）。
 
