@@ -74,6 +74,7 @@ compaction が staging の slice を retire すると、上げ途中の PUT が�
 - `pending`: PUT の誤りで、まだ窓の中。待つ。
 - `unexplained`: PUT 以外の誤り、窓の中に abandoned が来なかった PUT、ログに行の無い誤り（`unlogged`。metrics の増分がログの誤りの行より 5 秒以上多い。JuiceFS は遅い要求だけを `slow request` として書くので、速い誤りはログに出ない）。
 - `errors_total` は metrics の増分、`logged` はログの誤りの行の数です。説明できない誤りは窓（最大 30 秒）が過ぎてから数えるので、止まるのはその分遅れます。
+- 1 つの Guard を、育てる全ての回とその後の待ち、計測する流し直しとその後の待ちで使い回します（回の境目の誤りを見落とさない）。終わり（待ちが「未収束」で上限に達した場合も）には確定（finalize）として、窓と猶予が過ぎるまで（上限 30＋5＋1 秒）読み直し、残った待ち中・ログに行の無い誤りを説明できない誤りに数えて許容と比べます（超えれば失敗、許容以内でも 1 件以上なら `warnings` に残す）。例外で途中で止まった回は待たずに確定します（`object_errors.finalized`）。
 
 ### settings.toml
 

@@ -311,6 +311,57 @@ class TestRunParts(unittest.TestCase):
             f.write("%s juicefs[1] <WARNING>: upload: 429 Too Many Requests\n" % self._ts(self.T0 + 1))
         self.assertIn("rate limit", g.check())
 
+    def test_finalize_turns_pending_into_unexplained(self):
+        """終わりの直前の PUT の誤り（abandoned が来ない）は、finalize が窓の終わりまで待ってから説明できない誤りにする。"""
+        g, log, vals, now = self._guard_env()
+        with open(log, "a") as f:
+            f.write(self._put_err(self.T0 + 1, "chunks/0/1/1_0_4096"))
+        vals["juicefs_object_request_errors"] = 1.0
+        now[0] = self.T0 + 2
+        self.assertIsNone(g.check())
+        self.assertEqual(g.counts()["pending"], 1)
+        slept = []
+
+        def sleep(d):
+            slept.append(d)
+            now[0] += d
+        r = g.finalize(poll_s=1.0, sleep=sleep)
+        self.assertIn("説明できない", r)
+        self.assertGreaterEqual(now[0], self.T0 + 1 + runmod.ABANDON_WINDOW_S)  # 窓が過ぎるまで待った
+        self.assertLessEqual(now[0], self.T0 + 2 + runmod.ABANDON_WINDOW_S + runmod.UNLOGGED_GRACE_S + 1.0)  # 上限あり
+        c = g.counts()
+        self.assertEqual((c["pending"], c["unexplained"], c["finalized"]), (0, 1, True))
+        self.assertIsNone(g.finalize())  # 2 回目は何もしない
+
+    def test_finalize_waits_for_late_abandoned(self):
+        """窓の中に abandoned が来れば、finalize は説明できる誤りとして止めない（その時点で待ちを終える）。"""
+        g, log, vals, now = self._guard_env()
+        with open(log, "a") as f:
+            f.write(self._put_err(self.T0 + 1, "chunks/0/9/9604_0_4096"))
+        vals["juicefs_object_request_errors"] = 1.0
+        now[0] = self.T0 + 2
+
+        def sleep(d):
+            now[0] += d
+            if now[0] >= self.T0 + 8:
+                with open(log, "a") as f:
+                    f.write(self._abandoned(self.T0 + 7, "chunks/0/9/9604_0_4096"))
+        self.assertIsNone(g.finalize(poll_s=1.0, sleep=sleep))
+        self.assertLess(now[0], self.T0 + 20)
+        c = g.counts()
+        self.assertEqual((c["abandoned_explained"], c["unexplained"]), (1, 0))
+
+    def test_finalize_without_wait_and_unlogged(self):
+        """待たない finalize（失敗の後）でも、待ち中とログに行の無い最後の誤りを説明できない誤りに数える。許容以内なら理由は無い。"""
+        g, log, vals, now = self._guard_env(tolerance=2)
+        with open(log, "a") as f:
+            f.write(self._put_err(self.T0 + 1, "chunks/0/1/1_0_4096"))
+        vals["juicefs_object_request_errors"] = 2.0  # 1 件はログに行が無い
+        now[0] = self.T0 + 2
+        self.assertIsNone(g.finalize(wait=False))
+        c = g.counts()
+        self.assertEqual((c["unexplained"], c["unlogged"], c["pending"]), (2, 1, 0))
+
     def test_guard_stops_on_prod_errors(self):
         d = tempfile.mkdtemp(prefix="jfs-guard-")
         self.addCleanup(shutil.rmtree, d, ignore_errors=True)
@@ -488,7 +539,7 @@ class TestRunFailures(unittest.TestCase):
         self.out = os.path.join(d, "out")
         self.uuid = UUID
 
-    def _run(self, warm=None, subproc=None, head_s=None):
+    def _run(self, warm=None, subproc=None, head_s=None, poll_s=5.0):
         """外の資源をすべて偽にして run を呼ぶ。"""
         mp = self.spec.mountpoint
         ps = [mock.patch("replay.testvol.safety_check"),
@@ -512,7 +563,7 @@ class TestRunFailures(unittest.TestCase):
             self.addCleanup(p.stop)
         return runmod.run(self.trace, "default", self.out, self.test, spec=self.spec,
                           up_kw=dict(prod=self.prod, prod_redis=tv.PROD_REDIS), log=lambda m: None,
-                          prod_scrape=lambda: {}, head_s=head_s)
+                          prod_scrape=lambda: {}, head_s=head_s, poll_s=poll_s)
 
     def _results(self):
         """run.json と play.json の status と reasons。"""
@@ -596,6 +647,50 @@ class TestRunFailures(unittest.TestCase):
         self.assertEqual(res["status"], "failed")
         self.assertTrue(any("warm --force" in r for r in res["reasons"]), res["reasons"])
         self.assertEqual(self.calls[-1], "umount")
+
+    def _run_with_late_put_error(self, tolerance):
+        """流し直しの終わりの直前に PUT の誤りが出て abandoned が来ない回を、計測・待ち・metrics を偽にして流す。"""
+        log = self.spec.path("juicefs.log")
+        os.makedirs(self.spec.state_dir, exist_ok=True)
+        open(log, "w").close()
+        errs = {"juicefs_object_request_errors": 0.0}
+        real_play = player.play
+
+        def play(path, ops, t0, stop=None):
+            r = real_play(path, ops, t0, stop=stop)
+            ts = time.strftime("%Y/%m/%d %H:%M:%S", time.localtime()) + ".000000"
+            with open(log, "a") as f:  # 終わりの直前の PUT の誤り（abandoned の行は来ない）
+                f.write('%s juicefs[1] <WARNING>: slow request: PUT chunks/0/1/1_0_4096 payload_bytes=26 '
+                        '(req_id: "", err: operation error S3: PutObject, cost: 30.0s) [logRequest@cached_store.go:769]\n' % ts)
+            errs["juicefs_object_request_errors"] = 1.0
+            return r
+        common = dict(config.load_common(), abandon_window_seconds=0.5, object_error_tolerance=tolerance)
+        ps = [mock.patch("replay.run.player.play", side_effect=play),
+              mock.patch("replay.run.config.load_common", return_value=common),
+              mock.patch("replay.run.UNLOGGED_GRACE_S", 0.2),
+              mock.patch("replay.run.metrics_io.scrape", side_effect=lambda *a, **k: dict(errs)),
+              mock.patch("replay.run._mcli", return_value=""),
+              mock.patch("replay.run.settle", return_value={"state": "未収束", "seconds": 1}),
+              mock.patch("replay.run.mcap.capture", return_value=[])]
+        for p in ps:
+            p.start()
+            self.addCleanup(p.stop)
+        return self._run(poll_s=0.1)
+
+    def test_late_put_error_without_abandoned_fails_run(self):
+        """流し直しの終わりの直前の PUT の誤り（abandoned なし）は、待ちが未収束で終わっても確定して、その回を失敗にする。"""
+        res = self._run_with_late_put_error(tolerance=0)
+        self.assertEqual(res["status"], "failed", res)
+        self.assertTrue(any("説明できない" in r for r in res["reasons"]), res["reasons"])
+        rj = self._results()[0]
+        self.assertEqual((rj["object_errors"]["unexplained"], rj["object_errors"]["pending"]), (1, 0))
+        self.assertTrue(rj["object_errors"]["finalized"])
+
+    def test_late_put_error_within_tolerance_is_warned(self):
+        """許容（object_error_tolerance）以内なら失敗にしないが、warnings に残す。"""
+        res = self._run_with_late_put_error(tolerance=1)
+        self.assertEqual(res["status"], "ok", res)
+        self.assertTrue(any("説明できない誤りが 1 件" in w for w in res["warnings"]), res["warnings"])
 
     def test_clone_timeout_is_runerror(self):
         import subprocess

@@ -160,6 +160,7 @@ class Guard:
         self.history = []  # (時計の時刻, metrics の誤りの増分)
         self.total = 0.0  # metrics の誤りの増分（最新）
         self.last = classify_errors([], {}, 0)
+        self.final = False  # finalize の後は、待ち中と猶予中の誤りも説明できない誤りとして数える
         try:
             self.pos = os.path.getsize(log_path)  # 始める前の行は見ない
         except OSError:
@@ -218,11 +219,68 @@ class Guard:
 
     def counts(self):
         """object の要求の誤りの内訳（run.json に残す）: errors_total（metrics の増分）、logged（ログの誤りの行）、
-        abandoned_explained、pending、unexplained（ログの説明できない誤り + unlogged）、unlogged、tolerance。"""
-        unlogged = self._unlogged(self.clock())
+        abandoned_explained、pending、unexplained（ログの説明できない誤り + unlogged）、unlogged、tolerance、finalized。
+        finalize の後は、待ち中（pending）を説明できない誤りに入れ（pending は 0）、unlogged は猶予なしで数える。"""
+        if self.final:
+            unlogged = max(0, int(self.total - len(self.errors)))
+            unexplained = self.last["unexplained"] + self.last["pending"] + unlogged
+            pending = 0
+        else:
+            unlogged = self._unlogged(self.clock())
+            unexplained, pending = self.last["unexplained"] + unlogged, self.last["pending"]
         return {"errors_total": self.total, "logged": len(self.errors), "abandoned_explained": self.last["explained"],
-                "pending": self.last["pending"], "unexplained": self.last["unexplained"] + unlogged,
-                "unlogged": unlogged, "tolerance": self.tolerance}
+                "pending": pending, "unexplained": unexplained, "unlogged": unlogged, "tolerance": self.tolerance,
+                "finalized": self.final}
+
+    def _refresh(self):
+        """ログと試験の metrics を読み直して分類を更新する（mount の確かめはしない）。rate limit の行があれば返す。"""
+        hit = self._scan_log()
+        now = self.clock()
+        try:
+            v = self.scrape().get(OBJ_ERRORS)
+        except (OSError, ValueError):
+            v = None
+        if v is not None:
+            if self.base is None:
+                self.base = v
+            else:
+                self.total = max(0.0, v - self.base)
+                self.history.append((now, self.total))
+        self.last = classify_errors(self.errors, self.abandoned, now, self.window_s)
+        return hit
+
+    def _quiet(self, now):
+        """待ち中の PUT が無く、猶予（unlogged_grace_s）の間に metrics の誤りが増えていなければ真（判定を確定してよい）。"""
+        old = [d for t, d in self.history if t <= now - self.unlogged_grace_s]
+        return self.last["pending"] == 0 and (old[-1] if old else 0) >= self.total
+
+    def finalize(self, wait=True, poll_s=1.0, sleep=time.sleep):
+        """Guard を捨てる前（流し直しと待ちの終わり、run の終わり）に判定を確定する。wait なら、待ち中の PUT の窓と
+        unlogged の猶予が過ぎるまで（上限 window_s + unlogged_grace_s + 1 秒）ログと metrics を読み直す。その後、
+        残った待ち中と猶予中の誤りは説明できない誤りとして数える（counts の finalized）。
+        戻り値は止める（失敗にする）理由（説明できない誤りが tolerance を超えた、または rate limit の行）か None。"""
+        if self.final:
+            return None
+        deadline = self.clock() + (self.window_s + self.unlogged_grace_s + 1.0 if wait else 0.0)
+        hit = None
+        while True:
+            hit = self._refresh() or hit
+            now = self.clock()
+            if not wait or now >= deadline or self._quiet(now):
+                break
+            sleep(max(0.0, min(poll_s, deadline - now)))
+        self.final = True
+        if hit:
+            return "試験の mount のログに rate limit（429／403）: %s" % hit
+        c = self.counts()
+        if c["unexplained"] > self.tolerance:
+            what = self.last["first_unexplained"] or "待ち中・ログに行の無い誤り"
+            return ("流し直しの終わりの確定: 試験の object_request_errors に、retire（abandoned）で説明できない誤りが"
+                    " %d 件（許容 %d）: %s（誤り %g 件、abandoned で説明 %d 件、窓の中に abandoned が来なかった"
+                    "待ち中 %d 件、ログに行の無い誤り %d 件）"
+                    % (c["unexplained"], self.tolerance, what, c["errors_total"], c["abandoned_explained"],
+                       self.last["pending"], c["unlogged"]))
+        return None
 
     def check(self):
         """止める理由があれば文字列、無ければ None。"""
@@ -266,7 +324,12 @@ def sum_counts(guards):
     out = {}
     for g in guards:
         for k, v in g.counts().items():
-            out[k] = v if k == "tolerance" else out.get(k, 0) + v
+            if k == "tolerance":
+                out[k] = v
+            elif k == "finalized":
+                out[k] = out.get(k, True) and v
+            else:
+                out[k] = out.get(k, 0) + v
     return out
 
 
@@ -724,18 +787,23 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
             res["volume_uuid"] = _volume_uuid(spec) or res.get("volume_uuid")
             seed_mp_path, seed_info = _seed_path(trace_path, spec)
             res["clone"], res["clone_inode"] = _make_clone(spec, seed_mp_path, settings_name, log)
+            ag = guard()  # 育てる全ての回と、その後の待ちで 1 つの Guard を使う（回の境目の誤りも判定する）
             for i in range(age):
-                g = guard()
-                pr = _play_guarded(res["clone"], ops, g, poll_s, res["reasons"])
+                pr = _play_guarded(res["clone"], ops, ag, poll_s, res["reasons"])
                 age_plays.append(pr.to_dict())
                 if pr.failed or pr.stopped:
                     res["reasons"].append("育てる %d 回目: %s" % (i + 1, pr.stop_reason))
                     raise RunError("差分を育てる途中で止まった")
-            s = settle(scrape, guard(), settle_s, settle_max_s, poll_s)
+            s = settle(scrape, ag, settle_s, settle_max_s, poll_s)
             res["age_settle"] = s
             if s["state"] == "止めた":
                 res["reasons"].append(s["reason"])
                 raise RunError("差分を育てた後の待ちで止まった")
+            r = ag.finalize(poll_s=min(poll_s, 1.0))  # 終わりの直前の誤り（abandoned の窓・猶予の中）も判定する
+            if r:
+                res["reasons"].append(r)
+                raise RunError("差分を育てた後の誤りの確定で止まった")
+            _warn_tolerated(res, ag)
             testvol.umount(spec, run=tsr)
         n = clear_cache(spec.cache_dir, spec.mountpoint, prod, spec.state_dir, res.get("volume_uuid"))
         log("試験のキャッシュを空にした（%d ファイル）。温めたキャッシュの写しを戻す" % n)
@@ -775,6 +843,12 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
             if res["settle"]["state"] == "止めた":
                 res["status"] = "failed"
                 res["reasons"].append(res["settle"]["reason"])
+        # 流し直しと待ち（未収束で上限に達した場合も）の終わりに、窓・猶予の中の誤りも判定する。失敗済みなら待たない
+        r = g.finalize(wait=res["status"] == "ok", poll_s=min(poll_s, 1.0))
+        if r:
+            _fail(res, r)
+        else:
+            _warn_tolerated(res, g)
         if mounted():
             # 終わりの材料（/metrics、キャッシュの内訳、kaz-cache-state の写し）。取れなかった物は warnings に残して表示する
             res["warnings"].extend(mcap.capture(config.load_profile("test", mprof), out, "end"))
@@ -786,6 +860,11 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
         _fail(res, "中断された: %s" % type(e).__name__)
         raise
     finally:
+        for gg in guards:  # 例外で途中で捨てた Guard も、待たずに確定して数える（待ち中は説明できない誤りに入る）
+            if not gg.final:
+                pend = gg.counts()["pending"]
+                if gg.finalize(wait=False) and pend:
+                    res["warnings"].append("途中で止まったため、abandoned を待ち切れなかった PUT の誤り %d 件を説明できない誤りに数えた" % pend)
         res["object_errors"] = sum_counts(guards)
         if guards and not any(g.prod_seen for g in guards):
             res["warnings"].append("本番の metrics（%s）を読めなかったので、本番の object_request_errors は見張れていない"
@@ -799,6 +878,14 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
         _step(res, "play.json の書き出し", lambda: _write_play(out, plays, age_plays, res))
         _step(res, "run.json の書き出し", lambda: _write_run_json(out, res))
     return res
+
+
+def _warn_tolerated(res, g):
+    """説明できない誤りが許容（object_error_tolerance）以内で止めなかったとき、その数を warnings に残す（隠さない）。"""
+    c = g.counts()
+    if c["unexplained"]:
+        res["warnings"].append("試験の object_request_errors に説明できない誤りが %d 件（許容 %d 以内なので続けた）: %s"
+                               % (c["unexplained"], c["tolerance"], g.last["first_unexplained"] or "ログに行の無い誤り"))
 
 
 def _fail(res, reason):

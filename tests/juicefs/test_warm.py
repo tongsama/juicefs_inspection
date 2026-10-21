@@ -169,6 +169,19 @@ class WarmCacheTest(unittest.TestCase):
         self.assertFalse(os.path.exists(self.dest))
 
 
+    def test_save_failure_cleans_tmp_and_keeps_old(self):
+        """写しの途中の失敗では、作りかけ（.tmp-<pid>）を消し、前の写しはそのまま残す。"""
+        self._fill()
+        warmcache.save(self.spec.cache_dir, UUID, self.dest, {"seed": 1}, **self.kw)
+
+        def boom(*a, **k):
+            raise OSError(28, "No space left on device")
+        with mock.patch("replay.warmcache.shutil.copy2", side_effect=boom), self.assertRaises(OSError):
+            warmcache.save(self.spec.cache_dir, UUID, self.dest, {"seed": 2}, **self.kw)
+        self.assertEqual(os.listdir(self.root), ["t"])
+        self.assertEqual(warmcache.load_meta(self.dest)["seed"], 1)
+
+
 class EnsureWarmTest(unittest.TestCase):
     """ensure_warm: 使える写しは使い、無いか種が変わっていれば、既定の設定で温めてから写す（mount 等は偽）。"""
 

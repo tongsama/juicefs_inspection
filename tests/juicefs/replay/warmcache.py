@@ -192,18 +192,27 @@ def save(cache_dir, uuid, dest, info, *, mountpoint, prod, state_dir, root):
     tmp = "%s.tmp-%d" % (dreal, os.getpid())
     if os.path.lexists(tmp):
         runmod._rm_tree(check_warm_dir(tmp, root, cache_dir=real, mountpoint=mountpoint, prod=prod))
-    os.makedirs(os.path.join(tmp, CONTENT), mode=0o700)
-    t = time.monotonic()
-    files, nbytes, skipped = _copy_tree(vol, os.path.join(tmp, CONTENT), skip=("rawstaging",))
-    meta = dict(info, version=VERSION, uuid=uuid, files=files, bytes=nbytes, skipped=skipped,
-                saved_at=time.strftime("%Y-%m-%dT%H:%M:%S%z"), save_seconds=round(time.monotonic() - t, 1))
-    with open(os.path.join(tmp, META), "w", encoding="utf-8") as f:
-        json.dump(meta, f, ensure_ascii=False, indent=1)
     old = None
-    if os.path.lexists(dreal):
-        old = "%s.old-%d" % (dreal, os.getpid())
-        os.rename(dreal, old)
-    os.rename(tmp, dreal)
+    try:
+        os.makedirs(os.path.join(tmp, CONTENT), mode=0o700)
+        t = time.monotonic()
+        files, nbytes, skipped = _copy_tree(vol, os.path.join(tmp, CONTENT), skip=("rawstaging",))
+        meta = dict(info, version=VERSION, uuid=uuid, files=files, bytes=nbytes, skipped=skipped,
+                    saved_at=time.strftime("%Y-%m-%dT%H:%M:%S%z"), save_seconds=round(time.monotonic() - t, 1))
+        with open(os.path.join(tmp, META), "w", encoding="utf-8") as f:
+            json.dump(meta, f, ensure_ascii=False, indent=1)
+        if os.path.lexists(dreal):
+            old = "%s.old-%d" % (dreal, os.getpid())
+            os.rename(dreal, old)
+        os.rename(tmp, dreal)
+    except BaseException:
+        # 途中の失敗（容量不足・I/O エラー・中断）: 作りかけの写しを消し、退けた前の写しを戻してから元の例外を上げる
+        if old and not os.path.lexists(dreal) and os.path.lexists(old):
+            os.rename(old, dreal)
+            old = None
+        if os.path.lexists(tmp):
+            runmod._rm_tree(check_warm_dir(tmp, root, cache_dir=real, mountpoint=mountpoint, prod=prod))
+        raise
     if old:
         runmod._rm_tree(check_warm_dir(old, root, cache_dir=real, mountpoint=mountpoint, prod=prod))
     return meta
