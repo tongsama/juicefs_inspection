@@ -1,0 +1,35 @@
+# 計測・再生の試験の対象プロファイル（固定値）。接続の URL や鍵はここに書かない（実行時に mount スクリプトから読む）。
+
+[prod]
+metrics_url = "http://127.0.0.1:9567/metrics"
+inode = 634040
+cache_dir = "~/.juicefs/cache/73e74f7b-6f95-4155-adea-d9ef1e669c20"
+mountpoint = "~/mnt_juicefs"
+redis_source = "mount_script"
+redis_addr = ""
+log_glob = "~/.juicefs/*.log"
+bucket = "buckets"
+
+[test]
+metrics_url = "http://127.0.0.1:9568/metrics"
+inode = 0
+cache_dir = "~/.juicefs/cache-test"
+mountpoint = "~/mnt_juicefs_test"
+redis_source = "test"
+redis_addr = "127.0.0.1:16379"
+log_glob = "~/.juicefs/test-suite/*.log"
+bucket = "juicefs-kaz-test"
+
+# 試験の volume 用の資源と上限
+[common]
+redis_server = "~/.local/opt/redis-8.0.5/redis-server"
+test_binary = "~/.local/bin/kaz-test/juicefs-delta-7336466c"
+rtt_proxy_addr = "127.0.0.1:16380"
+rtt_one_way_ms = 5
+seed_limit_gib = 32
+settle_seconds = 60
+settle_max_seconds = 600
+loss_tolerance = 0.01
+interval_metrics_s = 60
+interval_llen_s = 600
+interval_cache_churn_s = 300
