@@ -724,7 +724,7 @@ class TestRunFailures(unittest.TestCase):
         self.assertTrue(any("warm --force" in r for r in res["reasons"]), res["reasons"])
         self.assertEqual(self.calls[-1], "umount")
 
-    def _run_with_late_put_error(self, tolerance, method="PUT"):
+    def _run_with_late_put_error(self, tolerance, method="PUT", stop=True):
         """流し直しの終わりの直前に PUT の誤りが出て abandoned が来ない回を、計測・待ち・metrics を偽にして流す。"""
         log = self.spec.path("juicefs.log")
         os.makedirs(self.spec.state_dir, exist_ok=True)
@@ -741,7 +741,8 @@ class TestRunFailures(unittest.TestCase):
                         % (ts, method))
             errs["juicefs_object_request_errors"] = 1.0
             return r
-        common = dict(config.load_common(), abandon_window_seconds=0.5, object_error_tolerance=tolerance)
+        common = dict(config.load_common(), abandon_window_seconds=0.5, object_error_tolerance=tolerance,
+                      object_errors_stop=stop)
         ps = [mock.patch("replay.run.player.play", side_effect=play),
               mock.patch("replay.run.config.load_common", return_value=common),
               mock.patch("replay.run.UNLOGGED_GRACE_S", 0.2),
@@ -768,6 +769,12 @@ class TestRunFailures(unittest.TestCase):
         res = self._run_with_late_put_error(tolerance=1)
         self.assertEqual(res["status"], "ok", res)
         self.assertTrue(any("説明できない誤りが 1 件" in w for w in res["warnings"]), res["warnings"])
+
+    def test_object_errors_stop_false_only_warns(self):
+        """object_errors_stop が false なら、説明できない PUT の誤りでも失敗にせず warnings に残す（rate limit は別）。"""
+        res = self._run_with_late_put_error(tolerance=0, stop=False)
+        self.assertEqual(res["status"], "ok", res)
+        self.assertTrue(any("説明できない誤りが 1 件" in w and "止めない設定" in w for w in res["warnings"]), res["warnings"])
 
     def test_late_delete_error_is_warned_not_failed(self):
         """流し直しの終わりの直前の DELETE の誤りは、その回を失敗にせず warnings に残す（Ruling 13）。"""

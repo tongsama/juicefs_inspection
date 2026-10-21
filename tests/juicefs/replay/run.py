@@ -280,7 +280,7 @@ class Guard:
         if hit:
             return "試験の mount のログに rate limit（429／403）: %s" % hit
         c = self.counts()
-        if c["unexplained"] > self.tolerance:
+        if self.tolerance is not None and c["unexplained"] > self.tolerance:
             what = self.last["first_unexplained"] or "待ち中・ログに行の無い誤り"
             return ("流し直しの終わりの確定: 試験の object_request_errors に、retire（abandoned）で説明できない誤りが"
                     " %d 件（許容 %d）: %s（誤り %g 件、abandoned で説明 %d 件、窓の中に abandoned が来なかった"
@@ -316,7 +316,7 @@ class Guard:
             self.history.append((now, self.total))
         self.last = classify_errors(self.errors, self.abandoned, now, self.window_s)
         c = self.counts()
-        if c["unexplained"] > self.tolerance:
+        if self.tolerance is not None and c["unexplained"] > self.tolerance:
             what = self.last["first_unexplained"] or "ログに行の無い誤り %d 件" % c["unlogged"]
             return ("試験の object_request_errors に、retire（abandoned）で説明できない誤りが %d 件（許容 %d）: %s"
                     "（誤り %g 件、abandoned で説明 %d 件、待ち中 %d 件）"
@@ -768,7 +768,8 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
     def guard():
         """試験と本番の両方を見張る Guard を作る（本番の値が読めたかを後で確かめるため控える）。"""
         g = Guard(scrape, spec.path("juicefs.log"), mounted, prod_scrape=prod_scrape,
-                  tolerance=common.get("object_error_tolerance", 0),
+                  # object_errors_stop が false なら、PUT／GET の 1 回ごとの失敗では止めず数えて警告だけにする（rate limit は止める）
+                  tolerance=common.get("object_error_tolerance", 0) if common.get("object_errors_stop", True) else None,
                   window_s=common.get("abandon_window_seconds", ABANDON_WINDOW_S))
         guards.append(g)
         return g
@@ -900,8 +901,9 @@ def _warn_tolerated(res, g):
         res["warnings"].append("試験の object の要求に PUT／GET 以外の誤り（DELETE など。データは失わず、object が残り得るだけ）が"
                                " %d 件（止めない）: %s" % (c["warned"], g.last["first_warned"]))
     if c["unexplained"]:
-        res["warnings"].append("試験の object_request_errors に説明できない誤りが %d 件（許容 %d 以内なので続けた）: %s"
-                               % (c["unexplained"], c["tolerance"], g.last["first_unexplained"] or "ログに行の無い誤り"))
+        lim = "止めない設定" if c["tolerance"] is None else "許容 %d 以内なので続けた" % c["tolerance"]
+        res["warnings"].append("試験の object_request_errors に説明できない誤りが %d 件（%s。JuiceFS が再試行する 1 回ごとの失敗を含む）: %s"
+                               % (c["unexplained"], lim, g.last["first_unexplained"] or "ログに行の無い誤り"))
 
 
 def _fail(res, reason):

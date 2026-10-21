@@ -32,6 +32,7 @@ seed_limit_gib = 32
 settle_seconds = 60
 settle_max_seconds = 600
 object_error_tolerance = 20  # 試験の PUT／GET の誤りのうち、retire（abandoned）で説明できない誤りの許容数（超えたら止める）。JuiceFS が再試行する 1 回だけの時間切れ（Drive の応答待ち 30 秒など）で止めないため 20 にした（2026-10-21、実走で確認）
+object_errors_stop = false  # PUT／GET の 1 回ごとの失敗（Drive の応答待ちの時間切れなど。JuiceFS が再試行する）で止めるか。2026-10-21 の実走で apt upgrade の間に 21 件出て止まったので false にした。rate limit・EIO・mount の停止・本番の誤りの増加では今までどおり止める
 replay_procs_max = 64  # 流し直しの worker の process の数の上限（記録の pid をこの数に分ける。1 process の pid が多いと GIL の取り合いで待ちが膨らむ）
 abandon_window_seconds = 30  # PUT の誤りの後、同じ key の `is not needed, abandoned` を待つ秒数
 loss_tolerance = 0.01
