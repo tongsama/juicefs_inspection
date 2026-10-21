@@ -37,12 +37,14 @@ def select(path=runmod.SETTINGS_PATH, only=None):
     return [s for s in allset if s["name"] in want]
 
 
-def make_runner(create_bucket=False, settings_path=None):
+def make_runner(create_bucket=False, settings_path=None, head_seconds=None):
     """本物の run を呼ぶ runner（試験の volume、Drive を使う）を作る。create_bucket は testvol.up に渡す
-    （volume が無いときだけ Drive に作ってよいという、ユーザーの明示の許可）。"""
+    （volume が無いときだけ Drive に作ってよいという、ユーザーの明示の許可）。head_seconds は記録の最初の N 秒だけを流す。"""
     def runner(trace, name, out, age):
         from lib import config
         kw = {"settings_path": settings_path} if settings_path else {}
+        if head_seconds is not None:
+            kw["head_s"] = head_seconds
         return runmod.run(trace, name, out, config.load_profile("test"), age=age,
                           up_kw={"create_bucket": True} if create_bucket else None, **kw)
     return runner
@@ -105,7 +107,7 @@ def _row(cells):
     return "| " + " | ".join(cells) + " |"
 
 
-def build_summary(entries, trace, age, stamp):
+def build_summary(entries, trace, age, stamp, head_seconds=None):
     """entries（label、setting、dir、status、reasons、settle）から summary.md の本文を作る。"""
     labels = [e["label"] for e in entries]
     plays = {e["label"]: _read_json(os.path.join(e["dir"], "play.json")) for e in entries}
@@ -130,7 +132,9 @@ def build_summary(entries, trace, age, stamp):
         status.append("失敗" if s == FAILED else "未収束" if s == NOT_SETTLED else "成功")
     head = ["項目"] + labels
     out = ["# suite の結果 %s" % stamp, "",
-           "- trace: `%s`、age: %d、設定: %s" % (trace, age, ", ".join(e["setting"] for e in entries)), "",
+           "- trace: `%s`、age: %d、設定: %s%s" % (trace, age, ", ".join(e["setting"] for e in entries),
+                                                "、--head-seconds %g（記録の最初の %g 秒だけ）" % (head_seconds, head_seconds)
+                                                if head_seconds else ""), "",
            _row(head), "|---|" + "---|" * len(labels), _row(["結果"] + status)]
     if body:
         out += [_row(r) for r in body[1:]]  # body[0] は compare のヘッダー行
@@ -160,8 +164,9 @@ def build_summary(entries, trace, age, stamp):
     return "\n".join(out) + "\n"
 
 
-def run_suite(trace, names, repeat=1, age=0, results_root=None, runner=None, stamp=None, log=print):
-    """names の設定を順に（各 repeat 回）流す。失敗で止め、summary.md を書く。
+def run_suite(trace, names, repeat=1, age=0, results_root=None, runner=None, stamp=None, log=print, head_seconds=None):
+    """names の設定を順に（各 repeat 回）流す。失敗で止め、summary.md を書く。head_seconds は表の見出しに書く
+    （実際に絞るのは runner。make_runner(head_seconds=...) を渡す）。
     戻り値は {status（ok／failed）、summary（summary.md の path）、dir、entries}。"""
     results_root = results_root or os.path.join(SUITE_DIR, "results")
     runner = runner or make_runner()
@@ -190,7 +195,7 @@ def run_suite(trace, names, repeat=1, age=0, results_root=None, runner=None, sta
             if stop:
                 break
     finally:  # Ctrl-C でも、終わった列までの表を残す
-        text = build_summary(entries, trace, age, stamp)
+        text = build_summary(entries, trace, age, stamp, head_seconds)
         with open(summary, "w", encoding="utf-8") as f:
             f.write(text)
     stop = stop or any(e["status"] == FAILED for e in entries)  # 表を作れず失敗にした列も反映する

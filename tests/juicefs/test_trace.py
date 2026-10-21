@@ -197,6 +197,22 @@ class VerifyTest(unittest.TestCase):
         self.assertEqual((meta["all_write_ops"], meta["all_write_bytes"]), (1, 10))
 
 
+class HeadTest(unittest.TestCase):
+    """--head-seconds の選び方（trace.head）。"""
+
+    def _ops(self):
+        return [accesslog.Op(t, t + 10, 1, "write", 0, 1, 0, 10, "OK") for t in (5_000_000, 5_500_000, 6_999_999, 7_000_000, 9_000_000)]
+
+    def test_head_selects_first_seconds(self):
+        ops = self._ops()
+        self.assertEqual([o.start_us for o in trace.head(ops, 2)], [5_000_000, 5_500_000, 6_999_999])
+        self.assertEqual(trace.head(ops, None), ops)  # 既定は全部
+        self.assertEqual(len(trace.head(ops, 0.5)), 1)
+        self.assertEqual(trace.head([], 3), [])
+        with self.assertRaises(ValueError):
+            trace.head(ops, 0)
+
+
 class RecordSafetyTest(unittest.TestCase):
     """record の出力の上書きの拒否と、stop の pid の確かめ（一時ファイルと子の process だけを使う）。"""
 

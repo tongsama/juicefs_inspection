@@ -56,6 +56,52 @@ class TestPlayer(unittest.TestCase):
         with open(self.path, "rb") as f:  # write の中身は種と違う（位置 + 1）
             self.assertEqual(f.read(4096), player.content(0, 4096))
 
+    def test_play_many_threads_no_busy_wait(self):
+        """163 pid の記録（初回の本番の trace と同じ規模）でも、待つ thread は眠って GIL を離すので、
+        1 操作の待ち時間（一時ファイル）は小さく、予定からの遅れも ~20 ms に収まる
+        （WSL の scheduler の揺れの分、上限は 25 ms とする）。"""
+        ops = []
+        for b in range(30):  # 50 ms ごとの山に、160 pid が 0.1 ms ずつずれて 1 操作ずつ（山の中では多くの thread が同時に待つ）
+            for p in range(160):
+                i = b * 160 + p
+                kind = ("write", "read")[i % 2]
+                ops.append(_op(b * 50_000 + p * 100, 1000 + p, kind, (i * 4096) % (4 * MiB), 4096))
+        r = player.play(self.path, ops, time.monotonic() + 1.0)
+        self.assertEqual(r.errors, [])
+        self.assertEqual(r.ops_done, len(ops))
+        self.assertLess(r.latency["write"]["p50_ms"], 1.0, r.latency)
+        self.assertLess(r.latency["read"]["p50_ms"], 1.0, r.latency)
+        self.assertLessEqual(r.max_lag_ms, 25.0)
+
+    def test_wait_never_spins(self):
+        """予定の時刻までは timeout 付きの wait で眠るだけで、timeout 0 の wait を繰り返して回らない
+        （旧版は最後の 2 ms を stop.wait(0) で回し、163 thread が GIL を取り合った）。"""
+        import threading
+        calls = []
+
+        class Counting(threading.Event):
+            """wait の timeout を控える Event。"""
+            def wait(self, timeout=None):
+                calls.append(timeout)
+                return super().wait(timeout)
+        ops = [_op(i * 3_000, 1 + i % 20, "write", 0, 10) for i in range(200)]
+        r = player.play(self.path, ops, time.monotonic() + 0.2, stop=Counting())
+        self.assertEqual(r.ops_done, 200)
+        self.assertTrue(calls)
+        self.assertGreaterEqual(min(calls), player.ISSUE_EARLY_S)  # 0 や極小の timeout で回さない
+        self.assertLessEqual(len(calls), 3 * len(ops))  # 1 操作あたり数回（起き遅れの見直し）まで
+
+    def test_stop_wakes_sleeping_threads(self):
+        """遠い予定の操作を待っている thread も、stop が立てばすぐ止まる（眠っていても反応が遅れない）。"""
+        import threading
+        stop = threading.Event()
+        ops = [_op(i * 1_000_000, 1 + i % 50, "write", 0, 10) for i in range(100)]  # 100 秒先まで
+        threading.Timer(0.2, stop.set).start()
+        t = time.monotonic()
+        r = player.play(self.path, ops, time.monotonic() + 0.5, stop=stop)
+        self.assertLess(time.monotonic() - t, 1.5)
+        self.assertTrue(r.stopped)
+
     def test_play_kinds_truncate_fallocate(self):
         ops = [_op(0, 1, "fallocate", 8 * MiB, MiB, 0), _op(1000, 1, "truncate", 0, 10 * MiB),
                _op(2000, 1, "write", 9 * MiB, 100), _op(3000, 1, "read", 9 * MiB, 100),
@@ -153,11 +199,117 @@ class TestRunParts(unittest.TestCase):
         with open(log, "a") as f:
             f.write("upload failed: 429 Too Many Requests\n")
         self.assertIn("429", g.check())
-        g = runmod.Guard(lambda: dict(vals), log, mounted=lambda: True)
+        g = runmod.Guard(lambda: dict(vals), log, mounted=lambda: True, unlogged_grace_s=0)
         vals["juicefs_object_request_errors"] = 3.0
-        self.assertIn("object_request_errors", g.check())
+        self.assertIn("object_request_errors", g.check())  # ログに無い誤りは説明できないので止める
         g = runmod.Guard(lambda: dict(vals), log, mounted=lambda: False)
         self.assertIn("mount", g.check())
+
+    T0 = 1_800_000_000.0  # 試験の時計の基準（ログの時刻もこの時刻から作る）
+
+    @staticmethod
+    def _ts(t):
+        """UNIX 秒 t を、juicefs のログの行頭の時刻（現地時刻、マイクロ秒）にする。"""
+        return time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(t)) + ".%06d" % round((t % 1) * 1e6)
+
+    def _put_err(self, t, key):
+        """retire で打ち切られた PUT の誤りの行（初回の実走の形。URL は含めない）。"""
+        return ('%s juicefs[1] <WARNING>: slow request: PUT %s payload_bytes=26 (req_id: "", err: operation error S3: '
+                'PutObject, exceeded maximum number of attempts, 1, https response error StatusCode: 0, RequestID: , '
+                'HostID: , request send failed, cost: 30.0017s) [logRequest@cached_store.go:769]\n' % (self._ts(t), key))
+
+    def _abandoned(self, t, key):
+        """finishStagingUpload の abandoned の行。"""
+        return ("%s juicefs[1] <INFO>: Key %s is not needed, abandoned, err: <nil> "
+                "[finishStagingUpload@cached_store.go:1457]\n" % (self._ts(t), key))
+
+    def _guard_env(self, errors=0.0, **kw):
+        """一時のログ、差し替えた metrics と時計で Guard を作る。戻り値は (guard, log の path, metrics の dict, 時計の list)。"""
+        d = tempfile.mkdtemp(prefix="jfs-guard-")
+        self.addCleanup(shutil.rmtree, d, ignore_errors=True)
+        log = os.path.join(d, "juicefs.log")
+        open(log, "w").close()
+        vals = {"juicefs_object_request_errors": errors}
+        now = [self.T0]
+        g = runmod.Guard(lambda: dict(vals), log, mounted=lambda: True, clock=lambda: now[0], **kw)
+        return g, log, vals, now
+
+    def test_classify_errors(self):
+        """abandoned で説明できる PUT の誤り、待ち中、説明できない誤り（abandoned が無い・遅すぎる・PUT 以外）を分ける。"""
+        t = self.T0
+        errs = [("PUT", "chunks/0/9/9604_0_4096", t), ("PUT", "chunks/0/8/8777_0_4096", t),
+                ("PUT", "chunks/0/1/1_0_4096", t - 100), ("GET", "chunks/0/9/9604_0_4096", t - 100),
+                ("PUT", "chunks/0/2/2_0_4096", t - 100)]
+        ab = {"chunks/0/9/9604_0_4096": [t + 5.3], "chunks/0/2/2_0_4096": [t - 100 + 31]}
+        c = runmod.classify_errors(errs, ab, now=t + 10, window_s=30)
+        self.assertEqual((c["explained"], c["pending"], c["unexplained"]), (1, 1, 3))
+        self.assertIn("chunks/0/1/1_0_4096", c["first_unexplained"])
+        c = runmod.classify_errors(errs, ab, now=t + 31, window_s=30)  # 窓を過ぎても abandoned が来なければ説明できない
+        self.assertEqual((c["explained"], c["pending"], c["unexplained"]), (1, 0, 4))
+
+    def test_guard_ignores_abandoned_put_errors(self):
+        """初回の実走の形: PUT の誤りで object_request_errors が 0 → 1 になり、5 秒後に同じ key が abandoned。止めない。"""
+        g, log, vals, now = self._guard_env()
+        self.assertIsNone(g.check())
+        with open(log, "a") as f:
+            f.write(self._put_err(self.T0 + 1, "chunks/0/9/9604_0_4096"))
+        vals["juicefs_object_request_errors"] = 1.0
+        now[0] = self.T0 + 2
+        self.assertIsNone(g.check())  # abandoned を待つ間は止めない
+        with open(log, "a") as f:
+            f.write(self._abandoned(self.T0 + 6.3, "chunks/0/9/9604_0_4096"))
+        for dt in (7, 40, 100):
+            now[0] = self.T0 + dt
+            self.assertIsNone(g.check())
+        c = g.counts()
+        self.assertEqual((c["errors_total"], c["abandoned_explained"], c["unexplained"]), (1, 1, 0))
+
+    def test_guard_stops_on_unexplained_put_error(self):
+        """abandoned が窓（30 秒）の中に来ない PUT の誤りは、窓を過ぎたら止める。"""
+        g, log, vals, now = self._guard_env()
+        with open(log, "a") as f:
+            f.write(self._put_err(self.T0 + 1, "chunks/0/1/1_0_4096"))
+        vals["juicefs_object_request_errors"] = 1.0
+        now[0] = self.T0 + 20
+        self.assertIsNone(g.check())
+        now[0] = self.T0 + 32
+        r = g.check()
+        self.assertIn("説明できない", r)
+        self.assertIn("chunks/0/1/1_0_4096", r)
+        self.assertEqual(g.counts()["unexplained"], 1)
+
+    def test_guard_tolerance(self):
+        """説明できない誤りが許容（profiles.toml の object_error_tolerance）以下なら止めない。"""
+        g, log, vals, now = self._guard_env(tolerance=1)
+        with open(log, "a") as f:
+            f.write(self._put_err(self.T0 + 1, "chunks/0/1/1_0_4096"))
+        vals["juicefs_object_request_errors"] = 1.0
+        now[0] = self.T0 + 40
+        self.assertIsNone(g.check())
+        with open(log, "a") as f:
+            f.write(self._put_err(self.T0 + 41, "chunks/0/2/2_0_4096"))
+        vals["juicefs_object_request_errors"] = 2.0
+        now[0] = self.T0 + 80
+        self.assertIn("説明できない", g.check())
+
+    def test_guard_unlogged_metric_errors_stop(self):
+        """metrics の誤りがログに出ない（遅くない誤りは slow request の行が無い）なら、猶予の後に説明できないとして止める。"""
+        g, log, vals, now = self._guard_env(unlogged_grace_s=5)
+        vals["juicefs_object_request_errors"] = 1.0
+        now[0] = self.T0 + 1
+        self.assertIsNone(g.check())
+        now[0] = self.T0 + 7
+        r = g.check()
+        self.assertIn("説明できない", r)
+        self.assertEqual(g.counts()["unlogged"], 1)
+
+    def test_guard_rate_limit_still_stops_with_abandoned(self):
+        """abandoned の行があっても、429／403 の rate limit の行が出たらすぐ止める。"""
+        g, log, vals, now = self._guard_env()
+        with open(log, "a") as f:
+            f.write(self._abandoned(self.T0 + 1, "chunks/0/1/1_0_4096"))
+            f.write("%s juicefs[1] <WARNING>: upload: 429 Too Many Requests\n" % self._ts(self.T0 + 1))
+        self.assertIn("rate limit", g.check())
 
     def test_guard_stops_on_prod_errors(self):
         d = tempfile.mkdtemp(prefix="jfs-guard-")
@@ -336,7 +488,7 @@ class TestRunFailures(unittest.TestCase):
         self.out = os.path.join(d, "out")
         self.uuid = UUID
 
-    def _run(self, warm=None, subproc=None):
+    def _run(self, warm=None, subproc=None, head_s=None):
         """外の資源をすべて偽にして run を呼ぶ。"""
         mp = self.spec.mountpoint
         ps = [mock.patch("replay.testvol.safety_check"),
@@ -347,8 +499,12 @@ class TestRunFailures(unittest.TestCase):
               mock.patch("replay.run._make_clone", return_value=(self.clone, 5)),
               mock.patch("replay.run._volume_uuid", side_effect=lambda spec: self.uuid),
               mock.patch("replay.run.wait_deleted", side_effect=lambda *a, **k: self.calls.append("wait") or {}),
-              mock.patch("replay.run.warm", side_effect=warm or (lambda *a: {"ranges": 0, "bytes": 0, "seconds": 0})),
+              mock.patch("replay.run.ensure_warm", return_value=({"uuid": UUID, "warm": {"ranges": 0}}, False)),
+              mock.patch("replay.warmcache.restore",
+                         return_value={"uuid": UUID, "files": 0, "bytes": 0, "skipped": 0, "seconds": 0}),
               mock.patch("os.path.ismount", side_effect=lambda p: p == mp)]
+        if warm:  # 複製を作った後（計測のプロファイルを書くところ）で失敗させる
+            ps.append(mock.patch("replay.run.write_measure_profiles", side_effect=warm))
         if subproc:
             ps.append(mock.patch("replay.run.subprocess.run", side_effect=subproc))
         for p in ps:
@@ -356,7 +512,7 @@ class TestRunFailures(unittest.TestCase):
             self.addCleanup(p.stop)
         return runmod.run(self.trace, "default", self.out, self.test, spec=self.spec,
                           up_kw=dict(prod=self.prod, prod_redis=tv.PROD_REDIS), log=lambda m: None,
-                          prod_scrape=lambda: {})
+                          prod_scrape=lambda: {}, head_s=head_s)
 
     def _results(self):
         """run.json と play.json の status と reasons。"""
@@ -367,7 +523,7 @@ class TestRunFailures(unittest.TestCase):
         return rj, pj
 
     def test_keyerror_midway_failed_and_cleaned(self):
-        def boom(*a):
+        def boom(*a, **k):
             raise KeyError("x")
         res = self._run(warm=boom)
         self.assertEqual(res["status"], "failed")
@@ -409,7 +565,7 @@ class TestRunFailures(unittest.TestCase):
         self.assertEqual(self.calls[-1], "umount")  # 後始末（umount）はする
 
     def test_interrupt_reraised_after_cleanup(self):
-        def intr(*a):
+        def intr(*a, **k):
             raise KeyboardInterrupt()
         with self.assertRaises(KeyboardInterrupt):
             self._run(warm=intr)
@@ -418,6 +574,28 @@ class TestRunFailures(unittest.TestCase):
         rj, pj = self._results()
         self.assertEqual(rj["status"], "failed")
         self.assertTrue(any("中断" in r for r in rj["reasons"]))
+
+    def test_run_records_counts_head_and_warm(self):
+        """run.json に、誤りの内訳（object_errors）、--head-seconds と流した操作の数、温めたキャッシュの写しの情報が残る。"""
+        import subprocess
+
+        def sp(cmd, **kw):
+            raise subprocess.TimeoutExpired(cmd, kw.get("timeout"))
+        with open(self.trace, "a") as f:
+            f.write(trace.format_op(_op(5_000_000, 1, "write", 0, 10)))  # 5 秒後（--head-seconds 1 では流さない）
+        self._run(subproc=sp, head_s=1)
+        rj = self._results()[0]
+        self.assertEqual((rj["head_seconds"], rj["ops"], rj["ops_total"]), (1, 1, 2))
+        self.assertEqual(rj["warm_cache"]["restore"]["uuid"], UUID)
+        self.assertFalse(rj["warm_cache"]["created"])
+
+    def test_warm_copy_for_other_volume_fails(self):
+        """戻した写しの UUID が mount した volume と違えば（volume を作り直した）、作り直しを促して失敗にする。"""
+        self.uuid = "73e74f7b-0000-4155-adea-d9ef1e669c99"
+        res = self._run()
+        self.assertEqual(res["status"], "failed")
+        self.assertTrue(any("warm --force" in r for r in res["reasons"]), res["reasons"])
+        self.assertEqual(self.calls[-1], "umount")
 
     def test_clone_timeout_is_runerror(self):
         import subprocess
@@ -485,6 +663,25 @@ class TestRunIntegration(unittest.TestCase):
             self.assertFalse(os.path.ismount(spec.mountpoint))  # 最後に mount を外す
             with resp.Resp(*spec.redis_addr, db=spec.db) as r:  # clone の chunk は消えている
                 self.assertEqual(r.call("SCAN", 0, "MATCH", "c%d_*" % res["clone_inode"], "COUNT", 10000)[1], [])
+            # 1 回目は温めたキャッシュの写しを作り（温めの数が残る）、2 回目はそれを戻すだけ（温め直さない）
+            self.assertTrue(rj["replay"]["warm_cache"]["created"])
+            self.assertGreaterEqual(rj["replay"]["warm"]["ranges"], 1)
+            self.assertGreaterEqual(rj["replay"]["warm_cache"]["restore"]["files"], 1)
+            self.assertEqual(rj["replay"]["object_errors"]["unexplained"], 0)
+            out2 = os.path.join(root, "out2")
+            with mock.patch("replay.run.warm", side_effect=AssertionError("2 回目は温め直さない")):
+                res2 = runmod.run(t, "default", out2, test, spec=spec, up_kw=up_kw, settle_s=2, settle_max_s=60,
+                                  delete_quiet_s=1, poll_s=0.5, intervals={"metrics": 1, "llen": 5, "keys": 5},
+                                  log=lambda m: None, prod_scrape=lambda: {"juicefs_object_request_errors": 0.0},
+                                  head_s=0.055)
+            self.assertEqual(res2["status"], "ok", res2)
+            self.assertFalse(res2["warm_cache"]["created"])
+            self.assertGreaterEqual(res2["warm_cache"]["restore"]["files"], 1)
+            with open(os.path.join(out2, "play.json")) as f:
+                self.assertEqual(json.load(f)["ops_done"], 2)  # --head-seconds 0.055: 最初の 2 操作だけ
+            snap = [n for n in os.listdir(out2) if n.startswith("keys-snapshot-")]
+            with open(os.path.join(out2, snap[0])) as f:  # 戻した block が volume のキャッシュに見える
+                self.assertGreaterEqual(len(f.read().splitlines()), 2)
         finally:
             testvol.cleanup(spec)
 

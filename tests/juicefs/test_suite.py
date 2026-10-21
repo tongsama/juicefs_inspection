@@ -125,6 +125,32 @@ class SuiteTest(unittest.TestCase):
             self.assertIn("a#2", text)
             self.assertIn("未収束", text)
 
+    def test_head_seconds_passed_to_run_and_summary(self):
+        """--head-seconds は make_runner から run の head_s に渡り、表の見出しにも出る。cli の run／suite も受け取る。"""
+        from unittest import mock
+        from replay import cli
+        with mock.patch("replay.run.run", return_value={"status": "ok", "reasons": [], "settle": None}) as rr, \
+                mock.patch("lib.config.load_profile", return_value="P"):
+            suite.make_runner(head_seconds=60)("t.tsv", "a", "/o", 0)
+            self.assertEqual(rr.call_args.kwargs["head_s"], 60)
+            suite.make_runner()("t.tsv", "a", "/o", 0)
+            self.assertNotIn("head_s", rr.call_args.kwargs)  # 既定は全体
+            cli.main(["run", "t.tsv", "--settings", "default", "--out", "/nonexistent/o", "--head-seconds", "5"])
+            self.assertEqual(rr.call_args.kwargs["head_s"], 5.0)
+        with mock.patch("replay.suite.run_suite", return_value={"status": "ok", "summary": "s"}) as rs:
+            cli.main(["suite", "t.tsv", "--only", "default", "--head-seconds", "30",
+                      "--settings-file", os.path.join(HERE, "settings.toml")])
+            self.assertEqual(rs.call_args.kwargs["head_seconds"], 30.0)
+        with self.assertRaises(SystemExit):
+            cli.main(["run", "t.tsv", "--settings", "default", "--head-seconds", "0"])
+        with tempfile.TemporaryDirectory() as root:
+            def runner(trace, name, out, age):
+                _fake_result(out, put=10, comp=1.0)
+                return {"status": "ok", "reasons": [], "settle": {"state": "落ち着いた", "seconds": 60}}
+            res = suite.run_suite("t.tsv", ["a"], results_root=root, runner=runner, stamp="H", head_seconds=60)
+            with open(res["summary"], encoding="utf-8") as f:
+                self.assertIn("--head-seconds 60", f.read())
+
     def test_only_filter_and_unknown(self):
         self.assertEqual([s["name"] for s in suite.select(os.path.join(HERE, "settings.toml"), "block,trigger30")],
                          ["trigger30", "block"])

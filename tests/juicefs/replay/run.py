@@ -3,9 +3,12 @@
 手順:
   0. 安全の確かめ（本番と重ならないこと）。試験の mount が上がっていれば外す。
      --age N なら、既定の設定で mount → 種を clone → 記録を N 回流す → 落ち着く → mount を外す（差分を育てる）。
-  1. 試験の mount を外した状態でキャッシュ（試験のキャッシュだけ）を空にし、その回の設定で mount する。
+     温めたキャッシュの写し（warmcache）が無いか、種が変わっていれば、先に作る（ensure_warm: 既定の設定で mount →
+     種を clone → 記録の read の範囲を Drive から 1 回読む → 複製を消す → mount を外す → 写す）。
+  1. 試験の mount を外した状態でキャッシュ（試験のキャッシュだけ）を空にし、温めたキャッシュの写しを戻してから、
+     その回の設定で mount する（各回は同じ温まったキャッシュから始まる。Drive から温め直さない）。
   2. 種のファイルを `juicefs clone` で per-run の path に複製する（--age のときは育てた複製を使う）。
-  3. キャッシュを温める: 記録の中の read の範囲を 1 回読み、page cache は捨てる。
+  3. （温めは写しを作るときだけ。--head-seconds N なら記録の最初の N 秒だけを流す）
   4. 計測の suite（test）を <out> に始める。
   5. 記録を流す（player.play）。Drive の rate limit・mount の停止を見張り、出たら止める。
   6. 落ち着くまで待つ（staging_blocks 0、object_request_uploading 0、compact_size_histogram_bytes_count が
@@ -28,7 +31,7 @@ from lib import config, metrics_io
 from lib.resp import Resp
 from measure import capture as mcap
 from measure import cli as mcli
-from replay import player, testvol, trace
+from replay import player, testvol, trace, warmcache
 
 SUITE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SETTINGS_PATH = os.path.join(SUITE_DIR, "settings.toml")
@@ -89,21 +92,74 @@ class Settle:
         return now - self.since >= self.quiet_s
 
 
+# 試験の mount のログの行（logRequest@cached_store.go と finishStagingUpload@cached_store.go の形）
+LOG_TIME_RE = re.compile(r"^(\d{4}/\d\d/\d\d \d\d:\d\d:\d\d)(\.\d+)?")
+ERR_REQ_RE = re.compile(r"slow request: (\w+) (\S+) .*?\berr: (?!<nil>)")  # err が <nil> でない object の要求
+ABANDONED_RE = re.compile(r"\bKey (\S+) is not needed, abandoned")
+ABANDON_WINDOW_S = 30.0  # PUT の誤りの後、同じ key の abandoned を待つ秒数（初回の実走では 5〜11 秒後）
+UNLOGGED_GRACE_S = 5.0  # metrics の誤りに対応する行がログに出るのを待つ秒数
+ABANDON_SKEW_S = 1.0  # abandoned の行が誤りの行より先に出た場合の許し（ログの書き込みの前後）
+
+
+def _log_time(line):
+    """ログの行頭の時刻（現地時刻）を UNIX 秒にする。無ければ None。"""
+    m = LOG_TIME_RE.match(line)
+    if not m:
+        return None
+    try:
+        return time.mktime(time.strptime(m.group(1), "%Y/%m/%d %H:%M:%S")) + float(m.group(2) or 0)
+    except (ValueError, OverflowError):
+        return None
+
+
+def classify_errors(errors, abandoned, now, window_s=ABANDON_WINDOW_S):
+    """ログの object の要求の誤り errors（(method, key, 時刻) の list）を、abandoned（key → 時刻の list）で分ける。
+    - 説明できる（explained）: PUT で、同じ key の abandoned が誤りの時刻の ABANDON_SKEW_S 前から window_s 後までにある
+      （compaction が staging の slice を retire し、上げ途中の PUT が打ち切られた。試験している効果そのもの）。
+    - 待ち中（pending）: PUT で、まだ window_s が過ぎていない。
+    - 説明できない（unexplained）: それ以外（PUT 以外の誤り、窓の中に abandoned が来なかった PUT）。
+    戻り値は {explained, pending, unexplained, first_unexplained（最初の説明できない誤りの文字列 or None）}。"""
+    c = {"explained": 0, "pending": 0, "unexplained": 0, "first_unexplained": None}
+    for method, key, t in errors:
+        if method == "PUT":
+            if any(t - ABANDON_SKEW_S <= a <= t + window_s for a in abandoned.get(key, ())):
+                c["explained"] += 1
+                continue
+            if now < t + window_s:
+                c["pending"] += 1
+                continue
+        c["unexplained"] += 1
+        if c["first_unexplained"] is None:
+            c["first_unexplained"] = "%s %s（%s）" % (method, key, time.strftime("%H:%M:%S", time.localtime(t)))
+    return c
+
+
 class Guard:
-    """流し直しと待ちの間の見張り。object_request_errors の増加、試験の mount のログの 429／403 の rate limit、
-    mount の停止（mountpoint が mount でない）、metrics の 3 回続けての取得の失敗を、check() で理由の文字列にして返す。
+    """流し直しと待ちの間の見張り。試験の mount のログの 429／403 の rate limit、mount の停止（mountpoint が mount でない）、
+    metrics の 3 回続けての取得の失敗、説明できない object の要求の誤りを、check() で理由の文字列にして返す。
+    試験の object_request_errors の増加は、そのまま止める理由にはしない。compaction が staging の slice を retire すると、
+    上げ途中の PUT が打ち切られて誤りになり、同じ key の `Key … is not needed, abandoned` がログに出る（初回の実走、
+    2026-10-21）。これは試験している効果なので数えない。説明できない誤り（abandoned の来ない PUT、PUT 以外、
+    ログに行の無い metrics の誤り）が tolerance を超えたら止める（classify_errors と counts を参照）。
     prod_scrape（本番の /metrics を読み取りの GET で取る関数）があれば、本番の object_request_errors の増加でも止める
     （rclone と Drive は本番と共有なので、試験の負荷が本番の失敗を起こしたら続けない）。本番の値が取れないときは
     その項目だけ見張れない（prod_seen が偽のまま。呼ぶ側が警告に残す）。"""
 
-    def __init__(self, scrape, log_path, mounted, prod_scrape=None):
+    def __init__(self, scrape, log_path, mounted, prod_scrape=None, tolerance=0, window_s=ABANDON_WINDOW_S,
+                 unlogged_grace_s=UNLOGGED_GRACE_S, clock=time.time):
         self.scrape, self.log_path, self.mounted = scrape, log_path, mounted
         self.prod_scrape = prod_scrape
+        self.tolerance, self.window_s, self.unlogged_grace_s, self.clock = tolerance, window_s, unlogged_grace_s, clock
         self.base = None
         self.prod_base = None
         self.prod_seen = False
         self.fail = 0
         self.pos = 0
+        self.errors = []  # ログの誤り (method, key, 時刻)
+        self.abandoned = {}  # key → abandoned の時刻の list
+        self.history = []  # (時計の時刻, metrics の誤りの増分)
+        self.total = 0.0  # metrics の誤りの増分（最新）
+        self.last = classify_errors([], {}, 0)
         try:
             self.pos = os.path.getsize(log_path)  # 始める前の行は見ない
         except OSError:
@@ -130,8 +186,8 @@ class Guard:
             self.prod_seen = True
         return v
 
-    def _log_hits(self):
-        """ログの増えた分から rate limit の行を探し、最初の 1 行（200 文字まで）を返す。"""
+    def _scan_log(self):
+        """ログの増えた分を読み、誤りの行と abandoned の行を控える。rate limit の行があれば最初の 1 行（200 文字まで）を返す。"""
         try:
             with open(self.log_path, "rb") as f:
                 f.seek(self.pos)
@@ -140,16 +196,39 @@ class Guard:
             return None
         cut = data.rfind(b"\n") + 1  # 書きかけの行は次回に回す
         self.pos += cut
+        hit = None
         for line in data[:cut].decode("utf-8", "replace").splitlines():
-            if RATE_LIMIT_RE.search(line):
-                return line.strip()[:200]
-        return None
+            if hit is None and RATE_LIMIT_RE.search(line):
+                hit = line.strip()[:200]
+            m = ERR_REQ_RE.search(line)
+            if m:
+                t = _log_time(line)
+                self.errors.append((m.group(1), m.group(2), self.clock() if t is None else t))
+                continue
+            m = ABANDONED_RE.search(line)
+            if m:
+                t = _log_time(line)
+                self.abandoned.setdefault(m.group(1), []).append(self.clock() if t is None else t)
+        return hit
+
+    def _unlogged(self, now):
+        """unlogged_grace_s より前の metrics の誤りの増分のうち、ログに行の無い数（遅くない誤りは行が出ない）。"""
+        old = [d for t, d in self.history if t <= now - self.unlogged_grace_s]
+        return max(0, int((old[-1] if old else 0) - len(self.errors)))
+
+    def counts(self):
+        """object の要求の誤りの内訳（run.json に残す）: errors_total（metrics の増分）、logged（ログの誤りの行）、
+        abandoned_explained、pending、unexplained（ログの説明できない誤り + unlogged）、unlogged、tolerance。"""
+        unlogged = self._unlogged(self.clock())
+        return {"errors_total": self.total, "logged": len(self.errors), "abandoned_explained": self.last["explained"],
+                "pending": self.last["pending"], "unexplained": self.last["unexplained"] + unlogged,
+                "unlogged": unlogged, "tolerance": self.tolerance}
 
     def check(self):
         """止める理由があれば文字列、無ければ None。"""
         if not self.mounted():
             return "試験の mount が落ちた（mountpoint が mount ではない）"
-        hit = self._log_hits()
+        hit = self._scan_log()
         if hit:
             return "試験の mount のログに rate limit（429／403）: %s" % hit
         pv = self._prod_errors()
@@ -157,6 +236,7 @@ class Guard:
             self.prod_base = pv
         elif pv is not None and pv > self.prod_base:
             return "本番の object_request_errors が増えた（%g → %g）。本番への影響を避けるため止めます" % (self.prod_base, pv)
+        now = self.clock()
         try:
             m = self.scrape()
             self.fail = 0
@@ -166,9 +246,28 @@ class Guard:
         v = m.get(OBJ_ERRORS)
         if self.base is None:
             self.base = v
-        elif v is not None and v > self.base:
-            return "object_request_errors が増えた（%g → %g）" % (self.base, v)
+        elif v is not None:
+            self.total = max(0.0, v - self.base)
+            self.history.append((now, self.total))
+        self.last = classify_errors(self.errors, self.abandoned, now, self.window_s)
+        c = self.counts()
+        if c["unexplained"] > self.tolerance:
+            what = self.last["first_unexplained"] or "ログに行の無い誤り %d 件" % c["unlogged"]
+            return ("試験の object_request_errors に、retire（abandoned）で説明できない誤りが %d 件（許容 %d）: %s"
+                    "（誤り %g 件、abandoned で説明 %d 件、待ち中 %d 件）"
+                    % (c["unexplained"], self.tolerance, what, c["errors_total"], c["abandoned_explained"], c["pending"]))
         return None
+
+
+def sum_counts(guards):
+    """複数の Guard の counts を足す（--age の回と本番の回）。Guard が無ければ None。"""
+    if not guards:
+        return None
+    out = {}
+    for g in guards:
+        for k, v in g.counts().items():
+            out[k] = v if k == "tolerance" else out.get(k, 0) + v
+    return out
 
 
 def _watch(guard, stop, poll_s, reasons):
@@ -474,24 +573,106 @@ def _play_guarded(path, ops, guard, poll_s, reasons):
         finish()
 
 
-def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, settle_s=None, settle_max_s=None,
-        delete_quiet_s=30, poll_s=5.0, intervals=None, settings_path=SETTINGS_PATH, log=print, prod_scrape=None):
-    """1 回の試験を行い、結果の dict（status は ok／failed、reasons、clone、clone_inode、settle、out）を返す。
-    結果の files は <out>/ の run.json、metrics.tsv など（計測の suite）、play.json、config.json。
-    prod_scrape は本番の object_request_errors を読む関数（既定は本番の metrics_url への読み取りの GET。試験で偽に差し替える）。"""
+def ensure_warm(trace_path, ops, spec, profile, prod, up_kw, default, scrape, *, force=False, delete_quiet_s=30,
+                max_s=600, poll_s=5.0, tsr=None, log=print):
+    """温めたキャッシュの写しが今の種で使えればそのまま返し、無いか種が変わっていれば（force なら必ず）作る。
+    作る手順: 試験の mount を外す → キャッシュを空にする → 既定の設定で mount → 種を clone → 記録の read の範囲を
+    1 回読む（warm。Drive から取る）→ 複製を消して後始末を待つ → mount を外す（キャッシュと kaz-2q の状態が揃う）→
+    warmcache.save。途中の失敗でも、複製を消して mount を外してから例外を上げる。戻り値は (meta, 作ったか)。"""
+    tsr = tsr or testvol._run
+    seed_mp_path, seed_info = _seed_path(trace_path, spec)
+    ident = warmcache.seed_identity(trace_path, seed_info)
+    d = warmcache.warm_dir(spec, trace_path)
+    root = warmcache.warm_root(spec)
+    warmcache.check_warm_dir(d, root, cache_dir=spec.cache_dir, mountpoint=spec.mountpoint, prod=prod)
+    meta = warmcache.load_meta(d)
+    ok, why = warmcache.is_valid(meta, ident, d)
+    if ok and not force:
+        log("温めたキャッシュの写しを使う: %s（%s 作成、%d ファイル、%d バイト）"
+            % (d, meta.get("saved_at"), meta.get("files", 0), meta.get("bytes", 0)))
+        return meta, False
+    log("温めたキャッシュの写しを作る（%s）: %s" % ("--force" if ok else why, d))
+    if os.path.ismount(spec.mountpoint):
+        testvol.umount(spec, run=tsr)
+    n = clear_cache(spec.cache_dir, spec.mountpoint, prod, spec.state_dir)
+    log("試験のキャッシュを空にした（%d ファイル）。既定の設定で mount して Drive から温める" % n)
+    clone_path = ino = None
+    ok_body = False
+    try:
+        testvol.up(profile, default, spec=spec, **up_kw)
+        uuid = _volume_uuid(spec)
+        if not uuid:
+            raise RunError("試験の mount の .config から volume の UUID を読めない（写すキャッシュの場所が決まらない）")
+        clone_path, ino = _make_clone(spec, seed_mp_path, "warm", log)
+        w = warm(clone_path, ops)
+        log("キャッシュを温めた: %(ranges)d 範囲、%(bytes)d バイト、%(seconds).1f 秒" % w)
+        os.unlink(clone_path)
+        clone_path = None
+        dl = wait_deleted(spec, ino, scrape, delete_quiet_s, max_s, poll_s)
+        testvol.umount(spec, run=tsr)
+        meta = warmcache.save(spec.cache_dir, uuid, d, {"seed": ident, "trace": os.path.abspath(trace_path),
+                                                        "settings": default.get("name"), "warm": w, "delete": dl},
+                              mountpoint=spec.mountpoint, prod=prod, state_dir=spec.state_dir, root=root)
+        log("温めたキャッシュを写した: %s（%d ファイル、%d バイト、%.1f 秒）"
+            % (d, meta["files"], meta["bytes"], meta["save_seconds"]))
+        ok_body = True
+        return meta, True
+    finally:
+        # 失敗の後始末（複製と mount を残さない）。本体が成功した後には何もしない。後始末の失敗は元の例外を隠さない
+        if not ok_body:
+            try:
+                if clone_path and os.path.ismount(spec.mountpoint):
+                    os.unlink(clone_path)
+                    wait_deleted(spec, ino, scrape, delete_quiet_s, max_s, poll_s)
+            except (OSError, RuntimeError, ConnectionError) as e:
+                log("警告: 温め用の複製を消せない（手で確かめる）: %s: %s" % (clone_path, e))
+            try:
+                testvol.umount(spec, run=tsr)
+            except (OSError, RuntimeError) as e:
+                log("警告: 試験の mount を外せない: %s" % e)
+
+
+def _common_setup(profile, spec, up_kw):
+    """run／warm_only の共通の準備: common、spec、prod、安全の確かめ。戻り値は (common, spec, up_kw, prod)。"""
     common = config.load_common()
     spec = spec or testvol.spec_from_profile(profile, common)
     up_kw = dict(up_kw or {})
     prod = up_kw.get("prod") or config.load_profile("prod")
     up_kw["prod"] = prod
     testvol.safety_check(profile, spec=spec, prod=prod, prod_redis=up_kw.get("prod_redis"))
+    return common, spec, up_kw, prod
+
+
+def warm_only(trace_path, profile, spec=None, up_kw=None, force=False, delete_quiet_s=30, poll_s=5.0,
+              settings_path=SETTINGS_PATH, log=print):
+    """jfsreplay warm: 温めたキャッシュの写しを（無いか種が変わっていれば。force なら必ず）作る。戻り値は (meta, 作ったか)。"""
+    common, spec, up_kw, prod = _common_setup(profile, spec, up_kw)
+    ops = trace.load(trace_path)
+    if not ops:
+        raise RunError("trace に操作が無い: %s" % trace_path)
+    url = "http://%s:%d/metrics" % spec.metrics_addr
+    return ensure_warm(trace_path, ops, spec, profile, prod, up_kw, load_settings("default", settings_path),
+                       lambda: metrics_io.scrape(url, WATCH_INCLUDE, timeout=10), force=force,
+                       delete_quiet_s=delete_quiet_s, max_s=common["settle_max_seconds"], poll_s=poll_s,
+                       tsr=up_kw.get("run"), log=log)
+
+
+def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, settle_s=None, settle_max_s=None,
+        delete_quiet_s=30, poll_s=5.0, intervals=None, settings_path=SETTINGS_PATH, log=print, prod_scrape=None,
+        head_s=None):
+    """1 回の試験を行い、結果の dict（status は ok／failed、reasons、clone、clone_inode、settle、out）を返す。
+    結果の files は <out>/ の run.json、metrics.tsv など（計測の suite）、play.json、config.json。
+    prod_scrape は本番の object_request_errors を読む関数（既定は本番の metrics_url への読み取りの GET。試験で偽に差し替える）。
+    head_s は記録の最初の head_s 秒だけを流す（--head-seconds。None なら全部）。温めたキャッシュの写しは記録の全体で作る。"""
+    common, spec, up_kw, prod = _common_setup(profile, spec, up_kw)
     if testvol._overlaps(out, prod.cache_dir) or testvol._overlaps(out, prod.mountpoint):
         raise testvol.SafetyError("出力の場所が本番と重なるので止めます: %s" % out)
     settings = load_settings(settings_name, settings_path)
     default = load_settings("default", settings_path)
     settle_s = common["settle_seconds"] if settle_s is None else settle_s
     settle_max_s = common["settle_max_seconds"] if settle_max_s is None else settle_max_s
-    ops = trace.load(trace_path)
+    all_ops = trace.load(trace_path)
+    ops = trace.head(all_ops, head_s)
     if not ops:
         raise RunError("trace に操作が無い: %s" % trace_path)
     os.makedirs(out, exist_ok=True)
@@ -514,12 +695,15 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
 
     def guard():
         """試験と本番の両方を見張る Guard を作る（本番の値が読めたかを後で確かめるため控える）。"""
-        g = Guard(scrape, spec.path("juicefs.log"), mounted, prod_scrape=prod_scrape)
+        g = Guard(scrape, spec.path("juicefs.log"), mounted, prod_scrape=prod_scrape,
+                  tolerance=common.get("object_error_tolerance", 0),
+                  window_s=common.get("abandon_window_seconds", ABANDON_WINDOW_S))
         guards.append(g)
         return g
 
     res = {"status": "ok", "reasons": [], "settings": settings, "age": age, "out": os.path.abspath(out),
-           "clone": None, "clone_inode": None, "settle": None, "cleanup": {}, "warnings": []}
+           "clone": None, "clone_inode": None, "settle": None, "cleanup": {}, "warnings": [], "head_seconds": head_s,
+           "ops": len(ops), "ops_total": len(all_ops)}
     plays, age_plays, measuring = [], [], False
     seed_info = None
     try:
@@ -527,6 +711,12 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
             res["volume_uuid"] = _volume_uuid(spec)
             log("試験の mount を外す（設定を入れ替えるため）")
             testvol.umount(spec, run=tsr)
+        wmeta, created = ensure_warm(trace_path, all_ops, spec, profile, prod, up_kw, default, scrape,
+                                     delete_quiet_s=delete_quiet_s, max_s=settle_max_s, poll_s=poll_s, tsr=tsr, log=log)
+        wdir = warmcache.warm_dir(spec, trace_path)
+        res["warm_cache"] = {"dir": wdir, "created": created, "saved_at": wmeta.get("saved_at"),
+                             "uuid": wmeta.get("uuid"), "files": wmeta.get("files"), "bytes": wmeta.get("bytes")}
+        res["warm"] = wmeta.get("warm")  # 写しを作ったときの温めの数（各回は温め直さない）
         seed_mp_path = None
         if age:
             log("--age %d: 既定の設定で差分を育てる" % age)
@@ -548,24 +738,31 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
                 raise RunError("差分を育てた後の待ちで止まった")
             testvol.umount(spec, run=tsr)
         n = clear_cache(spec.cache_dir, spec.mountpoint, prod, spec.state_dir, res.get("volume_uuid"))
-        log("試験のキャッシュを空にした（%d ファイル）。設定 %s で mount する" % (n, settings["name"]))
+        log("試験のキャッシュを空にした（%d ファイル）。温めたキャッシュの写しを戻す" % n)
+        rs = warmcache.restore(wdir, spec.cache_dir, mountpoint=spec.mountpoint, prod=prod, state_dir=spec.state_dir,
+                               root=warmcache.warm_root(spec))
+        res["warm_cache"]["restore"] = rs
+        log("温めたキャッシュを戻した（%(files)d ファイル、%(bytes)d バイト、%(seconds).1f 秒）" % rs)
+        log("設定 %s で mount する" % settings["name"])
         info = testvol.up(profile, settings, spec=spec, **up_kw)
         res["mount_args"] = info["mount_args"]
         uuid = _volume_uuid(spec)
         if not uuid:  # キャッシュの実の場所（<cache_dir>/<UUID>）が決まらないと、キャッシュの計測が空になる
             raise RunError("試験の mount の .config から volume の UUID を読めない（キャッシュの計測の場所が決まらない）")
         res["volume_uuid"] = uuid
+        if uuid != rs["uuid"]:  # volume を作り直した（format し直した）後の古い写し。戻したキャッシュが使われない
+            raise RunError("温めたキャッシュの写し（UUID %s）は今の試験の volume（UUID %s）のものではない。"
+                           "jfsreplay warm --force %s で作り直す" % (rs["uuid"], uuid, trace_path))
         if not res["clone"]:
             seed_mp_path, seed_info = _seed_path(trace_path, spec)
             res["clone"], res["clone_inode"] = _make_clone(spec, seed_mp_path, settings_name, log)
         res["seed"] = {"path": seed_mp_path, "inode": seed_info.get("inode")}
-        res["warm"] = warm(res["clone"], ops)
-        log("キャッシュを温めた: %(ranges)d 範囲、%(bytes)d バイト、%(seconds).1f 秒" % res["warm"])
         mprof = write_measure_profiles(out, spec, res["clone_inode"], common, intervals,
                                        cache_dir=os.path.join(spec.cache_dir, uuid))
         _mcli("--profiles", mprof, "start", "test", out)
         measuring = True
-        log("記録を流す: %d 操作、%.0f 秒" % (len(ops), (ops[-1].start_us - ops[0].start_us) / 1e6))
+        log("記録を流す: %d 操作、%.0f 秒%s" % (len(ops), (ops[-1].start_us - ops[0].start_us) / 1e6,
+                                          "（--head-seconds %g、全 %d 操作のうち）" % (head_s, len(all_ops)) if head_s else ""))
         g = guard()
         pr = _play_guarded(res["clone"], ops, g, poll_s, res["reasons"])
         plays.append(pr)
@@ -589,6 +786,7 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
         _fail(res, "中断された: %s" % type(e).__name__)
         raise
     finally:
+        res["object_errors"] = sum_counts(guards)
         if guards and not any(g.prod_seen for g in guards):
             res["warnings"].append("本番の metrics（%s）を読めなかったので、本番の object_request_errors は見張れていない"
                                    % prod.metrics_url)
@@ -643,7 +841,9 @@ def _write_play(out, plays, age_plays, res):
     d = plays[-1].to_dict() if plays else {"latency": {}, "max_lag_ms": None, "errors": [], "ops_done": 0,
                                            "failed": True, "stop_reason": "流し直しの前に止まった"}
     d.update({"status": res["status"], "reasons": res["reasons"], "settings": res["settings"],
-              "settle": res["settle"], "warm": res.get("warm"), "warnings": res.get("warnings", []), "age": res["age"], "age_plays": age_plays})
+              "settle": res["settle"], "warm": res.get("warm"), "warnings": res.get("warnings", []), "age": res["age"], "age_plays": age_plays,
+              "object_errors": res.get("object_errors"), "head_seconds": res.get("head_seconds"),
+              "warm_cache": res.get("warm_cache")})
     with open(os.path.join(out, "play.json"), "w", encoding="utf-8") as f:
         json.dump(d, f, ensure_ascii=False, indent=1)
 
@@ -672,6 +872,6 @@ def _write_run_json(out, res):
     """計測の suite の run.json に、流し直しの情報（replay）を足す。run.json が無ければ作る。"""
     run = mcli.read_run(out) or {"profile": "test"}
     run["replay"] = {k: res.get(k) for k in ("status", "reasons", "settings", "age", "clone", "clone_inode", "seed",
-                                             "mount_args", "warm", "settle", "age_settle", "cleanup", "warnings", "volume_uuid",
-                                             "traceback")}
+                                             "mount_args", "warm", "warm_cache", "settle", "age_settle", "cleanup", "warnings",
+                                             "volume_uuid", "object_errors", "head_seconds", "ops", "ops_total", "traceback")}
     mcli.write_run(out, run)

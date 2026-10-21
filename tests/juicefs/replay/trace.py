@@ -41,3 +41,17 @@ def load(path):
         result[slots[op.pid][k]] = op
         seq[op.pid] = k + 1
     return result
+
+
+def head(ops, seconds):
+    """開始の時刻で並べた ops（load の戻り値）のうち、最初の Op から seconds 秒未満に始まる Op だけを返す
+    （jfsreplay run／suite の --head-seconds。短い時間で流し直しの時刻の精度を確かめるため）。
+    seconds が None なら全部。0 以下は ValueError。"""
+    if seconds is None:
+        return list(ops)
+    if seconds <= 0:
+        raise ValueError("--head-seconds は正の数: %r" % (seconds,))
+    if not ops:
+        return []
+    limit = ops[0].start_us + seconds * 1e6
+    return [o for o in ops if o.start_us < limit]

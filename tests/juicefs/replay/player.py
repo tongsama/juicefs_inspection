@@ -110,6 +110,21 @@ def _error(op, e, t0):
             "message": str(e), "t_s": round(time.monotonic() - t0, 6)}
 
 
+ISSUE_EARLY_S = 0.0005  # 残りがこれ未満なら待たずに出す（眠りの起き遅れの方が大きいため）
+MAX_SLEEP_S = 1.0  # 1 回の眠りの上限（clock を差し替えた試験でも予定を見直せるように）
+
+
+def _sleep_until(when, stop, clock):
+    """clock() が when になるまで眠って待つ。stop.wait（timeout 付き）で眠るので、待つ間は GIL を離し、
+    stop が立てばすぐ起きる。回して待つ（busy-wait）ことはしない（初回の本番規模の試験で、163 thread が
+    最後の 2 ms を回して GIL を取り合い、write の p50 が 834 ms になったため）。残りが ISSUE_EARLY_S 未満なら戻る。"""
+    while not stop.is_set():
+        left = when - clock()
+        if left < ISSUE_EARLY_S:
+            return
+        stop.wait(min(left, MAX_SLEEP_S))
+
+
 def play(path, ops, t0, stop=None, clock=time.monotonic):
     """path を O_RDWR で開き、ops（開始の時刻順）を pid ごとの thread で流す。t0 は clock() の値の基準の時刻。
     stop（threading.Event）が立つか、エラーが出たら、全 thread が次の Op の前で止まる。戻り値は PlayResult。"""
@@ -131,11 +146,7 @@ def play(path, ops, t0, stop=None, clock=time.monotonic):
         for op in seq:
             when = t0 + (op.start_us - base) / 1e6
             data = content(op.off, op.size) if op.kind == "write" else None  # 待つ前に作る（遅れにも待ち時間にも入れない）
-            while True:
-                left = when - clock()
-                if left <= 0 or stop.is_set():
-                    break
-                stop.wait(min(left, 0.05) if left > 0.002 else 0)  # 最後の 2 ms は回して待つ（精度のため）
+            _sleep_until(when, stop, clock)
             if stop.is_set():
                 return
             a = clock()

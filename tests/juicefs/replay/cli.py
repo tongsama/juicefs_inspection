@@ -1,4 +1,4 @@
-"""jfsreplay の sub-command（record／stop／mark／verify／testvol／seed／run）。
+"""jfsreplay の sub-command（record／stop／mark／verify／testvol／seed／warm／run／suite）。
 
 record は <mountpoint>/.accesslog を読むだけで、mount には何も書かない。"""
 import argparse
@@ -292,7 +292,7 @@ def _run(a):
     from replay import run as runmod, testvol
     out = a.out or os.path.join(runmod.SUITE_DIR, "results", time.strftime("%Y%m%d-%H%M%S"), a.settings)
     try:
-        res = runmod.run(a.trace, a.settings, out, config.load_profile("test"), age=a.age)
+        res = runmod.run(a.trace, a.settings, out, config.load_profile("test"), age=a.age, head_s=a.head_seconds)
     except testvol.SafetyError as e:
         print("停止: %s" % e, file=sys.stderr)
         return 3
@@ -309,6 +309,33 @@ def _run(a):
     return 0 if res["status"] == "ok" else 1
 
 
+def _warm(a):
+    """jfsreplay warm の本体。温めたキャッシュの写しを（無いか種が変わっていれば。--force なら必ず）作る。
+    成功は 0、続けられないエラーは 2、安全の確かめで止まったら 3。"""
+    from replay import run as runmod, testvol, warmcache
+    profile = config.load_profile("test")
+    try:
+        meta, created = runmod.warm_only(a.trace, profile, force=a.force)
+    except testvol.SafetyError as e:
+        print("停止: %s" % e, file=sys.stderr)
+        return 3
+    except (KeyError, runmod.RunError, RuntimeError, OSError, ValueError) as e:
+        print("エラー: %s" % e, file=sys.stderr)
+        return 2
+    print("温めたキャッシュの写し: %s（%s、%s 作成、%d ファイル、%d バイト）" % (
+        warmcache.warm_dir(testvol.spec_from_profile(profile), a.trace), "作った" if created else "既存を使える",
+        meta.get("saved_at"), meta.get("files", 0), meta.get("bytes", 0)))
+    return 0
+
+
+def _head(v):
+    """--head-seconds の値（正の数）。"""
+    x = float(v)
+    if not x > 0:
+        raise argparse.ArgumentTypeError("--head-seconds は正の数")
+    return x
+
+
 def _suite(a):
     """jfsreplay suite の本体。全部成功は 0、失敗で止まったら 1、続けられないエラーは 2。"""
     from replay import suite
@@ -317,8 +344,8 @@ def _suite(a):
         if a.repeat < 1:
             raise ValueError("--repeat は 1 以上")
         sf = os.path.abspath(a.settings_file) if a.settings_file else None
-        res = suite.run_suite(a.trace, names, repeat=a.repeat, age=a.age,
-                              runner=suite.make_runner(a.create_bucket, sf))
+        res = suite.run_suite(a.trace, names, repeat=a.repeat, age=a.age, head_seconds=a.head_seconds,
+                              runner=suite.make_runner(a.create_bucket, sf, a.head_seconds))
     except (KeyError, OSError, ValueError) as e:
         print("エラー: %s" % e, file=sys.stderr)
         return 2
@@ -368,6 +395,11 @@ def main(argv=None):
     rn.add_argument("--settings", required=True, help="settings.toml の設定の名前（default は mount_flags.txt のまま）")
     rn.add_argument("--age", type=int, default=0, help="計測の前に既定の設定で記録を流して差分を育てる回数（既定 0）")
     rn.add_argument("--out", help="結果の置き場所（既定 tests/juicefs/results/<日時>/<設定の名前>）")
+    rn.add_argument("--head-seconds", type=_head, default=None, metavar="N",
+                    help="記録の最初の N 秒だけを流す（時刻の精度の短い確かめ用。既定は全体）")
+    wm = sp.add_parser("warm", help="温めたキャッシュの写しを作る（無いか種が変わっていれば。run も最初に自動で作る）")
+    wm.add_argument("trace")
+    wm.add_argument("--force", action="store_true", help="使える写しがあっても作り直す")
     su = sp.add_parser("suite", help="settings.toml の設定の組を順に流し、1 枚の比較の表（summary.md）を作る（設計書 §5.5）")
     su.add_argument("trace")
     su.add_argument("--only", help="流す設定の名前（カンマ区切り。既定は settings.toml の全部）")
@@ -376,11 +408,15 @@ def main(argv=None):
     su.add_argument("--create-bucket", action="store_true",
                     help="試験の volume が無いとき、本物の Drive にバケットと volume を作ってよい（run の前に seed などで作る場合は不要）")
     su.add_argument("--settings-file", default=None, help="設定の組のファイル（既定 tests/juicefs/settings.toml）")
+    su.add_argument("--head-seconds", type=_head, default=None, metavar="N",
+                    help="各回とも記録の最初の N 秒だけを流す（既定は全体）")
     a = ap.parse_args(argv)
     if a.cmd == "suite":
         return _suite(a)
     if a.cmd == "run":
         return _run(a)
+    if a.cmd == "warm":
+        return _warm(a)
     if a.cmd == "testvol":
         return _testvol(a)
     if a.cmd == "seed":
