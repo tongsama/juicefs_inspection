@@ -14,10 +14,31 @@ class Resp:
         self.readonly = readonly
         self.sock = sock if sock is not None else socket.create_connection((host, port), timeout=timeout)
         self.buf = self.sock.makefile("rb", buffering=1 << 20)
-        if password is not None:
-            self.call("AUTH", getattr(password, "value", password))
-        if db:
-            self.call("SELECT", db)
+        try:
+            if password is not None:
+                self.call("AUTH", getattr(password, "value", password))
+            if db:
+                self.call("SELECT", db)
+        except BaseException:  # AUTH／SELECT の失敗では、接続を漏らさず閉じてから投げ直す
+            self.close()
+            raise
+
+    def close(self):
+        """接続を閉じる（何度呼んでもよい）。"""
+        for obj in (self.buf, self.sock):
+            try:
+                obj.close()
+            except OSError:
+                pass
+
+    def __enter__(self):
+        """with 文で使えるようにする。"""
+        return self
+
+    def __exit__(self, *exc):
+        """with 文を抜けるとき接続を閉じる。"""
+        self.close()
+        return False
 
     def _check(self, cmd):
         """readonly で許可外の命令なら PermissionError（引数の値は含めない）。"""
@@ -68,16 +89,24 @@ class Resp:
 
 def connect_from_url(url, readonly=True):
     """redis:// の URL（str か Secret）で接続する。URL や認証情報は表示しない。"""
-    u = urlparse(getattr(url, "value", url))
-    r = Resp(u.hostname, u.port or 6379, readonly=readonly)
-    if u.password is not None:
-        if u.username:
-            r.call("AUTH", unquote(u.username), unquote(u.password))
-        else:
-            r.call("AUTH", unquote(u.password))
-    elif u.username:
-        r.call("AUTH", unquote(u.username))
-    r.call("SELECT", (u.path or "/0").strip("/") or "0")
+    try:
+        u = urlparse(getattr(url, "value", url))
+        host, port = u.hostname, u.port or 6379
+    except ValueError:  # 標準ライブラリの例外の文言には URL の一部が入るので、固定の文言に替える
+        raise ValueError("redis の URL の形式（ホスト、ポート）が不正") from None
+    r = Resp(host, port, readonly=readonly)
+    try:
+        if u.password is not None:
+            if u.username:
+                r.call("AUTH", unquote(u.username), unquote(u.password))
+            else:
+                r.call("AUTH", unquote(u.password))
+        elif u.username:
+            r.call("AUTH", unquote(u.username))
+        r.call("SELECT", (u.path or "/0").strip("/") or "0")
+    except BaseException:
+        r.close()
+        raise
     return r
 
 

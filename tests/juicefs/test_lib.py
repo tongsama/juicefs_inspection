@@ -100,5 +100,50 @@ class TestConfig(unittest.TestCase):
             config.load_profile("nope")
 
 
+class TestResourceHandling(unittest.TestCase):
+    """Task 1 レビュー由来: 接続の close、失敗時の後始末、例外に URL を載せない、UTF-8。"""
+
+    def test_resp_close_and_context_manager(self):
+        a, b = socket.socketpair()
+        self.addCleanup(b.close)
+        with Resp(None, None, sock=a) as r:
+            self.assertIs(r.sock, a)
+        self.assertEqual(a.fileno(), -1)
+        r.close()  # 2 回目も例外にならない
+
+    def test_resp_closes_socket_when_auth_fails(self):
+        a, b = socket.socketpair()
+        self.addCleanup(b.close)
+        b.sendall(b"-ERR invalid password\r\n")
+        with self.assertRaises(RuntimeError):
+            Resp(None, None, password="pw", sock=a)
+        self.assertEqual(a.fileno(), -1)
+
+    def test_resp_closes_socket_when_select_fails(self):
+        a, b = socket.socketpair()
+        self.addCleanup(b.close)
+        b.sendall(b"-ERR DB index is out of range\r\n")
+        with self.assertRaises(RuntimeError):
+            Resp(None, None, db=99, sock=a)
+        self.assertEqual(a.fileno(), -1)
+
+    def test_connect_from_url_bad_port_message_has_no_url(self):
+        from lib.resp import connect_from_url
+        with self.assertRaises(ValueError) as cm:
+            connect_from_url(Secret("redis://:topsecretpw@somehost:notaport/0"))
+        for w in ("topsecretpw", "somehost", "notaport"):
+            self.assertNotIn(w, str(cm.exception))
+        self.assertIsNone(cm.exception.__cause__)
+        self.assertTrue(cm.exception.__suppress_context__)
+
+    def test_metrics_io_uses_utf8(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "m.tsv")
+            metrics_io.append_sample(p, 60, {"系列": 1})
+            with open(p, "rb") as f:
+                self.assertIn("系列".encode("utf-8"), f.read())
+            self.assertIn("系列", metrics_io.load(p))
+
+
 if __name__ == "__main__":
     unittest.main()

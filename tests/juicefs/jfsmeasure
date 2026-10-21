@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+"""JuiceFS の計測 CLI の入口。tests/juicefs を import の探索先に足して measure.cli を呼ぶ。"""
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from measure.cli import main  # noqa: E402
+
+if __name__ == "__main__":
+    sys.exit(main())

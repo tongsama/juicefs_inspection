@@ -21,7 +21,7 @@ def load(path):
     """TSV（gzip 可）を系列名 → [(UNIX 秒, 値)]（時刻順）の dict にする。"""
     op = gzip.open if path.endswith(".gz") else open
     m = collections.defaultdict(list)
-    with op(path, "rt") as f:
+    with op(path, "rt", encoding="utf-8") as f:
         for line in f:
             p = line.rstrip("\n").split("\t")
             if len(p) != 4:
