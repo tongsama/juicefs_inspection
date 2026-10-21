@@ -34,7 +34,7 @@ JuiceFS（kaz 改修版）の compaction の設定を、本番と同じ形の書
 4. verify: `./jfsreplay verify <trace.tsv> <計測の出力ディレクトリ>`。記録した全 inode の write の回数とバイトを、同じ区間の `juicefs_fuse_written_size_bytes` の増分と比べ、差が 1%（`loss_tolerance`）以内か確かめます。
    - 終了 0: 回数とバイトの差がどちらも上限以内。終了 1: どちらかが上限を超えた。終了 2: 判定できない（meta.json が無い・壊れている、全 inode の write が 0、区間が metrics のサンプルの範囲の外、記録中の counter の減少＝mount の再起動）。
    - 解析できなかった行（Unknown）の数は表示するだけで、終了コードには入りません。1 を超える差か、Unknown が 0 でなければ、内容を確かめて記録を取り直します。
-5. seed: `./jfsreplay seed <trace.tsv> [--create-bucket]`。試験の volume に、流し直しが clone する種のファイルを作ります（上限 32 GiB、中身は位置から決まる圧縮のよく効くバイト列）。
+5. seed: `./jfsreplay seed <trace.tsv> [--written-only] [--create-bucket]`。`--written-only` は write が触れた chunk だけを種にします（read だけの範囲は穴のままで GET が出ないので、読み込みの比較は弱くなるが、種が小さく速い）。試験の volume に、流し直しが clone する種のファイルを作ります（上限 32 GiB、中身は位置から決まる圧縮のよく効くバイト列）。
    種を書いた後、試験の mount の `juicefs_staging_blocks` と `juicefs_object_request_uploading` が 0 になる（Drive への書き出しが終わる）まで待ち、1 分ごとに今の値を出します。待たずに run へ進むと、run の最初の `umount --flush` が書き出しの途中で時間切れになるためです。上限は 6 時間で、超えたら「書き出しが終わらない」と出して終了 2（種と `seed.json` はできているので、2 つの値が 0 になってから run します）。
    `seed.json` には trace の名前が入り、run は名前が違う `seed.json`（別の trace の種）を使わずに止まります。
 6. suite: `./jfsreplay suite <trace.tsv> [--only a,b] [--repeat N] [--age N] [--create-bucket]`。`settings.toml` の設定を上から順に `run` し、結果を 1 枚の表にします。

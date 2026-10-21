@@ -273,7 +273,8 @@ def _seed(a):
     try:
         limit = seed.parse_size(a.limit) if a.limit else None
         length = seed.parse_size(a.length) if a.length else None
-        info = seed.seed(a.trace, config.load_profile("test"), limit=limit, length=length, create_bucket=a.create_bucket)
+        info = seed.seed(a.trace, config.load_profile("test"), limit=limit, length=length, create_bucket=a.create_bucket,
+                         written_only=a.written_only)
     except testvol.SafetyError as e:
         print("停止: %s" % e, file=sys.stderr)
         return 3
@@ -360,6 +361,8 @@ def main(argv=None):
     sd.add_argument("--limit", default=None, help="種の上限（既定は profiles.toml の seed_limit_gib、例 32G）")
     sd.add_argument("--length", default=None, help="種の長さ（既定は trace の最大 off+size を 64 MiB に切り上げ）")
     sd.add_argument("--create-bucket", action="store_true", help="試験の volume が無いとき、本物の Drive に作ってよい")
+    sd.add_argument("--written-only", action="store_true",
+                    help="write が触れた chunk だけを種にする（read だけの範囲は穴のまま。種が小さく速いが、読み込みの GET の比較は弱くなる）")
     rn = sp.add_parser("run", help="1 つの compaction の設定で、記録を試験の volume に 1 回流す（設計書 §5.4）")
     rn.add_argument("trace")
     rn.add_argument("--settings", required=True, help="settings.toml の設定の名前（default は mount_flags.txt のまま）")

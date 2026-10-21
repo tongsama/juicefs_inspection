@@ -25,11 +25,12 @@ class SeedError(Exception):
     """種の作成を続けられないとき（上限超過、mount の mode 違い、record がブロックの形にならない等）。"""
 
 
-def chunks(ops):
-    """trace の write と read が触れた 64 MiB の chunk の番号（昇順、重複なし）。境目をまたぐ操作は両方の chunk を含む。"""
+def chunks(ops, kinds=("write", "read")):
+    """trace の操作（既定は write と read。kinds で絞れる）が触れた 64 MiB の chunk の番号（昇順、重複なし）。
+    境目をまたぐ操作は両方の chunk を含む。"""
     s = set()
     for o in ops:
-        if o.kind in ("write", "read") and o.size > 0:
+        if o.kind in kinds and o.size > 0:
             s.update(range(o.off // CHUNK, (o.off + o.size - 1) // CHUNK + 1))
     return sorted(s)
 
@@ -133,18 +134,19 @@ def verify_block_shape(spec, inode, chunk_list, length):
 
 
 def seed(trace_path, profile, spec=None, limit=None, length=None, create_bucket=False, up_kw=None, log=print,
-         scrape=None, flush_max_s=None, poll_s=5.0):
+         scrape=None, flush_max_s=None, poll_s=5.0, written_only=False):
     """種を作る。順序: 上限の確かめ → 試験の mount を block mode で up → 書く → fsync → compact → LRANGE で確認 →
     seed.json（trace の隣）→ 書き出し（staging_blocks と object_request_uploading が 0）を待つ。戻り値は seed.json の dict。
     scrape は試験の metrics を取る関数（既定は試験の mount の /metrics）。flush_max_s（既定 run.FLUSH_MAX_S）秒で終わらなければ SeedError
-    （種と seed.json はできているので、書き出しが終わってから run する）。"""
+    （種と seed.json はできているので、書き出しが終わってから run する）。
+    written_only なら write が触れた chunk だけを種にする（read だけの範囲は穴のまま。GET の比較は弱くなる）。"""
     spec = spec or testvol.spec_from_profile(profile)
     limit = limit if limit is not None else config.load_common()["seed_limit_gib"] << 30
     up_kw = up_kw or {}
     # mount 済みでも必ず確かめる（本番の mountpoint を指す設定ミスで 32 GiB を書かないため）
     testvol.safety_check(profile, spec=spec, prod=up_kw.get("prod"), prod_redis=up_kw.get("prod_redis"))
     ops = trace.load(trace_path)
-    cl = chunks(ops)
+    cl = chunks(ops, ("write",) if written_only else ("write", "read"))
     if not cl:
         raise SeedError("trace に write／read が無いので種を作れない")
     check_limit(cl, limit)  # 何も起動・書き込みする前

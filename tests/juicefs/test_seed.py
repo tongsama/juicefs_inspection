@@ -22,6 +22,12 @@ def _op(kind, off, size):
 
 
 class TestSeed(unittest.TestCase):
+    def test_chunks_written_only(self):
+        """kinds で write だけに絞ると、read だけの chunk は入らない。"""
+        ops = [_op("write", 0, 10), _op("read", 3 * 64 * MiB, 10)]
+        self.assertEqual(seed.chunks(ops), [0, 3])
+        self.assertEqual(seed.chunks(ops, ("write",)), [0])
+
     def test_chunks_from_trace(self):
         ops = [_op("write", 64 * MiB - 4096, 8192), _op("read", 5 * 64 * MiB + 10, 4096), _op("fsync", 900 * MiB, 0)]
         self.assertEqual(seed.chunks(ops), [0, 1, 5])
