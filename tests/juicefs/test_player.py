@@ -17,6 +17,7 @@ from replay import accesslog, player, run as runmod, seed, testvol, trace
 import test_testvol as tv
 
 MiB = 1 << 20
+UUID = "73e74f7b-0000-4155-adea-d9ef1e669c21"  # 試験のキャッシュの 1 段目の名前（UUID の形）
 
 
 def _op(start_us, pid, kind, off=0, size=0, mode=0, status="OK"):
@@ -169,27 +170,179 @@ class TestRunParts(unittest.TestCase):
         with self.assertRaises(KeyError):
             runmod.load_settings("nope", p)
 
-    def test_clear_cache_refuses_staging_and_prod(self):
+    def _cache(self):
+        """一時の試験のキャッシュ（UUID の 1 段目、raw に 1 ファイル、空の rawstaging）と、その外の場所を作る。"""
         d = tempfile.mkdtemp(prefix="jfs-cache-")
         self.addCleanup(shutil.rmtree, d, ignore_errors=True)
         cache = os.path.join(d, "cache")
-        os.makedirs(os.path.join(cache, "uuid", "raw", "chunks", "0"))
-        os.makedirs(os.path.join(cache, "uuid", "rawstaging"))
-        with open(os.path.join(cache, "uuid", "raw", "chunks", "0", "1_0_4"), "w") as f:
+        vol = os.path.join(cache, UUID)
+        os.makedirs(os.path.join(vol, "raw", "chunks", "0"))
+        os.makedirs(os.path.join(vol, "rawstaging"))
+        with open(os.path.join(vol, "raw", "chunks", "0", "1_0_4"), "w") as f:
             f.write("x")
-        prod = dataclasses.replace(config.load_profile("prod"))
-        n = runmod.clear_cache(cache, os.path.join(d, "mnt"), prod)
-        self.assertEqual(n, 1)
-        self.assertEqual(os.listdir(os.path.join(cache, "uuid")), ["rawstaging"])
-        with open(os.path.join(cache, "uuid", "rawstaging", "x"), "w") as f:
+        state = os.path.join(d, "state")
+        os.makedirs(state)
+        return d, cache, vol, state
+
+    def test_clear_cache_refuses_staging_and_prod(self):
+        d, cache, vol, state = self._cache()
+        prod = config.load_profile("prod")
+        mnt = os.path.join(d, "mnt")
+        self.assertEqual(runmod.clear_cache(cache, mnt, prod, state), 1)
+        self.assertEqual(os.listdir(vol), ["rawstaging"])
+        with open(os.path.join(vol, "rawstaging", "x"), "w") as f:
             f.write("x")
         with self.assertRaises(runmod.RunError):  # 上がっていない staging は消さない
-            runmod.clear_cache(cache, os.path.join(d, "mnt"), prod)
+            runmod.clear_cache(cache, mnt, prod, state)
         with self.assertRaises(testvol.SafetyError):
-            runmod.clear_cache(prod.cache_dir, os.path.join(d, "mnt"), prod)
+            runmod.clear_cache(prod.cache_dir, mnt, prod, state)
         os.makedirs(os.path.join(d, "mnt2"))
         with mock.patch("os.path.ismount", return_value=True), self.assertRaises(runmod.RunError):
-            runmod.clear_cache(cache, os.path.join(d, "mnt2"), prod)
+            runmod.clear_cache(cache, os.path.join(d, "mnt2"), prod, state)
+
+    def test_clear_cache_refuses_bad_paths(self):
+        d, cache, vol, state = self._cache()
+        prod = config.load_profile("prod")
+        mnt = os.path.join(d, "mnt")
+        for bad in ("", None, "cache-test", "./x"):  # 空・None・相対
+            with self.assertRaises(testvol.SafetyError, msg=repr(bad)):
+                runmod.clear_cache(bad, mnt, prod, state)
+        with self.assertRaises(testvol.SafetyError):  # state_dir（Redis の AOF）と重なる
+            runmod.clear_cache(d, mnt, prod, state)
+        with self.assertRaises(testvol.SafetyError):
+            runmod.clear_cache(os.path.join(state, "c"), mnt, prod, state)
+        with self.assertRaises(testvol.SafetyError):  # $HOME 自体とその上
+            runmod.clear_cache(os.path.expanduser("~"), mnt, prod, state)
+        with self.assertRaises(testvol.SafetyError):
+            runmod.clear_cache("/", mnt, prod, state)
+        with self.assertRaises(testvol.SafetyError):  # suite のディレクトリ
+            runmod.clear_cache(runmod.SUITE_DIR, mnt, prod, state)
+        with self.assertRaises(testvol.SafetyError):  # 試験の mountpoint の下
+            runmod.clear_cache(os.path.join(mnt, "c"), mnt, prod, state)
+        link = os.path.join(d, "link-to-prod")  # symlink で本番のキャッシュを指しても realpath で止める
+        os.symlink(prod.cache_dir, link)
+        with self.assertRaises(testvol.SafetyError):
+            runmod.clear_cache(link, mnt, prod, state)
+        self.assertTrue(os.path.exists(os.path.join(vol, "raw", "chunks", "0", "1_0_4")))  # どれも何も消していない
+
+    def test_clear_cache_skips_symlinks_and_other_names(self):
+        d, cache, vol, state = self._cache()
+        prod = config.load_profile("prod")
+        outside = os.path.join(d, "outside")
+        os.makedirs(os.path.join(outside, "sub"))
+        for p in (os.path.join(outside, "keep"), os.path.join(outside, "sub", "keep2")):
+            with open(p, "w") as f:
+                f.write("keep")
+        other = "11111111-2222-3333-4444-555555555555"
+        os.symlink(outside, os.path.join(cache, other))  # 1 段目の UUID の名前の symlink: たどらない
+        os.makedirs(os.path.join(cache, "not-a-uuid"))  # UUID の形でない名前: 触れない
+        with open(os.path.join(cache, "not-a-uuid", "f"), "w") as f:
+            f.write("x")
+        os.symlink(outside, os.path.join(vol, "raw", "chunks", "lnk"))  # UUID の下の symlink: リンク自体だけ消す
+        os.symlink(os.path.join(outside, "keep"), os.path.join(vol, "flink"))
+        runmod.clear_cache(cache, os.path.join(d, "mnt"), prod, state)
+        self.assertTrue(os.path.exists(os.path.join(outside, "keep")))
+        self.assertTrue(os.path.exists(os.path.join(outside, "sub", "keep2")))
+        self.assertTrue(os.path.islink(os.path.join(cache, other)))
+        self.assertTrue(os.path.exists(os.path.join(cache, "not-a-uuid", "f")))
+        self.assertEqual(os.listdir(vol), ["rawstaging"])
+        os.makedirs(os.path.join(vol, "raw"))
+        with open(os.path.join(vol, "raw", "y"), "w") as f:
+            f.write("y")
+        runmod.clear_cache(cache, os.path.join(d, "mnt"), prod, state, volume_uuid=other)  # 別の UUID だけ: vol は残る
+        self.assertTrue(os.path.exists(os.path.join(vol, "raw", "y")))
+
+
+class TestRunFailures(unittest.TestCase):
+    """run の途中の例外でも、失敗として結果に残り、後始末（複製の削除・umount）と結果の書き出しが行われること。"""
+
+    def setUp(self):
+        d = tempfile.mkdtemp(prefix="jfs-runfail-")
+        self.addCleanup(shutil.rmtree, d, ignore_errors=True)
+        self.d = d
+        self.prod, self.test = tv._profiles()
+        self.spec = dataclasses.replace(
+            testvol.spec_from_profile(self.test), mountpoint=os.path.join(d, "mnt"),
+            cache_dir=os.path.join(d, "cache"), state_dir=os.path.join(d, "state"), storage="file",
+            bucket=os.path.join(d, "bucket") + "/")
+        self.trace = os.path.join(d, "t.tsv")
+        with open(self.trace, "w") as f:
+            f.write(trace.format_op(_op(0, 1, "write", 0, 10)))
+        self.clone = os.path.join(d, "mnt", "replay", "c.img")
+        os.makedirs(os.path.dirname(self.clone))
+        with open(self.clone, "w") as f:
+            f.write("x")
+        self.calls = []
+        self.out = os.path.join(d, "out")
+
+    def _run(self, warm=None, subproc=None):
+        """外の資源をすべて偽にして run を呼ぶ。"""
+        mp = self.spec.mountpoint
+        ps = [mock.patch("replay.testvol.safety_check"),
+              mock.patch("replay.testvol.up", return_value={"mount_args": []}),
+              mock.patch("replay.testvol.umount", side_effect=lambda *a, **k: self.calls.append("umount")),
+              mock.patch("replay.run.clear_cache", return_value=0),
+              mock.patch("replay.run._seed_path", return_value=("/seed", {"inode": 3})),
+              mock.patch("replay.run._make_clone", return_value=(self.clone, 5)),
+              mock.patch("replay.run.wait_deleted", side_effect=lambda *a, **k: self.calls.append("wait") or {}),
+              mock.patch("replay.run.warm", side_effect=warm or (lambda *a: {"ranges": 0, "bytes": 0, "seconds": 0})),
+              mock.patch("os.path.ismount", side_effect=lambda p: p == mp)]
+        if subproc:
+            ps.append(mock.patch("replay.run.subprocess.run", side_effect=subproc))
+        for p in ps:
+            p.start()
+            self.addCleanup(p.stop)
+        return runmod.run(self.trace, "default", self.out, self.test, spec=self.spec,
+                          up_kw=dict(prod=self.prod, prod_redis=tv.PROD_REDIS), log=lambda m: None)
+
+    def _results(self):
+        """run.json と play.json の status と reasons。"""
+        with open(os.path.join(self.out, "run.json")) as f:
+            rj = json.load(f)["replay"]
+        with open(os.path.join(self.out, "play.json")) as f:
+            pj = json.load(f)
+        return rj, pj
+
+    def test_keyerror_midway_failed_and_cleaned(self):
+        def boom(*a):
+            raise KeyError("x")
+        res = self._run(warm=boom)
+        self.assertEqual(res["status"], "failed")
+        self.assertTrue(any("KeyError" in r for r in res["reasons"]))
+        self.assertFalse(os.path.exists(self.clone))  # 複製は消える
+        self.assertEqual(self.calls[-2:], ["wait", "umount"])
+        rj, pj = self._results()
+        self.assertEqual((rj["status"], pj["status"]), ("failed", "failed"))
+        self.assertIn("traceback", rj)
+
+    def test_timeout_in_measure_start_failed_and_cleaned(self):
+        import subprocess
+
+        def sp(cmd, **kw):
+            raise subprocess.TimeoutExpired(cmd, kw.get("timeout"))
+        res = self._run(subproc=sp)
+        self.assertEqual(res["status"], "failed")
+        self.assertTrue(any("RunError" in r and "start" in r for r in res["reasons"]), res["reasons"])
+        self.assertFalse(os.path.exists(self.clone))
+        self.assertEqual(self.calls[-1], "umount")
+        self.assertEqual(self._results()[0]["status"], "failed")
+
+    def test_interrupt_reraised_after_cleanup(self):
+        def intr(*a):
+            raise KeyboardInterrupt()
+        with self.assertRaises(KeyboardInterrupt):
+            self._run(warm=intr)
+        self.assertFalse(os.path.exists(self.clone))
+        self.assertEqual(self.calls[-1], "umount")
+        rj, pj = self._results()
+        self.assertEqual(rj["status"], "failed")
+        self.assertTrue(any("中断" in r for r in rj["reasons"]))
+
+    def test_clone_timeout_is_runerror(self):
+        import subprocess
+        with mock.patch("replay.run.subprocess.run", side_effect=subprocess.TimeoutExpired("x", 600)), \
+                self.assertRaises(runmod.RunError):
+            runmod.clone("/bin/true", "/a", os.path.join(self.d, "b", "c"))
 
 
 class TestRunIntegration(unittest.TestCase):

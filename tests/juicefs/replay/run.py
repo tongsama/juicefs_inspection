@@ -16,11 +16,13 @@ EIO などのエラー・rate limit・mount の停止は、その回を「失敗
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
 import threading
 import time
 import tomllib
+import traceback
 
 from lib import config, metrics_io
 from lib.resp import Resp
@@ -167,38 +169,94 @@ def _watch(guard, stop, poll_s, reasons):
     return finish
 
 
-def clear_cache(cache_dir, mountpoint, prod):
-    """試験の mount が外れているときだけ、試験のキャッシュ（<cache_dir>/<uuid>/ の rawstaging 以外）を消す。
-    本番のキャッシュ・mountpoint と重なれば SafetyError、mount 中か、rawstaging に上がっていない block があれば RunError。
-    戻り値は消したファイルの数。"""
-    for label, p in (("本番のキャッシュ", prod.cache_dir), ("本番の mountpoint", prod.mountpoint)):
-        if testvol._overlaps(cache_dir, p) or testvol._overlaps(mountpoint, p):
-            raise testvol.SafetyError("キャッシュを消す対象が%sと重なるので止めます" % label)
+UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
+
+
+def _under(a, b):
+    """a が b と同じか、b の下にあるか（どちらも解決済みの絶対 path）。"""
+    return a == b or a.startswith(b.rstrip("/") + "/")
+
+
+def _rm_tree(p):
+    """p（実のディレクトリ）の中身を、symlink をたどらずに消して p も消す。symlink はリンク自体だけ消す。消したファイルの数。"""
+    n = 0
+    for r, ds, fs in os.walk(p, topdown=False, followlinks=False):
+        for f in fs:
+            os.unlink(os.path.join(r, f))
+            n += 1
+        for d in ds:
+            q = os.path.join(r, d)
+            if os.path.islink(q):
+                os.unlink(q)  # ディレクトリへの symlink（先は消さない）
+                n += 1
+            else:
+                os.rmdir(q)
+    os.rmdir(p)
+    return n
+
+
+def check_cache_dir(cache_dir, mountpoint, prod, state_dir):
+    """消してよい試験のキャッシュの場所かを確かめ、解決した絶対 path を返す。だめなら SafetyError。
+    空・None・相対 path は不可。realpath で解決し、本番のキャッシュ・本番の mountpoint・試験の state_dir（Redis の AOF）・
+    試験の mountpoint・suite のディレクトリと重なるか、$HOME 自体かその上なら止める。"""
+    if not cache_dir or not isinstance(cache_dir, str) or not os.path.isabs(cache_dir):
+        raise testvol.SafetyError("キャッシュの場所が空か相対 path なので消さない: %r" % (cache_dir,))
+    # 本番の mountpoint は FUSE の root に stat を送らないよう文字列で比べる（realpath の前に）
+    if testvol._overlaps(cache_dir, prod.mountpoint) or testvol._overlaps(mountpoint, prod.mountpoint):
+        raise testvol.SafetyError("キャッシュを消す対象が本番の mountpoint と重なるので止めます")
+    real = os.path.realpath(cache_dir)
+    home = os.path.realpath(os.path.expanduser("~"))
+    if _under(home, real):
+        raise testvol.SafetyError("キャッシュの場所が $HOME 自体かその上なので消さない: %s" % real)
+    for label, other in (("本番のキャッシュ", prod.cache_dir), ("試験の state（Redis の AOF）", state_dir),
+                         ("試験の mountpoint", mountpoint), ("suite のディレクトリ", SUITE_DIR)):
+        if not other:
+            continue
+        o = os.path.realpath(os.path.expanduser(other)) if label != "試験の mountpoint" else os.path.abspath(other)
+        if _under(real, o) or _under(o, real):
+            raise testvol.SafetyError("キャッシュを消す対象が%sと重なるので止めます: %s" % (label, real))
+    return real
+
+
+def clear_cache(cache_dir, mountpoint, prod, state_dir, volume_uuid=None):
+    """試験の mount が外れているときだけ、試験のキャッシュ（<cache_dir>/<UUID>/ の rawstaging 以外）を消す。
+    場所は check_cache_dir で確かめる（だめなら SafetyError）。1 段目は UUID の形の名前の実のディレクトリだけを対象にし
+    （volume_uuid があればそれだけ）、symlink やほかの名前には触れない。mount 中か、rawstaging に上がっていない block が
+    あれば RunError（何も消さない）。戻り値は消したファイルの数。"""
+    real = check_cache_dir(cache_dir, mountpoint, prod, state_dir)
     if os.path.ismount(mountpoint):
         raise RunError("試験の mount が上がっている間はキャッシュを消さない: %s" % mountpoint)
-    if not os.path.isdir(cache_dir):
+    try:
+        st0 = os.lstat(real)
+    except FileNotFoundError:
         return 0
-    vols = [os.path.join(cache_dir, d) for d in os.listdir(cache_dir) if os.path.isdir(os.path.join(cache_dir, d))]
+    if not stat.S_ISDIR(st0.st_mode):
+        raise testvol.SafetyError("キャッシュの場所がディレクトリではない: %s" % real)
+    vols = []
+    for name in os.listdir(real):
+        p = os.path.join(real, name)
+        if not UUID_RE.match(name) or (volume_uuid and name != volume_uuid):
+            continue
+        if stat.S_ISDIR(os.lstat(p).st_mode):  # symlink（lstat で LNK）は対象にしない
+            vols.append(p)
     for v in vols:  # 先に全部確かめる（途中まで消してから止まらない）
         st = os.path.join(v, "rawstaging")
-        if os.path.isdir(st) and any(fs for _r, _d, fs in os.walk(st)):
-            raise RunError("staging に上がっていない block が残っているので、キャッシュを消さない: %s" % st)
+        if os.path.lexists(st):
+            if not stat.S_ISDIR(os.lstat(st).st_mode):
+                raise RunError("rawstaging が実のディレクトリではないので、キャッシュを消さない: %s" % st)
+            # 空のディレクトリ（書き出し済みの後に残る chunks/...）は良い。ファイルか symlink があれば止める
+            if any(fs or any(os.path.islink(os.path.join(r, x)) for x in ds) for r, ds, fs in os.walk(st)):
+                raise RunError("staging に上がっていない block が残っているので、キャッシュを消さない: %s" % st)
     n = 0
     for v in vols:
         for name in os.listdir(v):
             if name == "rawstaging":
                 continue
             p = os.path.join(v, name)
-            if os.path.isdir(p) and not os.path.islink(p):
-                for r, ds, fs in os.walk(p, topdown=False):
-                    for f in fs:
-                        os.unlink(os.path.join(r, f))
-                        n += 1
-                    for d in ds:
-                        os.rmdir(os.path.join(r, d))
-                os.rmdir(p)
+            if stat.S_ISDIR(os.lstat(p).st_mode):
+                n += _rm_tree(p)
             else:
-                os.unlink(p)
+                os.unlink(p)  # ファイルと symlink（リンク自体）
                 n += 1
     return n
 
@@ -222,8 +280,11 @@ def warm(path, ops):
 def clone(binary, src, dst):
     """`juicefs clone src dst`（メタデータだけの複製）。失敗は RunError。"""
     os.makedirs(os.path.dirname(dst), exist_ok=True)
-    p = subprocess.run([binary, "clone", src, dst], capture_output=True, text=True, timeout=600,
-                       stdin=subprocess.DEVNULL)
+    try:
+        p = subprocess.run([binary, "clone", src, dst], capture_output=True, text=True, timeout=600,
+                           stdin=subprocess.DEVNULL)
+    except subprocess.TimeoutExpired:
+        raise RunError("juicefs clone が %d 秒で終わらない: %s" % (600, dst)) from None
     if p.returncode != 0:
         raise RunError("juicefs clone が失敗（終了 %d）:\n%s" % (p.returncode, (p.stderr or p.stdout)[-1500:]))
     return os.stat(dst).st_ino
@@ -331,10 +392,13 @@ def _seed_path(trace_path, spec):
 def _mcli(*args):
     """計測の suite の CLI（jfsmeasure）を子の process で呼ぶ（sampler の Popen をこの process に残さないため）。
     0 以外は RunError（出力の末尾を付ける）。"""
-    p = subprocess.run([sys.executable, "-I", JFSMEASURE] + list(args), capture_output=True, text=True, timeout=300,
-                       stdin=subprocess.DEVNULL)
+    name = next((x for x in args if x in ("start", "stop", "capture")), args[0])
+    try:
+        p = subprocess.run([sys.executable, "-I", JFSMEASURE] + list(args), capture_output=True, text=True,
+                           timeout=300, stdin=subprocess.DEVNULL)
+    except subprocess.TimeoutExpired:
+        raise RunError("jfsmeasure %s が %d 秒で終わらない" % (name, 300)) from None
     if p.returncode != 0:
-        name = next((x for x in args if x in ("start", "stop", "capture")), args[0])
         raise RunError("jfsmeasure %s が失敗（終了 %d）:\n%s" % (name, p.returncode, (p.stderr + p.stdout)[-1500:]))
     return p.stdout + p.stderr
 
@@ -383,15 +447,17 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
     res = {"status": "ok", "reasons": [], "settings": settings, "age": age, "out": os.path.abspath(out),
            "clone": None, "clone_inode": None, "settle": None, "cleanup": {}}
     plays, age_plays, measuring = [], [], False
-    seed_rel, seed_info = None, None
+    seed_info = None
     try:
         if os.path.ismount(spec.mountpoint):
+            res["volume_uuid"] = _volume_uuid(spec)
             log("試験の mount を外す（設定を入れ替えるため）")
             testvol.umount(spec, run=tsr)
         seed_mp_path = None
         if age:
             log("--age %d: 既定の設定で差分を育てる" % age)
             testvol.up(profile, default, spec=spec, **up_kw)
+            res["volume_uuid"] = _volume_uuid(spec) or res.get("volume_uuid")
             seed_mp_path, seed_info = _seed_path(trace_path, spec)
             res["clone"], res["clone_inode"] = _make_clone(spec, seed_mp_path, settings_name, log)
             for i in range(age):
@@ -407,7 +473,7 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
                 res["reasons"].append(s["reason"])
                 raise RunError("差分を育てた後の待ちで止まった")
             testvol.umount(spec, run=tsr)
-        n = clear_cache(spec.cache_dir, spec.mountpoint, prod)
+        n = clear_cache(spec.cache_dir, spec.mountpoint, prod, spec.state_dir, res.get("volume_uuid"))
         log("試験のキャッシュを空にした（%d ファイル）。設定 %s で mount する" % (n, settings["name"]))
         info = testvol.up(profile, settings, spec=spec, **up_kw)
         res["mount_args"] = info["mount_args"]
@@ -436,21 +502,46 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
         if mounted():
             # 終わりの材料（キャッシュの内訳など）。空にした直後は kaz-cache-state が無いこともあるので、取れない物は警告にする
             res["warnings"] = mcap.capture(config.load_profile("test", mprof), out, "end")
-    except (RunError, RuntimeError, OSError, ValueError) as e:
-        res["status"] = "failed"
-        res["reasons"].append("%s: %s" % (type(e).__name__, e))
+    except Exception as e:  # 想定外の例外も含め、その回を失敗として結果に残す（後始末は finally で必ず行う）
+        _fail(res, "%s: %s" % (type(e).__name__, e))
+        if not isinstance(e, (RunError, RuntimeError, OSError, ValueError)):
+            res["traceback"] = traceback.format_exc()[-3000:]
+    except BaseException as e:  # 中断（KeyboardInterrupt など）: 失敗として残し、後始末の後に投げ直す
+        _fail(res, "中断された: %s" % type(e).__name__)
+        raise
     finally:
         if measuring:
-            try:
-                _mcli("stop", out)
-            except RunError as e:
-                res["reasons"].append(str(e))
-        _cleanup(spec, res, scrape, delete_quiet_s, settle_max_s, poll_s, tsr, log)
+            _step(res, "計測の停止", lambda: _mcli("stop", out))
+        _step(res, "後始末（複製の削除・umount）",
+              lambda: _cleanup(spec, res, scrape, delete_quiet_s, settle_max_s, poll_s, tsr, log))
         if res["cleanup"].get("errors"):
             res["status"] = "failed"
-        _write_play(out, plays, age_plays, res)
-        _write_run_json(out, res)
+        _step(res, "play.json の書き出し", lambda: _write_play(out, plays, age_plays, res))
+        _step(res, "run.json の書き出し", lambda: _write_run_json(out, res))
     return res
+
+
+def _fail(res, reason):
+    """res を失敗にして理由を足す。"""
+    res["status"] = "failed"
+    res["reasons"].append(reason)
+
+
+def _step(res, label, fn):
+    """finally の 1 つの手順を、ほかの手順と独立に行う。失敗は res に残し、ほかの手順と元のエラーを隠さない。"""
+    try:
+        fn()
+    except Exception as e:
+        _fail(res, "%sの失敗: %s: %s" % (label, type(e).__name__, e))
+
+
+def _volume_uuid(spec):
+    """試験の mount の .config から volume の UUID を読む（キャッシュの 1 段目の名前）。読めなければ None。"""
+    try:
+        u = testvol.read_mount_config(spec.mountpoint).get("Format", {}).get("UUID")
+    except (OSError, ValueError, AttributeError):
+        return None
+    return u if isinstance(u, str) and UUID_RE.match(u) else None
 
 
 def _make_clone(spec, src, settings_name, log):
@@ -499,5 +590,6 @@ def _write_run_json(out, res):
     """計測の suite の run.json に、流し直しの情報（replay）を足す。run.json が無ければ作る。"""
     run = mcli.read_run(out) or {"profile": "test"}
     run["replay"] = {k: res.get(k) for k in ("status", "reasons", "settings", "age", "clone", "clone_inode", "seed",
-                                             "mount_args", "warm", "settle", "age_settle", "cleanup", "warnings")}
+                                             "mount_args", "warm", "settle", "age_settle", "cleanup", "warnings", "volume_uuid",
+                                             "traceback")}
     mcli.write_run(out, run)

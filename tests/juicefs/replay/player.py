@@ -79,11 +79,12 @@ class PlayResult:
         return d
 
 
-def _do(fd, op):
-    """Op を 1 つ実行する。失敗は例外のまま上げる。"""
+def _do(fd, op, data=None):
+    """Op を 1 つ実行する。write の中身 data は呼ぶ側が先に作って渡す（待ち時間に中身を作る時間を入れないため）。
+    失敗は例外のまま上げる。"""
     k = op.kind
     if k == "write":
-        data = memoryview(content(op.off, op.size))
+        data = memoryview(content(op.off, op.size) if data is None else data)
         at = op.off
         while len(data):
             n = os.pwrite(fd, data, at)
@@ -129,6 +130,7 @@ def play(path, ops, t0, stop=None, clock=time.monotonic):
         """1 つの pid の Op を予定の時刻に順に出す。"""
         for op in seq:
             when = t0 + (op.start_us - base) / 1e6
+            data = content(op.off, op.size) if op.kind == "write" else None  # 待つ前に作る（遅れにも待ち時間にも入れない）
             while True:
                 left = when - clock()
                 if left <= 0 or stop.is_set():
@@ -138,7 +140,7 @@ def play(path, ops, t0, stop=None, clock=time.monotonic):
                 return
             a = clock()
             try:
-                _do(fd, op)
+                _do(fd, op, data)
             except Exception as e:  # EIO など。その時点で全体を止める
                 with lock:
                     errors.append(_error(op, e, t0))
@@ -155,10 +157,17 @@ def play(path, ops, t0, stop=None, clock=time.monotonic):
     threads = [threading.Thread(target=worker, args=(seq,), name="replay-pid-%d" % pid, daemon=True)
                for pid, seq in by_pid.items()]
     try:
-        for t in threads:
-            t.start()
-        for t in threads:
-            t.join()
+        try:
+            for t in threads:
+                t.start()
+            for t in threads:
+                t.join()
+        except BaseException:  # 中断（KeyboardInterrupt など）: 全 thread を止めて待ってから fd を閉じる
+            stop.set()
+            for t in threads:
+                if t.is_alive():
+                    t.join()
+            raise
     finally:
         a = clock()
         try:
