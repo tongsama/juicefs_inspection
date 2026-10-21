@@ -732,7 +732,7 @@ class TestRunFailures(unittest.TestCase):
         errs = {"juicefs_object_request_errors": 0.0}
         real_play = player.play
 
-        def play(path, ops, t0, stop=None):
+        def play(path, ops, t0, stop=None, procs=None):
             r = real_play(path, ops, t0, stop=stop)
             ts = time.strftime("%Y/%m/%d %H:%M:%S", time.localtime()) + ".000000"
             with open(log, "a") as f:  # 終わりの直前の PUT の誤り（abandoned の行は来ない）

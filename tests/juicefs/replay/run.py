@@ -638,7 +638,9 @@ def _play_guarded(path, ops, guard, poll_s, reasons):
     stop = threading.Event()
     finish = _watch(guard, stop, poll_s, reasons)
     try:
-        return player.play(path, ops, time.monotonic() + 1.0, stop=stop)
+        # worker の process の数の上限は profiles.toml の replay_procs_max（1 process の pid が多いと GIL の取り合いで遅くなる）
+        procs = config.load_common().get("replay_procs_max")
+        return player.play(path, ops, time.monotonic() + 1.0, stop=stop, procs=procs)
     finally:
         finish()
 
