@@ -1,0 +1,22 @@
+{
+ "inode": 634040,
+ "lines_total": 222009,
+ "keepalive": 0,
+ "unknown": 0,
+ "ops": 168259,
+ "unknown_samples": [],
+ "all_write_ops": 72412,
+ "all_write_bytes": 5225972736,
+ "started": 1792554964.8899114,
+ "metrics_start": {
+  "count": 15.0,
+  "sum": 109875.0,
+  "t": 1792554964.9044232
+ },
+ "metrics_stop": {
+  "count": 72429.0,
+  "sum": 5226160435.0,
+  "t": 1792556068.1246183
+ },
+ "stopped": 1792556068.1248565
+}
