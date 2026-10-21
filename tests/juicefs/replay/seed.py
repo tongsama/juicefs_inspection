@@ -9,7 +9,6 @@ import os
 import re
 import struct
 import subprocess
-import time
 
 from lib import config, resp
 from replay import trace, testvol
@@ -89,38 +88,46 @@ def write_seed(path, chunk_list, length):
         os.close(fd)
 
 
-def slice_sizes(raw_records):
-    """chunk の list の要素（24 バイト）から、各 record の size のリストを返す。形が不正なら ValueError。"""
+def slice_records(raw_records):
+    """chunk の list の要素（24 バイト）から (pos, id, size, off, len) のリストを返す。形が不正なら ValueError。"""
     out = []
     for r in raw_records:
         if len(r) != SLICE_REC.size:
             raise ValueError("record の長さが %d（24 のはず）" % len(r))
-        out.append(SLICE_REC.unpack(r)[2])
+        out.append(SLICE_REC.unpack(r))
     return out
 
 
-def bad_chunks(redis, inode, chunk_list):
-    """試験の Redis で chunk ごとに LRANGE し、record が 4 MiB を超える、または空の chunk の番号と理由を返す。"""
+def shape_problem(records, c, length):
+    """chunk c の record が「4 MiB の block 1 つにつき 1 record」の形か確かめ、違えば理由、よければ None。
+    pos は 4 MiB の倍数、off == 0、size == len == 4 MiB（seed の長さで切れる最後の block だけ短い）、record 数は block 数。"""
+    span = min(CHUNK, length - c * CHUNK)
+    want = -(-span // BLOCK)
+    if len(records) != want:
+        return "record が %d 個（%d 個のはず）" % (len(records), want)
+    for i, (pos, _id, size, off, ln) in enumerate(sorted(records)):
+        exp = min(BLOCK, span - i * BLOCK)
+        if pos != i * BLOCK or off != 0 or size != exp or ln != exp:
+            return "block %d の record が pos=%d size=%d off=%d len=%d（pos=%d size=len=%d off=0 のはず）" % (
+                i, pos, size, off, ln, i * BLOCK, exp)
+    return None
+
+
+def bad_chunks(redis, inode, chunk_list, length):
+    """試験の Redis で chunk ごとに LRANGE し、ブロックの形でない chunk の (番号, 理由) を返す。"""
     bad = []
     for c in chunk_list:
-        sizes = slice_sizes(redis.call("LRANGE", "c%d_%d" % (inode, c), 0, -1) or [])
-        if not sizes:
-            bad.append((c, "record なし"))
-        elif max(sizes) > BLOCK:
-            bad.append((c, "最大 %d バイトの record（%d 個）" % (max(sizes), len(sizes))))
+        recs = slice_records(redis.call("LRANGE", "c%d_%d" % (inode, c), 0, -1) or [])
+        why = shape_problem(recs, c, length)
+        if why:
+            bad.append((c, why))
     return bad
 
 
-def verify_block_shape(spec, inode, chunk_list, timeout=120, interval=2):
-    """compact が非同期に反映される場合に備え、timeout まで繰り返して全 chunk がブロックの形か確かめる。
-    戻り値は最後の bad_chunks（空ならよい）。"""
-    deadline = time.time() + timeout
-    while True:
-        with resp.Resp(spec.redis_addr[0], spec.redis_addr[1], db=spec.db, readonly=True) as r:
-            bad = bad_chunks(r, inode, chunk_list)
-        if not bad or time.time() >= deadline:
-            return bad
-        time.sleep(interval)
+def verify_block_shape(spec, inode, chunk_list, length):
+    """全 chunk がブロックの形か 1 回で確かめる（compact は同期なので待たない）。空なら良い。"""
+    with resp.Resp(spec.redis_addr[0], spec.redis_addr[1], db=spec.db, readonly=True) as r:
+        return bad_chunks(r, inode, chunk_list, length)
 
 
 def seed(trace_path, profile, spec=None, limit=None, length=None, create_bucket=False, up_kw=None, log=print):
@@ -128,19 +135,24 @@ def seed(trace_path, profile, spec=None, limit=None, length=None, create_bucket=
     seed.json（trace の隣）。戻り値は seed.json の dict。"""
     spec = spec or testvol.spec_from_profile(profile)
     limit = limit if limit is not None else config.load_common()["seed_limit_gib"] << 30
+    up_kw = up_kw or {}
+    # mount 済みでも必ず確かめる（本番の mountpoint を指す設定ミスで 32 GiB を書かないため）
+    testvol.safety_check(profile, spec=spec, prod=up_kw.get("prod"), prod_redis=up_kw.get("prod_redis"))
     ops = trace.load(trace_path)
     cl = chunks(ops)
     if not cl:
         raise SeedError("trace に write／read が無いので種を作れない")
     check_limit(cl, limit)  # 何も起動・書き込みする前
     length = disk_length(ops, length)
+    if cl[-1] * CHUNK >= length:
+        raise SeedError("trace が触れる chunk %d が種の長さ %d バイトを超えている" % (cl[-1], length))
     name = os.path.splitext(os.path.basename(trace_path))[0]
     if os.path.ismount(spec.mountpoint):
         mode = testvol.read_mount_config(spec.mountpoint).get("Meta", {}).get("KazCompactionMode")
         if mode != "block":
             raise SeedError("試験の mount が mode=%r で動いている。block mode で立て直すため、先に testvol down すること" % mode)
     else:
-        testvol.up(profile, {"name": "seed", "mode": "block"}, spec=spec, create_bucket=create_bucket, **(up_kw or {}))
+        testvol.up(profile, {"name": "seed", "mode": "block"}, spec=spec, create_bucket=create_bucket, **up_kw)
     path = os.path.join(spec.mountpoint, "seed", name + ".img")
     log("種を書く: %s（%d chunk、長さ %d バイト）" % (path, len(cl), length))
     write_seed(path, cl, length)
@@ -149,7 +161,7 @@ def seed(trace_path, profile, spec=None, limit=None, length=None, create_bucket=
     if p.returncode != 0:
         raise SeedError("juicefs compact が失敗（終了 %d）:\n%s" % (p.returncode, (p.stderr or p.stdout)[-1500:]))
     inode = os.stat(path).st_ino
-    bad = verify_block_shape(spec, inode, cl)
+    bad = verify_block_shape(spec, inode, cl, length)
     if bad:
         raise SeedError("compact の後も record がブロックの形でない chunk がある: %s" % "; ".join("chunk %d: %s" % b for b in bad[:10]))
     info = {"name": name, "inode": inode, "path": path, "mountpoint": spec.mountpoint, "length": length,

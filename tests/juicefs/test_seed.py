@@ -6,9 +6,10 @@ import shutil
 import struct
 import tempfile
 import unittest
+from unittest import mock
 import zlib
 
-from lib import config
+from lib import config, resp
 from replay import accesslog, seed, testvol, trace
 import test_testvol as tv
 
@@ -50,11 +51,42 @@ class TestSeed(unittest.TestCase):
         with self.assertRaises(seed.SeedError):
             seed.seed(t, config.load_profile("test"), spec=spec, limit=64 * MiB)
 
-    def test_slice_sizes(self):
+    def test_slice_records_and_shape(self):
         raw = [struct.pack(">IQIII", 0, 1, 4 * MiB, 0, 4 * MiB), struct.pack(">IQIII", 0, 2, 5 * MiB, 0, 1)]
-        self.assertEqual(seed.slice_sizes(raw), [4 * MiB, 5 * MiB])
+        self.assertEqual(seed.slice_records(raw)[1], (0, 2, 5 * MiB, 0, 1))
         with self.assertRaises(ValueError):
-            seed.slice_sizes([b"x"])
+            seed.slice_records([b"x"])
+        ok = [(i * 4 * MiB, 1, 4 * MiB, 0, 4 * MiB) for i in range(16)]
+        self.assertIsNone(seed.shape_problem(ok, 0, 64 * MiB))
+        self.assertIsNone(seed.shape_problem(ok[:2], 0, 8 * MiB))  # 長さで切れる chunk
+        self.assertIsNotNone(seed.shape_problem(ok[:15], 0, 64 * MiB))  # 個数が足りない
+        self.assertIsNotNone(seed.shape_problem([(0, 1, 64 * MiB, 0, 64 * MiB)], 0, 64 * MiB))
+        self.assertIsNotNone(seed.shape_problem([(0, 1, 4 * MiB, 5, 4 * MiB)] + ok[1:], 0, 64 * MiB))  # off != 0
+        self.assertIsNotNone(seed.shape_problem([(MiB, 1, 4 * MiB, 0, 4 * MiB)] + ok[1:], 0, 64 * MiB))  # pos がずれ
+
+    def test_seed_safety_check_even_if_mounted(self):
+        """本番の mountpoint を指す Spec は、mount 済みに見えても何も書く前に SafetyError。"""
+        d = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, d, ignore_errors=True)
+        t = os.path.join(d, "t.tsv")
+        with open(t, "w") as f:
+            f.write(trace.format_op(_op("write", 0, 4096)))
+        prod, test = tv._profiles()
+        spec = dataclasses.replace(testvol.spec_from_profile(test), mountpoint=prod.mountpoint)
+        with mock.patch("os.path.ismount", return_value=True), mock.patch.object(seed, "write_seed") as w:
+            with self.assertRaises(testvol.SafetyError):
+                seed.seed(t, test, spec=spec, up_kw=dict(prod=prod, prod_redis=tv.PROD_REDIS))
+            w.assert_not_called()
+
+    def test_seed_rejects_chunk_beyond_length(self):
+        d = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, d, ignore_errors=True)
+        t = os.path.join(d, "t.tsv")
+        with open(t, "w") as f:
+            f.write(trace.format_op(_op("write", 200 * MiB, 4096)))
+        prod, test = tv._profiles()
+        with self.assertRaises(seed.SeedError):
+            seed.seed(t, test, length=64 * MiB, up_kw=dict(prod=prod, prod_redis=tv.PROD_REDIS))
 
 
 class TestSeedIntegration(unittest.TestCase):
@@ -89,6 +121,11 @@ class TestSeedIntegration(unittest.TestCase):
                 f.seek(64 * MiB - 4096)
                 self.assertEqual(f.read(8192), seed.content(64 * MiB - 4096, 8192))
             self.assertEqual(testvol.read_mount_config(spec.mountpoint)["Meta"]["KazCompactionMode"], "block")
+            with resp.Resp(*spec.redis_addr, db=spec.db) as r:  # 各 chunk は 4 MiB の block ごとに 1 record
+                for c in info["chunks"]:
+                    recs = sorted(seed.slice_records(r.call("LRANGE", "c%d_%d" % (info["inode"], c), 0, -1)))
+                    self.assertEqual([x[0] for x in recs], [i * 4 * MiB for i in range(16)])
+                    self.assertTrue(all(x[2] == x[4] == 4 * MiB and x[3] == 0 for x in recs))
         finally:
             testvol.cleanup(spec)
 
