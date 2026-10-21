@@ -1,0 +1,27 @@
+期間 178.8 分、chunk 6 個、今の方式の実績: chunk 1920 5112 MiB、合計 6203 MiB
+
+== chunk 1920 ==
+case                             PUT MiB   PUT回     畳込   畳込blk    最大PUT    rec最大   rec平均     まとめ     段
+A 今の見積もり resend/full 300             645    203      6       0     52.0      320     228       0     1
+B resend/partial 300                 645    203      6       0     52.0      320     228       0     1
+C tier4/full 300                     395    225      5      65     52.8      383     240      27     4
+D tier4/partial 300                  299    214     10      20      9.0      384     281      32     4
+E tier8/partial 300                  268    189     16      34     12.6      385     278      16     8
+F tier4/partial 500                  311    206      0       0     11.6      499     349      32     4
+G tier4/partial 800                  311    206      0       0     11.6      499     349      32     4
+H tier4/partial 500 gap4K            257    200      6       6      7.5      581     480      32     4
+I tier8/partial 500                  198    170      2       3      9.1      581     387      16     8
+J resend/partial 500                 645    203      6       0     52.0      320     228       0     1
+
+== 全 chunk 合計（rec は最大の chunk） ==
+case                             PUT MiB   PUT回     畳込   畳込blk    最大PUT    rec最大   rec平均     まとめ     段
+A 今の見積もり resend/full 300            1017    347     17       0     52.0      320     228       0     1
+B resend/partial 300                1017    347     17       0     52.0      320     228       0     1
+C tier4/full 300                     699    401      7      75     52.8      383     240      48     4
+D tier4/partial 300                  593    387     13      23     15.8      384     281      55     4
+E tier8/partial 300                  469    334     26      45     15.5      385     278      26     8
+F tier4/partial 500                  613    381      0       0     16.1      499     349      55     4
+G tier4/partial 800                  613    381      0       0     16.1      499     349      55     4
+H tier4/partial 500 gap4K            513    371      7       7     14.8      581     480      55     4
+I tier8/partial 500                  386    312      2       3     16.1      581     387      27     8
+J resend/partial 500                1017    347     17       0     52.0      320     228       0     1
