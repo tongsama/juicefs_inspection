@@ -1,5 +1,4 @@
-"""jfsmeasure の sub-command（start／check／stop／capture）。
-progress／boot／compare は別の Task で足す。"""
+"""jfsmeasure の sub-command（start／check／stop／capture／progress／compare／boot）。"""
 import argparse
 import glob
 import hashlib
@@ -11,7 +10,9 @@ import sys
 import time
 
 from lib import config
+from measure import boot as bootmod
 from measure import capture as cap
+from measure import report
 
 KINDS = ("metrics", "llen", "keys")
 STALE_FACTOR = 3  # 記録の最後の更新がこの間隔の倍数より古ければ警告
@@ -214,6 +215,32 @@ def cmd_capture(a, profile, common):
     return 1 if problems else 0
 
 
+def _run_report(fn):
+    """表を作る関数を呼んで出力する。記録が無い・指定が読めないときは日本語の理由を出して 1。"""
+    try:
+        print(fn())
+    except (report.NoData, ValueError, OSError) as e:
+        print("NG: %s" % e, file=sys.stderr)
+        return 1
+    return 0
+
+
+def cmd_progress(a, profile, common):
+    """progress_kaz.sh と同じ項目に compaction などを足して表示する。"""
+    return _run_report(lambda: report.progress(a.outdir, a.start, a.end))
+
+
+def cmd_compare(a, profile, common):
+    """区間を同じ表で並べる。"""
+    return _run_report(lambda: report.compare(a.specs))
+
+
+def cmd_boot(a, profile, common):
+    """起動の区間の解析。"""
+    marks = {k: v for k, v in zip(bootmod.MARK_KEYS, (a.boot_start, a.login_screen, a.login_done, a.app)) if v}
+    return _run_report(lambda: bootmod.analyze(a.outdir, a.start, a.end, marks, a.label))
+
+
 def main(argv=None):
     """jfsmeasure の入口。"""
     ap = argparse.ArgumentParser(prog="jfsmeasure", description="JuiceFS の計測")
@@ -230,6 +257,21 @@ def main(argv=None):
     s.add_argument("outdir")
     s.add_argument("label")
     s.add_argument("--profile", help="対象のプロファイル（既定は run.json のもの）")
+    s = sub.add_parser("progress", help="流入・compaction などを表示する")
+    s.add_argument("outdir")
+    s.add_argument("start", nargs="?", default="first", help="開始（既定は first）。省略時は全体と直近 1 時間を出す")
+    s.add_argument("end", nargs="?", default="now")
+    s = sub.add_parser("compare", help="区間を同じ表で並べる")
+    s.add_argument("specs", nargs="+", metavar="ラベル:ディレクトリかTSV:開始:終了")
+    s = sub.add_parser("boot", help="起動の区間の解析")
+    s.add_argument("outdir")
+    s.add_argument("start")
+    s.add_argument("end")
+    s.add_argument("label", nargs="?")
+    s.add_argument("--boot-start", help="起動開始の時刻（HH:MM[:SS]）")
+    s.add_argument("--login-screen", help="ログイン画面の時刻")
+    s.add_argument("--login-done", help="ログイン完了の時刻")
+    s.add_argument("--app", help="アプリの時刻")
     a = ap.parse_args(argv)
     profile = common = None
     if a.cmd in ("start", "capture"):
@@ -240,7 +282,8 @@ def main(argv=None):
             return 1
         a.profiles = a.profiles or (run or {}).get("profiles_path")
         profile, common = config.load_profile(pname, a.profiles), config.load_common(a.profiles)
-    return {"start": cmd_start, "check": cmd_check, "stop": cmd_stop, "capture": cmd_capture}[a.cmd](a, profile, common)
+    return {"start": cmd_start, "check": cmd_check, "stop": cmd_stop, "capture": cmd_capture,
+            "progress": cmd_progress, "compare": cmd_compare, "boot": cmd_boot}[a.cmd](a, profile, common)
 
 
 if __name__ == "__main__":
