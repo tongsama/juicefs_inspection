@@ -269,6 +269,26 @@ def _run(a):
     return 0 if res["status"] == "ok" else 1
 
 
+def _suite(a):
+    """jfsreplay suite の本体。全部成功は 0、失敗で止まったら 1、続けられないエラーは 2。"""
+    from replay import suite
+    try:
+        names = [x["name"] for x in suite.select(a.settings_file or suite.runmod.SETTINGS_PATH, a.only)]
+        if a.repeat < 1:
+            raise ValueError("--repeat は 1 以上")
+        sf = os.path.abspath(a.settings_file) if a.settings_file else None
+        res = suite.run_suite(a.trace, names, repeat=a.repeat, age=a.age,
+                              runner=suite.make_runner(a.create_bucket, sf))
+    except (KeyError, OSError, ValueError) as e:
+        print("エラー: %s" % e, file=sys.stderr)
+        return 2
+    print("表: %s" % res["summary"])
+    if res["status"] != "ok":
+        print("失敗した設定があり、そこで止めました。表の「失敗・注意」を見てください", file=sys.stderr)
+        return 1
+    return 0
+
+
 def main(argv=None):
     """jfsreplay の入口。"""
     ap = argparse.ArgumentParser(prog="jfsreplay", description="JuiceFS の write の記録と流し直し")
@@ -306,7 +326,17 @@ def main(argv=None):
     rn.add_argument("--settings", required=True, help="settings.toml の設定の名前（default は mount_flags.txt のまま）")
     rn.add_argument("--age", type=int, default=0, help="計測の前に既定の設定で記録を流して差分を育てる回数（既定 0）")
     rn.add_argument("--out", help="結果の置き場所（既定 tests/juicefs/results/<日時>/<設定の名前>）")
+    su = sp.add_parser("suite", help="settings.toml の設定の組を順に流し、1 枚の比較の表（summary.md）を作る（設計書 §5.5）")
+    su.add_argument("trace")
+    su.add_argument("--only", help="流す設定の名前（カンマ区切り。既定は settings.toml の全部）")
+    su.add_argument("--repeat", type=int, default=1, help="同じ設定を流す回数（ばらつきを見る。既定 1）")
+    su.add_argument("--age", type=int, default=0, help="各回の計測の前に既定の設定で記録を流して差分を育てる回数（既定 0）")
+    su.add_argument("--create-bucket", action="store_true",
+                    help="試験の volume が無いとき、本物の Drive にバケットと volume を作ってよい（run の前に seed などで作る場合は不要）")
+    su.add_argument("--settings-file", default=None, help="設定の組のファイル（既定 tests/juicefs/settings.toml）")
     a = ap.parse_args(argv)
+    if a.cmd == "suite":
+        return _suite(a)
     if a.cmd == "run":
         return _run(a)
     if a.cmd == "testvol":

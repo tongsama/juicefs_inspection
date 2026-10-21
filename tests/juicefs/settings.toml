@@ -1,0 +1,36 @@
+# jfsreplay suite の既定の設定の組（設計書 §5.5）。上から順に流す。
+# name  : 結果の名前
+# mode  : compaction の mode（delta／block）。省略すると mount_flags.txt のまま
+# flags : mount_flags.txt の [compaction] の印のある行を置き換える値（先頭の -- は付けない）
+# 書き換え・追加・削除は自由。`jfsreplay suite --only 名前,名前` で一部だけ流せる。
+
+[[settings]]
+name = "default"
+mode = "delta"
+flags = { "kaz-compaction-delta-trigger" = 99, "kaz-compaction-delta-block-ratio" = 0.5 }
+
+[[settings]]
+name = "trigger30"
+mode = "delta"
+flags = { "kaz-compaction-delta-trigger" = 30 }
+
+[[settings]]
+name = "trigger50"
+mode = "delta"
+flags = { "kaz-compaction-delta-trigger" = 50 }
+
+[[settings]]
+name = "trigger200"
+mode = "delta"
+flags = { "kaz-compaction-delta-trigger" = 200 }
+
+[[settings]]
+name = "block-ratio75"
+mode = "delta"
+flags = { "kaz-compaction-delta-block-ratio" = 0.75 }
+
+# 参考: ブロック単位の compaction
+[[settings]]
+name = "block"
+mode = "block"
+flags = {}
