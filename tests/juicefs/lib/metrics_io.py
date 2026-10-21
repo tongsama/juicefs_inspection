@@ -73,4 +73,4 @@ DEFAULT_INCLUDE = re.compile(
     r"object_request_data_bytes|object_request_durations_histogram_seconds_(sum|count)|uptime|"
     r"fuse_ops_durations_histogram_seconds_count|kaz_cache_2q_|kaz_compaction_|"
     r"meta_ops_durations_histogram_seconds_(sum|count)|transaction_durations_histogram_seconds_(sum|count)|"
-    r"fuse_ops_durations_histogram_seconds_sum|fuse_read_size_bytes_(sum|count))")
+    r"fuse_ops_durations_histogram_seconds_sum|fuse_read_size_bytes_(sum|count)|fuse_written_size_bytes_(sum|count))")

@@ -11,7 +11,8 @@ import time
 from lib import config, metrics_io
 from replay import accesslog, trace
 
-STAGING_SERIES = "juicefs_staging_write_bytes"
+FUSE_COUNT = "juicefs_fuse_written_size_bytes_count"
+FUSE_SUM = "juicefs_fuse_written_size_bytes_sum"
 
 
 class _Stop(Exception):
@@ -23,8 +24,8 @@ def record(out, inode, accesslog_path, exit_at_eof=False, poll_s=0.1):
     （mount 側の buffer 10,240 行を溢れさせないため）。止まるときに out.meta.json へ行の総数と Unknown の数を書く。
     戻り値は meta の dict。"""
     f = open(accesslog_path, "rb")  # 開けること自体が開始時の確認になる（失敗は OSError）
-    meta = {"inode": inode, "lines_total": 0, "unknown": 0, "ops": 0, "unknown_samples": [],
-            "started": time.time()}
+    meta = {"inode": inode, "lines_total": 0, "keepalive": 0, "unknown": 0, "ops": 0, "unknown_samples": [],
+            "all_write_ops": 0, "all_write_bytes": 0, "started": time.time()}
     pidfile = out + ".pid"
     with open(pidfile, "w") as pf:
         pf.write(str(os.getpid()))
@@ -43,8 +44,18 @@ def record(out, inode, accesslog_path, exit_at_eof=False, poll_s=0.1):
                 if not buf.endswith(b"\n"):
                     continue  # 行の途中（次の読みで続きが来る）
                 line, buf = buf.decode("utf-8", "replace"), b""
+                if accesslog.is_keepalive(line):
+                    meta["keepalive"] += 1  # idle 時の "#" 行。行の総数にも Unknown にも入れない
+                    continue
                 meta["lines_total"] += 1
-                r = accesslog.parse_line(line, inode)
+                ino, r = accesslog.parse_any(line)
+                if (isinstance(r, accesslog.Op) and r.kind == "write" and r.status == "OK"
+                        and ino < accesslog.MIN_INTERNAL_NODE):
+                    # 全 inode の成功した write（vfs.go が written_size を observe する条件と同じ）。verify の突き合わせ用
+                    meta["all_write_ops"] += 1
+                    meta["all_write_bytes"] += r.size
+                if isinstance(r, accesslog.Op) and ino != inode:
+                    r = None
                 if isinstance(r, accesslog.Unknown):
                     meta["unknown"] += 1
                     if len(meta["unknown_samples"]) < 5:
@@ -81,32 +92,59 @@ def mark(out, label, now=None):
         f.write("%d\t%s\t%s\n" % (int(t * 1e6), time.strftime("%Y-%m-%dT%H:%M:%S%z", time.localtime(t)), label))
 
 
+def _cum(series):
+    """counter の系列を、mount のし直しの reset を足し合わせた累積 [(時刻, 累積の増分)] にする。"""
+    out, c = [], 0.0
+    for i, (t, v) in enumerate(series):
+        if i:
+            c += v - series[i - 1][1] if v >= series[i - 1][1] else v
+        out.append((t, c))
+    return out
+
+
+def _delta_between(series, t0, t1):
+    """時刻 t0〜t1 の counter の増分。サンプルの間は線形に補間する（60 秒間隔でも記録の区間に合わせるため）。
+    区間がサンプルの範囲に収まらなければ None。"""
+    cum = _cum(series)
+    if len(cum) < 2 or t0 < cum[0][0] or t1 > cum[-1][0]:
+        return None
+
+    def at(t):
+        for (ta, ca), (tb, cb) in zip(cum, cum[1:]):
+            if ta <= t <= tb:
+                return ca if tb == ta else ca + (cb - ca) * (t - ta) / (tb - ta)
+    return at(t1) - at(t0)
+
+
 def verify(out, outdir, limit):
-    """記録の write のバイトを、同じ区間の staging_write_bytes の差と比べる。
-    区間は、最初の write の開始以前の最後のサンプルから、最後の write の終了以後の最初のサンプルまで（記録の区間を外側で挟む）。
-    戻り値は (差の割合 or None, 表示の行のリスト)。差の割合は |metrics − trace| / trace。"""
+    """record の meta.json（全 inode の write の回数とバイト、記録の開始・終了時刻）を、同じ区間の
+    juicefs_fuse_written_size_bytes の _count と _sum の増分と比べる。回数とバイトの両方を limit で判定する。
+    対象 inode だけの write の合計は参考として表示する。戻り値は (差の割合の大きい方 or None, 表示の行)。"""
+    try:
+        with open(out + ".meta.json", encoding="utf-8") as f:
+            meta = json.load(f)
+    except (OSError, ValueError):
+        return None, ["meta.json を読めません（record が正常に止まっていません）"]
+    if not meta.get("all_write_ops"):
+        return None, ["記録に全 inode の write がありません（all_write_ops が 0）"]
+    t0, t1 = meta["started"], meta["stopped"]
+    m = metrics_io.load(os.path.join(outdir, "metrics.tsv"))
+    dc = _delta_between(m.get(FUSE_COUNT, []), t0, t1)
+    ds = _delta_between(m.get(FUSE_SUM, []), t0, t1)
+    if dc is None or ds is None:
+        return None, ["記録の区間 [%d, %d] が %s／%s のサンプルの範囲に収まりません" % (t0, t1, FUSE_COUNT, FUSE_SUM)]
     ops = [o for o in trace.load(out) if o.kind == "write" and o.status == "OK"]
-    if not ops:
-        return None, ["記録に成功した write がありません"]
-    series = metrics_io.load(os.path.join(outdir, "metrics.tsv")).get(STAGING_SERIES, [])
-    t0 = min(o.start_us for o in ops) / 1e6
-    t1 = max(o.end_us for o in ops) / 1e6
-    ts = [t for t, _ in series]
-    before = [t for t in ts if t <= t0]
-    after = [t for t in ts if t >= t1]
-    if not before or not after:
-        return None, ["区間 [%d, %d] を挟む %s のサンプルがありません（前 %d 個、後 %d 個）" % (t0, t1, STAGING_SERIES, len(before), len(after))]
-    a, b = max(before), min(after)  # staging への書き込みは遅れて起きるので、記録の区間を外側のサンプルで挟む
-    tb = sum(o.size for o in ops)
-    mb = metrics_io.delta(series, a, b)
-    if tb == 0:
-        return None, ["区間内の write のバイトが 0 です"]
-    ratio = abs(mb - tb) / tb
-    lines = ["区間 %d - %d（%.0f 秒）" % (a, b, b - a),
-             "記録: write %d 回 %d バイト" % (len(ops), tb),
-             "metrics: %s の差 %.0f バイト" % (STAGING_SERIES, mb),
-             "差の割合: %.2f%%（上限 %.2f%%）%s" % (ratio * 100, limit * 100, "" if ratio <= limit else " 超過")]
-    return ratio, lines
+    lines = ["区間 %.0f - %.0f（%.0f 秒）" % (t0, t1, t1 - t0)]
+    ratios = []
+    for name, rec, met in (("回数", meta["all_write_ops"], dc), ("バイト", meta["all_write_bytes"], ds)):
+        r = abs(met - rec) / rec if rec else None
+        if r is None:
+            return None, lines + ["記録の write の%sが 0 です" % name]
+        ratios.append(r)
+        lines.append("全 inode の write %s: 記録 %d、metrics の差 %.0f、差の割合 %.2f%%（上限 %.2f%%）%s" % (
+            name, rec, met, r * 100, limit * 100, "" if r <= limit else " 超過"))
+    lines.append("（参考）対象 inode %s の write: %d 回 %d バイト" % (meta.get("inode"), len(ops), sum(o.size for o in ops)))
+    return max(ratios), lines
 
 
 def _meta_lines(out):
@@ -116,7 +154,7 @@ def _meta_lines(out):
             m = json.load(f)
     except OSError:
         return ["meta.json なし（record が正常に止まらなかった可能性）"]
-    msg = "accesslog の行 %d、解析できなかった行 %d" % (m["lines_total"], m["unknown"])
+    msg = "accesslog の行 %d（keepalive %d は除く）、解析できなかった行 %d" % (m["lines_total"], m.get("keepalive", 0), m["unknown"])
     return [msg + (" ← 0 でないので内容を確認すること" if m["unknown"] else "")]
 
 
@@ -146,7 +184,7 @@ def main(argv=None):
         except OSError as e:
             print("エラー: %s を開けません（%s）" % (path, e), file=sys.stderr)
             return 2
-        print("記録 %d 操作、行 %d、解析できなかった行 %d" % (meta["ops"], meta["lines_total"], meta["unknown"]))
+        print("記録 %d 操作、行 %d、keepalive %d、解析できなかった行 %d" % (meta["ops"], meta["lines_total"], meta["keepalive"], meta["unknown"]))
         return 0
     if a.cmd == "stop":
         try:

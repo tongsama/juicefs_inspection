@@ -60,57 +60,73 @@ def _epoch_us(m):
     return int(time.mktime((y, mo, d, h, mi, s, 0, 0, -1))) * 1000000 + int(m.group(7))
 
 
+# 特別（内部）ノードの下限。これ以上の inode（control／stats など）は FUSE の write の集計から除く
+MIN_INTERNAL_NODE = 0x7FFFFFFF00000000
+
+
+def is_keepalive(line):
+    """mount が idle の間に 1 秒ごとに返す "#" だけの行か。"""
+    return line.rstrip("\r\n") == "#"
+
+
 def parse_line(line, inode):
     """1 行を解析する。対象の inode の write／read／fsync／flush／fallocate／truncate なら Op、
     別の inode や対象外のメソッドなら None、形が知らないものなら Unknown を返す。"""
+    ino, r = parse_any(line)
+    if isinstance(r, Unknown):
+        return r
+    return r if r is not None and ino == inode else None
+
+
+def parse_any(line):
+    """inode を問わず 1 行を解析し、(inode, Op | None | Unknown) を返す。inode は Op のときだけ意味を持つ。
+    全 inode の write の集計（取りこぼしの確認）に使う。"""
     line = line.rstrip("\r\n")
     m = LINE_RE.match(line)
     if not m:
-        return Unknown(line)
+        return 0, Unknown(line)
     method, body, status = m.group(11), m.group(12), m.group(13)
     if method not in HANDLED:
-        return None
+        return 0, None
     pid, dur_us = int(m.group(10)), int(round(float(m.group(14)) * 1e6))
     end_us = _epoch_us(m)
     off = size = mode = 0
     if method == "write":
         a = _WRITE_RE.match(body)
         if not a:
-            return Unknown(line)
+            return 0, Unknown(line)
         ino, size, off = int(a.group(1)), int(a.group(2)), int(a.group(3))
         kind = "write"
     elif method == "read":
         a = _READ_RE.match(body)
         if not a:
-            return Unknown(line)
+            return 0, Unknown(line)
         ino, size, off = int(a.group(1)), int(a.group(2)), int(a.group(3))
         kind = "read"
     elif method == "fsync":
         a = _FSYNC_RE.match(body)
         if not a:
-            return Unknown(line)
+            return 0, Unknown(line)
         ino, mode, kind = int(a.group(1)), int(a.group(2)), "fsync"
     elif method == "flush":
         a = _FLUSH_RE.match(body)
         if not a:
-            return Unknown(line)
+            return 0, Unknown(line)
         ino, kind = int(a.group(1)), "flush"
     elif method == "fallocate":
         a = _FALLOC_RE.match(body)
         if not a:
-            return Unknown(line)
+            return 0, Unknown(line)
         ino, mode, off, size = (int(a.group(i)) for i in range(1, 5))
         kind = "fallocate"
     else:  # setattr
         a = _SETATTR_RE.match(body)
         if not a:
-            return Unknown(line)
+            return 0, Unknown(line)
         ino, mode = int(a.group(1)), int(a.group(2), 16)
         sm = _SIZE_RE.search(a.group(3))
         if not sm:
             # size を変えない setattr（chmod／chown／utimens）は対象外
-            return None
+            return 0, None
         size, kind = int(sm.group(1)), "truncate"
-    if ino != inode:
-        return None
-    return Op(end_us - dur_us, end_us, pid, kind, off, size, mode, dur_us, status)
+    return ino, Op(end_us - dur_us, end_us, pid, kind, off, size, mode, dur_us, status)

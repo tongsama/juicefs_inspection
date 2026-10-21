@@ -89,25 +89,53 @@ class TraceTest(unittest.TestCase):
 
 
 class VerifyTest(unittest.TestCase):
-    def _setup(self, d, metric_bytes):
+    def _setup(self, d, count, size):
+        """記録（全 inode の write 100 回・100000 バイト）と、区間の外側を含む metrics を作る。metrics の差は count／size。"""
         base = int(time.time()) - 1000
-        with open(os.path.join(d, "t.tsv"), "w") as f:
-            for i in range(10):  # 10 回 × 1000 バイト、1 秒おき
-                s = (base + 10 + i) * 1000000
-                f.write(trace.format_op(accesslog.Op(s, s + 1000, 1, "write", i * 1000, 1000, 0, 1000)))
+        t = os.path.join(d, "t.tsv")
+        with open(t, "w") as f:
+            s = (base + 10) * 1000000
+            f.write(trace.format_op(accesslog.Op(s, s + 1000, 1, "write", 0, 1000, 0, 1000)))
+        with open(t + ".meta.json", "w") as f:
+            json.dump({"inode": INO, "lines_total": 1, "unknown": 0, "keepalive": 0, "all_write_ops": 100, "all_write_bytes": 100000,
+                       "started": base + 10, "stopped": base + 20}, f)
         out = os.path.join(d, "m")
         os.mkdir(out)
-        metrics_io.append_sample(os.path.join(out, "metrics.tsv"), base + 5, {"juicefs_staging_write_bytes": 500.0})
-        metrics_io.append_sample(os.path.join(out, "metrics.tsv"), base + 10, {"juicefs_staging_write_bytes": 500.0})
-        metrics_io.append_sample(os.path.join(out, "metrics.tsv"), base + 20, {"juicefs_staging_write_bytes": 500.0 + metric_bytes})
-        return os.path.join(d, "t.tsv"), out
+        for ts, c, b in ((base + 0, 5, 50), (base + 30, 5 + count * 3, 50 + size * 3)):
+            # 区間 [10, 20] は全体 [0, 30] の中央 1/3 なので、線形補間で count／size の差になる
+            metrics_io.append_sample(os.path.join(out, "metrics.tsv"), ts, {
+                "juicefs_fuse_written_size_bytes_count": float(c), "juicefs_fuse_written_size_bytes_sum": float(b)})
+        return t, out
 
     def test_verify_threshold(self):
-        for metric, code in ((10050, 0), (9800, 1)):  # 差 0.5% と 2%（記録は 10000 バイト）
+        # (metrics の回数の差, バイトの差, 期待する終了コード)。記録は 100 回・100000 バイト
+        for c, b, code in ((100, 100000, 0), (100, 100500, 0), (100.5, 100000, 0), (102, 100000, 1),
+                           (100, 102000, 1), (98, 98000, 1)):
             with tempfile.TemporaryDirectory() as d:
-                t, out = self._setup(d, metric)
-                rc = cli.main(["verify", t, out])
-                self.assertEqual(rc, code, metric)
+                t, out = self._setup(d, c, b)
+                self.assertEqual(cli.main(["verify", t, out]), code, (c, b))
+
+    def test_keepalive_excluded(self):
+        """idle 時の "#" 行は、行の総数にも Unknown にも入れず keepalive として数える。"""
+        with tempfile.TemporaryDirectory() as d:
+            src = os.path.join(d, "src")
+            with open(src, "w") as f:
+                f.write("#\n" + _line("13:00:10.500000", 5, "write (627902,4096,0,9)") + "#\n#\n"
+                        + _line("13:00:11.500000", 5, "write (1,100,0,9)") + "garbage\n")
+            meta = cli.record(os.path.join(d, "o.tsv"), INO, src, exit_at_eof=True)
+        self.assertEqual((meta["keepalive"], meta["lines_total"], meta["unknown"]), (3, 3, 1))
+        self.assertEqual(meta["unknown_samples"], ["garbage"])
+        self.assertEqual((meta["all_write_ops"], meta["all_write_bytes"], meta["ops"]), (2, 4196, 1))
+
+    def test_all_write_excludes_internal_and_failed(self):
+        with tempfile.TemporaryDirectory() as d:
+            src = os.path.join(d, "src")
+            with open(src, "w") as f:
+                f.write(_line("13:00:10.500000", 5, "write (9223372032559808514,10,0,9)")
+                        + "2026.10.14 13:00:11.000000 [uid:0,gid:0,pid:5] write (5,10,0,9) - input/output error <0.001000>\n"
+                        + _line("13:00:12.000000", 5, "write (5,10,0,9)"))
+            meta = cli.record(os.path.join(d, "o.tsv"), INO, src, exit_at_eof=True)
+        self.assertEqual((meta["all_write_ops"], meta["all_write_bytes"]), (1, 10))
 
 
 if __name__ == "__main__":
