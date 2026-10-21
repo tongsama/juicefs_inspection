@@ -38,6 +38,7 @@ STAGING = "juicefs_staging_blocks"
 UPLOADING = "juicefs_object_request_uploading"
 COMPACT = "juicefs_compact_size_histogram_bytes_count"
 OBJ_ERRORS = "juicefs_object_request_errors"
+PROD_INCLUDE = re.compile(r"^juicefs_object_request_errors")  # 本番の /metrics から読む系列（読み取りの GET だけ）
 WATCH_INCLUDE = re.compile(r"^juicefs_(staging_blocks|object_request_uploading|object_request_errors|"
                            r"compact_size_histogram_bytes_count|object_request_durations_histogram_seconds_count)")
 # Drive（rclone serve s3）の回数制限の行。429 は too many／rate／limit と一緒のときだけ（inode などの数字と区別する）
@@ -90,11 +91,17 @@ class Settle:
 
 class Guard:
     """流し直しと待ちの間の見張り。object_request_errors の増加、試験の mount のログの 429／403 の rate limit、
-    mount の停止（mountpoint が mount でない）、metrics の 3 回続けての取得の失敗を、check() で理由の文字列にして返す。"""
+    mount の停止（mountpoint が mount でない）、metrics の 3 回続けての取得の失敗を、check() で理由の文字列にして返す。
+    prod_scrape（本番の /metrics を読み取りの GET で取る関数）があれば、本番の object_request_errors の増加でも止める
+    （rclone と Drive は本番と共有なので、試験の負荷が本番の失敗を起こしたら続けない）。本番の値が取れないときは
+    その項目だけ見張れない（prod_seen が偽のまま。呼ぶ側が警告に残す）。"""
 
-    def __init__(self, scrape, log_path, mounted):
+    def __init__(self, scrape, log_path, mounted, prod_scrape=None):
         self.scrape, self.log_path, self.mounted = scrape, log_path, mounted
+        self.prod_scrape = prod_scrape
         self.base = None
+        self.prod_base = None
+        self.prod_seen = False
         self.fail = 0
         self.pos = 0
         try:
@@ -109,6 +116,19 @@ class Guard:
             self.base = self.scrape().get(OBJ_ERRORS)
         except (OSError, ValueError):
             self.base = None
+        self.prod_base = self._prod_errors()
+
+    def _prod_errors(self):
+        """本番の object_request_errors の今の値。prod_scrape が無いか、取れなければ None。"""
+        if self.prod_scrape is None:
+            return None
+        try:
+            v = self.prod_scrape().get(OBJ_ERRORS)
+        except (OSError, ValueError):
+            return None
+        if v is not None:
+            self.prod_seen = True
+        return v
 
     def _log_hits(self):
         """ログの増えた分から rate limit の行を探し、最初の 1 行（200 文字まで）を返す。"""
@@ -132,6 +152,11 @@ class Guard:
         hit = self._log_hits()
         if hit:
             return "試験の mount のログに rate limit（429／403）: %s" % hit
+        pv = self._prod_errors()
+        if self.prod_base is None:
+            self.prod_base = pv
+        elif pv is not None and pv > self.prod_base:
+            return "本番の object_request_errors が増えた（%g → %g）。本番への影響を避けるため止めます" % (self.prod_base, pv)
         try:
             m = self.scrape()
             self.fail = 0
@@ -350,6 +375,34 @@ def settle(scrape, guard, quiet_s, max_s, poll_s, clock=time.monotonic):
         time.sleep(poll_s)
 
 
+FLUSH_MAX_S = 6 * 3600  # 種の書き出しを待つ上限（32 GiB の種でも Drive に上げ切れるよう大きく取る）
+
+
+def wait_flushed(scrape, max_s=FLUSH_MAX_S, poll_s=5.0, progress_s=60.0, log=print, clock=time.monotonic):
+    """staging_blocks と object_request_uploading が 2 回続けて 0 になるまで待つ（書き出しの完了）。
+    progress_s ごとに今の値を log に出す。戻り値は {state（落ち着いた／未収束）, seconds, last}。
+    系列が取れない間は 0 とみなさずに待ち続ける（上限 max_s）。"""
+    t0 = clock()
+    zeros, last_log, m = 0, None, {}
+    while True:
+        now = clock()
+        try:
+            m = scrape()
+        except (OSError, ValueError):
+            m = {}
+        st, up = m.get(STAGING), m.get(UPLOADING)
+        zeros = zeros + 1 if st == 0 and up == 0 else 0
+        if zeros >= 2:
+            return {"state": SETTLED, "seconds": round(now - t0, 1), "last": {STAGING: st, UPLOADING: up}}
+        if last_log is None or now - last_log >= progress_s:
+            log("書き出しを待つ: staging_blocks=%s、object_request_uploading=%s（経過 %d 秒、上限 %d 秒）"
+                % (st, up, now - t0, max_s))
+            last_log = now
+        if now - t0 >= max_s:
+            return {"state": NOT_SETTLED, "seconds": round(now - t0, 1), "last": {STAGING: st, UPLOADING: up}}
+        time.sleep(poll_s)
+
+
 def _toml(v):
     """profiles.toml に書く値（文字列・数・真偽）。"""
     if isinstance(v, bool):
@@ -359,16 +412,19 @@ def _toml(v):
     return json.dumps(str(v), ensure_ascii=False)
 
 
-def write_measure_profiles(out, spec, inode, common, intervals=None):
+def write_measure_profiles(out, spec, inode, common, intervals=None, *, cache_dir):
     """計測の suite に渡す <out>/profiles.toml（test だけ）を書く。inode は複製の inode、Redis は試験の Redis の直接の
-    port と db、間隔は intervals（metrics／llen／keys の秒）で上書きできる。接続の鍵は入れない。path を返す。"""
+    port と db、間隔は intervals（metrics／llen／keys の秒）で上書きできる。接続の鍵は入れない。path を返す。
+    cache_dir は volume のキャッシュの実の場所（<spec.cache_dir>/<UUID>。JuiceFS は --cache-dir の下の UUID の
+    ディレクトリに置くので、親の spec.cache_dir では keys・内訳・kaz-cache-state が空になる）。
+    log_glob は試験の mount の juicefs のログだけ（Redis や中継のログは含めない）。"""
     c = dict(common)
     for k, key in (("metrics", "interval_metrics_s"), ("llen", "interval_llen_s"), ("keys", "interval_cache_churn_s")):
         if intervals and k in intervals:
             c[key] = intervals[k]
-    test = {"metrics_url": "http://%s:%d/metrics" % spec.metrics_addr, "inode": inode, "cache_dir": spec.cache_dir,
+    test = {"metrics_url": "http://%s:%d/metrics" % spec.metrics_addr, "inode": inode, "cache_dir": cache_dir,
             "mountpoint": spec.mountpoint, "redis_source": "test", "redis_addr": "%s:%d" % spec.redis_addr,
-            "redis_db": spec.db, "log_glob": os.path.join(spec.state_dir, "*.log"), "bucket": spec.bucket_name}
+            "redis_db": spec.db, "log_glob": spec.path("juicefs.log"), "bucket": spec.bucket_name}
     path = os.path.join(out, "profiles.toml")
     with open(path, "w", encoding="utf-8") as f:
         f.write("# jfsreplay run が書いた計測用のプロファイル（複製の inode と試験の資源）\n[test]\n")
@@ -379,13 +435,18 @@ def write_measure_profiles(out, spec, inode, common, intervals=None):
 
 
 def _seed_path(trace_path, spec):
-    """trace の隣の seed.json から、試験の mountpoint の上の種の path を返す。無ければ RunError。"""
+    """trace の隣の seed.json から、試験の mountpoint の上の種の path を返す。無ければ RunError。
+    seed.json の name が trace の名前（拡張子を除く）と違えば、別の trace の種なので RunError。"""
     p = os.path.join(os.path.dirname(os.path.abspath(trace_path)), "seed.json")
     try:
         with open(p, encoding="utf-8") as f:
             info = json.load(f)
     except (OSError, ValueError):
         raise RunError("seed.json が無い（先に jfsreplay seed を実行する）: %s" % p) from None
+    name = os.path.splitext(os.path.basename(trace_path))[0]
+    if info.get("name") != name:
+        raise RunError("seed.json の種（%r）は trace（%r）のものではない。jfsreplay seed %s で作り直す: %s"
+                       % (info.get("name"), name, trace_path, p))
     return os.path.join(spec.mountpoint, os.path.relpath(info["path"], info["mountpoint"])), info
 
 
@@ -414,9 +475,10 @@ def _play_guarded(path, ops, guard, poll_s, reasons):
 
 
 def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, settle_s=None, settle_max_s=None,
-        delete_quiet_s=30, poll_s=5.0, intervals=None, settings_path=SETTINGS_PATH, log=print):
+        delete_quiet_s=30, poll_s=5.0, intervals=None, settings_path=SETTINGS_PATH, log=print, prod_scrape=None):
     """1 回の試験を行い、結果の dict（status は ok／failed、reasons、clone、clone_inode、settle、out）を返す。
-    結果の files は <out>/ の run.json、metrics.tsv など（計測の suite）、play.json、config.json。"""
+    結果の files は <out>/ の run.json、metrics.tsv など（計測の suite）、play.json、config.json。
+    prod_scrape は本番の object_request_errors を読む関数（既定は本番の metrics_url への読み取りの GET。試験で偽に差し替える）。"""
     common = config.load_common()
     spec = spec or testvol.spec_from_profile(profile, common)
     up_kw = dict(up_kw or {})
@@ -444,8 +506,20 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
         """試験の mount が生きているか。"""
         return os.path.ismount(spec.mountpoint)
 
+    if prod_scrape is None:
+        def prod_scrape():
+            """本番の /metrics から object_request_errors だけを読む（読み取りの GET のみ、本番には何も書かない）。"""
+            return metrics_io.scrape(prod.metrics_url, PROD_INCLUDE, timeout=10)
+    guards = []
+
+    def guard():
+        """試験と本番の両方を見張る Guard を作る（本番の値が読めたかを後で確かめるため控える）。"""
+        g = Guard(scrape, spec.path("juicefs.log"), mounted, prod_scrape=prod_scrape)
+        guards.append(g)
+        return g
+
     res = {"status": "ok", "reasons": [], "settings": settings, "age": age, "out": os.path.abspath(out),
-           "clone": None, "clone_inode": None, "settle": None, "cleanup": {}}
+           "clone": None, "clone_inode": None, "settle": None, "cleanup": {}, "warnings": []}
     plays, age_plays, measuring = [], [], False
     seed_info = None
     try:
@@ -461,13 +535,13 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
             seed_mp_path, seed_info = _seed_path(trace_path, spec)
             res["clone"], res["clone_inode"] = _make_clone(spec, seed_mp_path, settings_name, log)
             for i in range(age):
-                g = Guard(scrape, spec.path("juicefs.log"), mounted)
+                g = guard()
                 pr = _play_guarded(res["clone"], ops, g, poll_s, res["reasons"])
                 age_plays.append(pr.to_dict())
                 if pr.failed or pr.stopped:
                     res["reasons"].append("育てる %d 回目: %s" % (i + 1, pr.stop_reason))
                     raise RunError("差分を育てる途中で止まった")
-            s = settle(scrape, Guard(scrape, spec.path("juicefs.log"), mounted), settle_s, settle_max_s, poll_s)
+            s = settle(scrape, guard(), settle_s, settle_max_s, poll_s)
             res["age_settle"] = s
             if s["state"] == "止めた":
                 res["reasons"].append(s["reason"])
@@ -477,17 +551,22 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
         log("試験のキャッシュを空にした（%d ファイル）。設定 %s で mount する" % (n, settings["name"]))
         info = testvol.up(profile, settings, spec=spec, **up_kw)
         res["mount_args"] = info["mount_args"]
+        uuid = _volume_uuid(spec)
+        if not uuid:  # キャッシュの実の場所（<cache_dir>/<UUID>）が決まらないと、キャッシュの計測が空になる
+            raise RunError("試験の mount の .config から volume の UUID を読めない（キャッシュの計測の場所が決まらない）")
+        res["volume_uuid"] = uuid
         if not res["clone"]:
             seed_mp_path, seed_info = _seed_path(trace_path, spec)
             res["clone"], res["clone_inode"] = _make_clone(spec, seed_mp_path, settings_name, log)
         res["seed"] = {"path": seed_mp_path, "inode": seed_info.get("inode")}
         res["warm"] = warm(res["clone"], ops)
         log("キャッシュを温めた: %(ranges)d 範囲、%(bytes)d バイト、%(seconds).1f 秒" % res["warm"])
-        mprof = write_measure_profiles(out, spec, res["clone_inode"], common, intervals)
+        mprof = write_measure_profiles(out, spec, res["clone_inode"], common, intervals,
+                                       cache_dir=os.path.join(spec.cache_dir, uuid))
         _mcli("--profiles", mprof, "start", "test", out)
         measuring = True
         log("記録を流す: %d 操作、%.0f 秒" % (len(ops), (ops[-1].start_us - ops[0].start_us) / 1e6))
-        g = Guard(scrape, spec.path("juicefs.log"), mounted)
+        g = guard()
         pr = _play_guarded(res["clone"], ops, g, poll_s, res["reasons"])
         plays.append(pr)
         if pr.failed or pr.stopped:
@@ -500,8 +579,8 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
                 res["status"] = "failed"
                 res["reasons"].append(res["settle"]["reason"])
         if mounted():
-            # 終わりの材料（キャッシュの内訳など）。空にした直後は kaz-cache-state が無いこともあるので、取れない物は警告にする
-            res["warnings"] = mcap.capture(config.load_profile("test", mprof), out, "end")
+            # 終わりの材料（/metrics、キャッシュの内訳、kaz-cache-state の写し）。取れなかった物は warnings に残して表示する
+            res["warnings"].extend(mcap.capture(config.load_profile("test", mprof), out, "end"))
     except Exception as e:  # 想定外の例外も含め、その回を失敗として結果に残す（後始末は finally で必ず行う）
         _fail(res, "%s: %s" % (type(e).__name__, e))
         if not isinstance(e, (RunError, RuntimeError, OSError, ValueError)):
@@ -510,6 +589,9 @@ def run(trace_path, settings_name, out, profile, spec=None, age=0, up_kw=None, s
         _fail(res, "中断された: %s" % type(e).__name__)
         raise
     finally:
+        if guards and not any(g.prod_seen for g in guards):
+            res["warnings"].append("本番の metrics（%s）を読めなかったので、本番の object_request_errors は見張れていない"
+                                   % prod.metrics_url)
         if measuring:
             _step(res, "計測の停止", lambda: _mcli("stop", out))
         _step(res, "後始末（複製の削除・umount）",

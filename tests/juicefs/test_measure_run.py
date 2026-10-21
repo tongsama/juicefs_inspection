@@ -114,7 +114,7 @@ class MeasureTestBase(unittest.TestCase):
             f.write('#!/bin/sh\necho "juicefs version 1.4.1-fake"\n')
         os.chmod(self.binary, os.stat(self.binary).st_mode | stat.S_IXUSR)
         with open(os.path.join(t, "vm-io-1.log"), "w") as f:
-            f.write("boot\nkaz-2q enabled\nunrelated\n")
+            f.write("boot\nkaz-2q enabled\nkaz meta redis://u:pw@db.example:6379/1\nunrelated\n")
         self.profiles = os.path.join(t, "profiles.toml")
         self.write_profiles(60, 600, 300)
         self.out = os.path.join(t, "out")
@@ -255,6 +255,49 @@ class TestStartStop(MeasureTestBase):
         self.assertEqual(self.jfs("stop", self.out)[0], 0)
         rc, out = self.jfs("start", "test", self.out)
         self.assertEqual(rc, 0, out)
+
+
+class TestProdOutputRefused(MeasureTestBase):
+    """start と capture は、出力ディレクトリが本番の mountpoint・キャッシュ（偽の一時の path）と重なれば止まる。"""
+
+    def setUp(self):
+        super().setUp()
+        t = self.tmp.name
+        self.prod_mp, self.prod_cache = os.path.join(t, "prodmnt"), os.path.join(t, "prodcache")
+        for d in (self.prod_mp, self.prod_cache):
+            os.makedirs(d)
+        with open(self.profiles, "a") as f:
+            f.write('''
+[prod]
+metrics_url = "http://127.0.0.1:1/metrics"
+inode = 1
+cache_dir = "%s"
+mountpoint = "%s"
+redis_source = "mount_script"
+redis_addr = ""
+log_glob = "%s/none-*.log"
+bucket = "buckets"
+''' % (self.prod_cache, self.prod_mp, t))
+
+    def test_start_refuses_under_prod_cache_and_mount(self):
+        for out in (os.path.join(self.prod_cache, "out"), self.prod_mp, os.path.join(self.prod_mp, "a", "b")):
+            rc, msg = self.jfs("start", "test", out)
+            self.assertEqual(rc, 3, msg)
+            self.assertIn("本番", msg)
+            self.assertFalse(os.path.exists(os.path.join(out, "run.json")))
+        self.assertEqual(os.listdir(self.prod_cache), [])
+
+    def test_symlink_into_prod_is_refused(self):
+        link = os.path.join(self.tmp.name, "link")
+        os.symlink(self.prod_cache, link)
+        rc, msg = self.jfs("capture", os.path.join(link, "o"), "x", "--profile", "test")
+        self.assertEqual(rc, 3, msg)
+        self.assertEqual(os.listdir(self.prod_cache), [])
+        link2 = os.path.join(self.tmp.name, "link2")
+        os.symlink(self.prod_mp, link2)
+        rc, msg = self.jfs("start", "test", link2)
+        self.assertEqual(rc, 3, msg)
+        self.assertEqual(os.listdir(self.prod_mp), [])
 
 
 class TestCheck(MeasureTestBase):

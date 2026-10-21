@@ -3,14 +3,16 @@
 種は <mountpoint>/seed/<trace の名前>.img。VM のディスクと同じ長さ（trace の最大 off+size を 64 MiB に切り上げ、
 または --length）の疎なファイルで、trace が触れた（write と read）64 MiB の chunk だけに、圧縮のよく効く中身を書き、fsync する。
 その後 block mode の mount で `juicefs compact` をかけ、各 chunk の record が 1 つ 4 MiB 以下（ブロックの形）に
-なったことを、試験の Redis の LRANGE で確かめる。"""
+なったことを、試験の Redis の LRANGE で確かめる。
+最後に、試験の mount の staging_blocks と object_request_uploading が 0 になる（書き出しが終わる）まで待つ。
+待たずに run へ進むと、run の最初の `umount --flush` が書き出しの途中で時間切れになるため。"""
 import json
 import os
 import re
 import struct
 import subprocess
 
-from lib import config, resp
+from lib import config, metrics_io, resp
 from replay import trace, testvol
 
 CHUNK = 64 << 20  # JuiceFS の chunk の大きさ
@@ -130,9 +132,12 @@ def verify_block_shape(spec, inode, chunk_list, length):
         return bad_chunks(r, inode, chunk_list, length)
 
 
-def seed(trace_path, profile, spec=None, limit=None, length=None, create_bucket=False, up_kw=None, log=print):
+def seed(trace_path, profile, spec=None, limit=None, length=None, create_bucket=False, up_kw=None, log=print,
+         scrape=None, flush_max_s=None, poll_s=5.0):
     """種を作る。順序: 上限の確かめ → 試験の mount を block mode で up → 書く → fsync → compact → LRANGE で確認 →
-    seed.json（trace の隣）。戻り値は seed.json の dict。"""
+    seed.json（trace の隣）→ 書き出し（staging_blocks と object_request_uploading が 0）を待つ。戻り値は seed.json の dict。
+    scrape は試験の metrics を取る関数（既定は試験の mount の /metrics）。flush_max_s（既定 run.FLUSH_MAX_S）秒で終わらなければ SeedError
+    （種と seed.json はできているので、書き出しが終わってから run する）。"""
     spec = spec or testvol.spec_from_profile(profile)
     limit = limit if limit is not None else config.load_common()["seed_limit_gib"] << 30
     up_kw = up_kw or {}
@@ -169,4 +174,19 @@ def seed(trace_path, profile, spec=None, limit=None, length=None, create_bucket=
     with open(os.path.join(os.path.dirname(os.path.abspath(trace_path)), "seed.json"), "w", encoding="utf-8") as f:
         json.dump(info, f, ensure_ascii=False, indent=1)
     log("種を作った: inode %d、path %s、全 %d chunk の record は 1 つ 4 MiB 以下" % (inode, path, len(cl)))
+    from replay import run as runmod  # run は player 経由で seed を読むので、循環を避けてここで読む
+    flush_max_s = runmod.FLUSH_MAX_S if flush_max_s is None else flush_max_s
+    if scrape is None:
+        url = "http://%s:%d/metrics" % spec.metrics_addr
+
+        def scrape():
+            """試験の mount の staging と upload の系列を取る。"""
+            return metrics_io.scrape(url, runmod.WATCH_INCLUDE, timeout=10)
+    log("書き出し（staging の upload）が終わるのを待つ（上限 %d 秒）" % flush_max_s)
+    w = runmod.wait_flushed(scrape, max_s=flush_max_s, poll_s=poll_s, log=log)
+    if w["state"] != runmod.SETTLED:
+        raise SeedError("種はできたが、書き出しが %d 秒で終わらない（最後の値 %s）。試験の mount は上げたままなので、"
+                        "staging_blocks と object_request_uploading が 0 になってから run すること"
+                        % (flush_max_s, w["last"]))
+    log("書き出しが終わった（%.0f 秒）" % w["seconds"])
     return info

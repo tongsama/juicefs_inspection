@@ -161,6 +161,14 @@ class CompareTest(unittest.TestCase):
         self.assertFalse(any("Retries" in l or "Format.Name" in l for l in out))
         self.assertTrue(out[3].startswith("| 窓の長さ"))
 
+    def test_compare_config_ignores_per_mount_items(self):
+        with tempfile.TemporaryDirectory() as a, tempfile.TemporaryDirectory() as b:
+            make_dir(a, {"Pid": 10, "PPid": 1, "CommPath": "/x/a", "StatePath": "/x/sa", "Meta": {"Retries": 10}})
+            make_dir(b, {"Pid": 20, "PPid": 2, "CommPath": "/x/b", "StatePath": "/x/sb", "Meta": {"Retries": 5}})
+            rows, missing = report.config_rows([{"label": "A", "path": a}, {"label": "B", "path": b}])
+        self.assertEqual(list(rows), ["Meta.Retries"])
+        self.assertEqual(missing, [])
+
     def test_compare_rows_for_new_items(self):
         with tempfile.TemporaryDirectory() as a:
             make_dir(a)

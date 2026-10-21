@@ -11,29 +11,40 @@ JuiceFS（kaz 改修版）の compaction の設定を、本番と同じ形の書
 
 ## 1. 本番の計測の手順
 
-本番の mount（`~/mnt_juicefs`）には読み取りだけで触れます。出力ディレクトリはキャッシュや mountpoint の外に置きます。
+本番の mount（`~/mnt_juicefs`）には読み取りだけで触れます。出力ディレクトリはキャッシュや mountpoint の外に置きます（`start` と `capture` は、出力ディレクトリが本番の mountpoint か本番のキャッシュと同じかその下なら、symlink を解いた先も含めて何も書かずに終了 3 で止まります）。
 
 1. start: `./jfsmeasure start prod <出力ディレクトリ>`
    metrics（60 秒）、LLEN の分布（10 分）、キャッシュの出入り（5 分）の常駐を起動します。開始時の `/metrics` 全体とキャッシュの内訳も取ります。
    mount の設定は、動いている mount の `<mountpoint>/.config`（JSON）を写して `config.json` に残します。**設定の比較は、スクリプトの値でなく必ずこの `.config`（実効値）で行います**（mount スクリプトの既定値と実効値は違うことがある。例: cache-size、cache-eviction）。接続先や鍵らしい項目は伏せられます。
-2. check: `./jfsmeasure check <出力ディレクトリ>` で、常駐と記録の状態、前回と同じ材料（バイナリの version、sha256、config.json）がそろっているかを確かめます。
+2. check: `./jfsmeasure check <出力ディレクトリ>` で、次を確かめます（問題があれば `NG:` の行を出して終了 1、無ければ 0）。
+   - 3 つの常駐（metrics、llen、keys）の pid が生きた sampler であること。
+   - `metrics.tsv` と `llen.tsv` があり、最後の更新が間隔の 3 倍より新しく、最新の標本が取得の失敗（`_scrape_error`／`error`）でないこと。
+   - `keys-snapshot-*`、`metrics-start-*`、`breakdown-start-*`、`keys-events.tsv`、`config.json` があること。
+   バイナリの version・sha256 は `run.json` に残しますが、check はその中身を確かめません。
 3. capture: 再起動の直前に `./jfsmeasure capture <出力ディレクトリ> <ラベル>`（`/metrics` 全体、キャッシュの内訳とファイルの一覧、kaz-2q の管理ファイルの写し）。
 4. boot: 再起動の後、`./jfsmeasure boot <出力ディレクトリ> <開始> <終了> [ラベル]`（4 つの時刻は `--boot-start`、`--login-screen`、`--login-done`、`--app`）。GET、ミス、ヒット率、ghost_hit の内訳などを出します。
 5. compare: `./jfsmeasure compare 'ラベル:ディレクトリ:開始:終了' …` で区間を同じ表に並べます。先頭に `config.json` の違いが出ます。経過だけ見るなら `./jfsmeasure progress <出力ディレクトリ>`。
 
 ## 2. 試験の手順（record → mark → verify → seed → suite）
 
-1. record: 本番の VM を起動する前に `./jfsreplay record <trace.tsv> --inode <VM のディスクの inode>`（既定は prod の inode 634040）。`.accesslog` を読むだけで mount には何も書きません。同時に `jfsmeasure start prod` も動かしておきます。
+1. record: 本番の VM を起動する前に `./jfsreplay record <trace.tsv> --inode <VM のディスクの inode>`。**`--inode` は必須**です（既定値はありません。今の VM のディスクは `profiles.toml` の prod の inode 634040）。`.accesslog` を読むだけで mount には何も書きません。同時に `jfsmeasure start prod` も動かしておきます。
+   出力の trace に中身があるか `<trace.tsv>.meta.json` があれば、追記せずに終了 2 で止まります（毎回新しい名前にする）。
 2. mark: 起動の節目で `./jfsreplay mark <trace.tsv> <ラベル>`（起動開始、ログイン画面、ログイン完了、アプリ）。
-3. 10〜15 分したら `./jfsreplay stop <trace.tsv>`。
-4. verify: `./jfsreplay verify <trace.tsv> <計測の出力ディレクトリ>`。記録した全 inode の write の回数とバイトを、同じ区間の `juicefs_fuse_written_size_bytes` の増分と比べ、差が 1% 以内か確かめます。超える、または解析できなかった行（Unknown）が 0 でなければ、記録を取り直します。
+3. 10〜15 分したら `./jfsreplay stop <trace.tsv>`。`<trace.tsv>.pid` の pid が `jfsreplay record` であることを `/proc/<pid>/cmdline` で確かめてから SIGTERM を送ります。違えば signal を送らず、古い pidfile だけを消して終了 2。
+4. verify: `./jfsreplay verify <trace.tsv> <計測の出力ディレクトリ>`。記録した全 inode の write の回数とバイトを、同じ区間の `juicefs_fuse_written_size_bytes` の増分と比べ、差が 1%（`loss_tolerance`）以内か確かめます。
+   - 終了 0: 回数とバイトの差がどちらも上限以内。終了 1: どちらかが上限を超えた。終了 2: 判定できない（meta.json が無い・壊れている、全 inode の write が 0、区間が metrics のサンプルの範囲の外、記録中の counter の減少＝mount の再起動）。
+   - 解析できなかった行（Unknown）の数は表示するだけで、終了コードには入りません。1 を超える差か、Unknown が 0 でなければ、内容を確かめて記録を取り直します。
 5. seed: `./jfsreplay seed <trace.tsv> [--create-bucket]`。試験の volume に、流し直しが clone する種のファイルを作ります（上限 32 GiB、中身は位置から決まる圧縮のよく効くバイト列）。
+   種を書いた後、試験の mount の `juicefs_staging_blocks` と `juicefs_object_request_uploading` が 0 になる（Drive への書き出しが終わる）まで待ち、1 分ごとに今の値を出します。待たずに run へ進むと、run の最初の `umount --flush` が書き出しの途中で時間切れになるためです。上限は 6 時間で、超えたら「書き出しが終わらない」と出して終了 2（種と `seed.json` はできているので、2 つの値が 0 になってから run します）。
+   `seed.json` には trace の名前が入り、run は名前が違う `seed.json`（別の trace の種）を使わずに止まります。
 6. suite: `./jfsreplay suite <trace.tsv> [--only a,b] [--repeat N] [--age N] [--create-bucket]`。`settings.toml` の設定を上から順に `run` し、結果を 1 枚の表にします。
    - 既定の 6 つ: `default`（trigger 99、block-ratio 0.5）、`trigger30`、`trigger50`、`trigger200`、`block-ratio75`、`block`（block モード）。
    - 1 つ流すだけなら `jfsreplay run <trace.tsv> --settings <名前>`。
    - 失敗（EIO、rate limit、mount の停止、安全の確かめ）はその列を「失敗」として表に出し、**そこで止まります**。「未収束」（落ち着きの判定が上限 10 分で収まらない）は失敗ではなく、表に印を付けて続けます。
    - `--repeat N` は同じ設定を N 回流し、列は `名前`、`名前#2`… になります。
    - 1 回は 10〜15 分、6 設定で約 1.5 時間です。
+   - **suite・run・seed は、本番の VM を止めた（idle の）状態で流します**。rclone（`rclone serve s3`）と Drive は本番と共有で、本番と試験の `max-uploads` は足し合わさって Drive にかかります。run の見張りは、本番の `/metrics`（`http://127.0.0.1:9567/metrics`、読み取りの GET だけ）の `juicefs_object_request_errors` も読み、流し直しの間に増えたらその回を止めます。本番の metrics が読めなかったときは、見張れなかったことを警告として `run.json` に残します。
+   - 各回の計測は、run が書く `<out>/profiles.toml` の test を使います。キャッシュの場所は、JuiceFS が `--cache-dir` の下に作る volume の UUID のディレクトリ（`~/.juicefs/cache-test/<UUID>`）、ログは試験の mount の `~/.juicefs/test-suite/juicefs.log` だけです（`profiles.toml` の test の `cache_dir` は親なので、`jfsmeasure start test` を手で使うときはキャッシュの項目が空になります）。終わりの材料の取りこぼし（`kaz-cache-state.v1` がまだ保存されていないなど）は警告として表示し、`run.json` と `play.json` の `warnings` に残します。
 
 ### settings.toml
 
@@ -61,7 +72,7 @@ flags = { "kaz-compaction-delta-trigger" = 30 }
 - 本番の Redis、本番のバケット（`buckets`）、本番の mountpoint（`~/mnt_juicefs`）、本番のキャッシュ（`~/.juicefs/cache/…`）には、試験の道具は書き込みません。試験の Redis は `127.0.0.1:16379`（db 1）、バケットは `juicefs-kaz-test`、mountpoint は `~/mnt_juicefs_test`、キャッシュは `~/.juicefs/cache-test`。プロファイルの書き間違い（本番と同じ host、バケット名、path）は、書き込みの前に止まります。
 - 本番の Redis には読み取りの命令（LLEN、LRANGE、HGET、DBSIZE、SCAN）だけを送ります。接続先や鍵は表示せず、`config.json` や `run.json` にも書きません（実行時に mount スクリプトから読みます）。
 - **`--create-bucket`**: 試験の volume がまだ無いとき、本物の Drive（`rclone serve s3`）にバケットと volume を作る操作です。**この旗を付けたときだけ**行います。付けずに volume が無ければ、何も作らず止まります。作ってよいかをユーザーが確かめてから付けてください。
-- 試験の並列のアップロードは本番以下にします。Drive の rate limit（429、403 の rate limit）が出たら、その回を止めて表に出します。
+- 試験の並列のアップロードは本番以下にし、本番の VM は idle にしておきます（本番と試験の upload は同じ rclone と Drive に足し合わさる）。Drive の rate limit（429、403 の rate limit）か、本番の `juicefs_object_request_errors` の増加が出たら、その回を止めて表に出します。
 - clone は各回の終わりに消します。試験のバケットと Redis は次の回のために残します。全部消す `jfsreplay testvol destroy` は確認を求めます。
 - 試験の Redis の state ディレクトリ（`~/.juicefs/test-suite/`）は mode 0700 です。volume の Format には storage の認証情報が JuiceFS の仕様で入ります（本番と同じ）。
 

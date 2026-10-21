@@ -289,9 +289,12 @@ def _flatten(obj, pre=""):
     return out
 
 
+CONFIG_IGNORE = {"Pid", "PPid", "CommPath", "StatePath"}  # mount ごとに必ず違う項目（設定の違いではない）
+
+
 def config_rows(specs):
     """区間ごとの config.json の違い。{項目: [各区間の値 or None]} と、config.json の無い区間のラベル。
-    比べるのは config.json のある区間だけ。値がそろっている項目は含めない。"""
+    比べるのは config.json のある区間だけ。値がそろっている項目と、CONFIG_IGNORE（最後の名前で判定）は含めない。"""
     flats, missing = [], []
     for s in specs:
         p = os.path.join(s["path"], "config.json") if os.path.isdir(s["path"]) else None
@@ -309,6 +312,8 @@ def config_rows(specs):
     rows = {}
     if len(have) >= 2:
         for k in sorted(set().union(*have)):
+            if k.rsplit(".", 1)[-1] in CONFIG_IGNORE:
+                continue
             vals = [None if f is None else f.get(k, "(なし)") for f in flats]
             if len({json.dumps(v, sort_keys=True) for v in vals if v is not None}) > 1:
                 rows[k] = vals

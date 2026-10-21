@@ -159,6 +159,66 @@ class TestRunParts(unittest.TestCase):
         g = runmod.Guard(lambda: dict(vals), log, mounted=lambda: False)
         self.assertIn("mount", g.check())
 
+    def test_guard_stops_on_prod_errors(self):
+        d = tempfile.mkdtemp(prefix="jfs-guard-")
+        self.addCleanup(shutil.rmtree, d, ignore_errors=True)
+        log = os.path.join(d, "juicefs.log")
+        prod = {"juicefs_object_request_errors": 7.0}
+        g = runmod.Guard(lambda: {"juicefs_object_request_errors": 0.0}, log, mounted=lambda: True,
+                         prod_scrape=lambda: dict(prod))
+        self.assertIsNone(g.check())
+        self.assertTrue(g.prod_seen)
+        prod["juicefs_object_request_errors"] = 8.0
+        self.assertIn("本番の object_request_errors", g.check())
+
+        def down():
+            raise OSError("refused")
+        g = runmod.Guard(lambda: {"juicefs_object_request_errors": 0.0}, log, mounted=lambda: True, prod_scrape=down)
+        self.assertIsNone(g.check())  # 本番が読めないだけでは止めない（呼ぶ側が警告にする）
+        self.assertFalse(g.prod_seen)
+
+    def test_write_measure_profiles_uses_volume_cache_dir(self):
+        d = tempfile.mkdtemp(prefix="jfs-mprof-")
+        self.addCleanup(shutil.rmtree, d, ignore_errors=True)
+        prod, test = tv._profiles()
+        spec = dataclasses.replace(testvol.spec_from_profile(test), cache_dir=os.path.join(d, "cache"),
+                                   state_dir=os.path.join(d, "state"))
+        vol = os.path.join(spec.cache_dir, UUID)
+        p = runmod.write_measure_profiles(d, spec, 42, config.load_common(), cache_dir=vol)
+        prof = config.load_profile("test", p)
+        self.assertEqual(prof.cache_dir, vol)
+        self.assertEqual(prof.log_glob, os.path.join(spec.state_dir, "juicefs.log"))  # Redis や中継のログは含めない
+        self.assertEqual(prof.inode, 42)
+
+    def test_seed_path_checks_trace_name(self):
+        d = tempfile.mkdtemp(prefix="jfs-seedp-")
+        self.addCleanup(shutil.rmtree, d, ignore_errors=True)
+        spec = dataclasses.replace(testvol.spec_from_profile(tv._profiles()[1]), mountpoint=os.path.join(d, "mnt"))
+        with open(os.path.join(d, "seed.json"), "w") as f:
+            json.dump({"name": "other", "path": "/m/seed/other.img", "mountpoint": "/m", "inode": 3}, f)
+        with self.assertRaises(runmod.RunError):
+            runmod._seed_path(os.path.join(d, "boot.tsv"), spec)
+        path, info = runmod._seed_path(os.path.join(d, "other.tsv"), spec)
+        self.assertEqual(path, os.path.join(d, "mnt", "seed", "other.img"))
+
+    def test_wait_flushed(self):
+        vals = iter([{}, {"juicefs_staging_blocks": 3, "juicefs_object_request_uploading": 1},
+                     {"juicefs_staging_blocks": 0, "juicefs_object_request_uploading": 0},
+                     {"juicefs_staging_blocks": 0, "juicefs_object_request_uploading": 1},
+                     {"juicefs_staging_blocks": 0, "juicefs_object_request_uploading": 0},
+                     {"juicefs_staging_blocks": 0, "juicefs_object_request_uploading": 0}])
+        t = iter(range(100))
+        logs = []
+        r = runmod.wait_flushed(lambda: next(vals), max_s=50, poll_s=0, progress_s=2, log=logs.append,
+                                clock=lambda: next(t))
+        self.assertEqual(r["state"], "落ち着いた")
+        self.assertEqual(r["seconds"], 6)  # 2 回続けての 0 まで待つ（6 回目の標本、時計は 1 回目の標本で 1）
+        self.assertTrue(logs and "staging_blocks" in logs[0])
+        r = runmod.wait_flushed(lambda: {"juicefs_staging_blocks": 1, "juicefs_object_request_uploading": 0},
+                                max_s=3, poll_s=0, log=lambda m: None, clock=lambda: next(t))
+        self.assertEqual(r["state"], "未収束")
+        self.assertEqual(r["last"]["juicefs_staging_blocks"], 1)
+
     def test_load_settings(self):
         d = tempfile.mkdtemp(prefix="jfs-set-")
         self.addCleanup(shutil.rmtree, d, ignore_errors=True)
@@ -274,6 +334,7 @@ class TestRunFailures(unittest.TestCase):
             f.write("x")
         self.calls = []
         self.out = os.path.join(d, "out")
+        self.uuid = UUID
 
     def _run(self, warm=None, subproc=None):
         """外の資源をすべて偽にして run を呼ぶ。"""
@@ -284,6 +345,7 @@ class TestRunFailures(unittest.TestCase):
               mock.patch("replay.run.clear_cache", return_value=0),
               mock.patch("replay.run._seed_path", return_value=("/seed", {"inode": 3})),
               mock.patch("replay.run._make_clone", return_value=(self.clone, 5)),
+              mock.patch("replay.run._volume_uuid", side_effect=lambda spec: self.uuid),
               mock.patch("replay.run.wait_deleted", side_effect=lambda *a, **k: self.calls.append("wait") or {}),
               mock.patch("replay.run.warm", side_effect=warm or (lambda *a: {"ranges": 0, "bytes": 0, "seconds": 0})),
               mock.patch("os.path.ismount", side_effect=lambda p: p == mp)]
@@ -293,7 +355,8 @@ class TestRunFailures(unittest.TestCase):
             p.start()
             self.addCleanup(p.stop)
         return runmod.run(self.trace, "default", self.out, self.test, spec=self.spec,
-                          up_kw=dict(prod=self.prod, prod_redis=tv.PROD_REDIS), log=lambda m: None)
+                          up_kw=dict(prod=self.prod, prod_redis=tv.PROD_REDIS), log=lambda m: None,
+                          prod_scrape=lambda: {})
 
     def _results(self):
         """run.json と play.json の status と reasons。"""
@@ -326,6 +389,24 @@ class TestRunFailures(unittest.TestCase):
         self.assertFalse(os.path.exists(self.clone))
         self.assertEqual(self.calls[-1], "umount")
         self.assertEqual(self._results()[0]["status"], "failed")
+
+    def test_measure_profile_points_to_volume_cache(self):
+        import subprocess
+
+        def sp(cmd, **kw):
+            raise subprocess.TimeoutExpired(cmd, kw.get("timeout"))
+        self._run(subproc=sp)  # 計測の start で止める（profiles.toml は書かれた後）
+        prof = config.load_profile("test", os.path.join(self.out, "profiles.toml"))
+        self.assertEqual(prof.cache_dir, os.path.join(self.spec.cache_dir, UUID))
+        self.assertEqual(self._results()[0]["volume_uuid"], UUID)
+
+    def test_missing_volume_uuid_fails_before_measure(self):
+        self.uuid = None
+        res = self._run()
+        self.assertEqual(res["status"], "failed")
+        self.assertTrue(any("UUID" in r for r in res["reasons"]), res["reasons"])
+        self.assertFalse(os.path.exists(os.path.join(self.out, "profiles.toml")))
+        self.assertEqual(self.calls[-1], "umount")  # 後始末（umount）はする
 
     def test_interrupt_reraised_after_cleanup(self):
         def intr(*a):
@@ -373,8 +454,15 @@ class TestRunIntegration(unittest.TestCase):
             info = seed.seed(t, test, spec=spec, up_kw=up_kw, log=lambda m: None)
             res = runmod.run(t, "default", out, test, spec=spec, up_kw=up_kw, settle_s=2, settle_max_s=60,
                              delete_quiet_s=1, poll_s=0.5, intervals={"metrics": 1, "llen": 5, "keys": 5},
-                             log=lambda m: None)
+                             log=lambda m: None, prod_scrape=lambda: {"juicefs_object_request_errors": 0.0})
             self.assertEqual(res["status"], "ok", res)
+            names = os.listdir(out)
+            snap = [n for n in names if n.startswith("keys-snapshot-")]
+            self.assertEqual(len(snap), 1, names)
+            with open(os.path.join(out, snap[0])) as f:  # 温めた block が volume のキャッシュ（<cache>/<UUID>）に見える
+                self.assertGreaterEqual(len(f.read().splitlines()), 2)
+            self.assertTrue(any(n.startswith("breakdown-start-") for n in names), names)
+            self.assertFalse(any("内訳" in w for w in res["warnings"]), res["warnings"])
             for fn in ("run.json", "metrics.tsv", "play.json", "config.json"):
                 self.assertTrue(os.path.exists(os.path.join(out, fn)), fn)
             with open(os.path.join(out, "play.json")) as f:

@@ -89,6 +89,50 @@ class TestSeed(unittest.TestCase):
             seed.seed(t, test, length=64 * MiB, up_kw=dict(prod=prod, prod_redis=tv.PROD_REDIS))
 
 
+    def _seed_with_fakes(self, scrape, flush_max_s):
+        """mount・書き込み・compact・LRANGE を偽にして seed を呼び、(結果か例外, log, seed.json の path) を返す。"""
+        d = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, d, ignore_errors=True)
+        t = os.path.join(d, "t.tsv")
+        with open(t, "w") as f:
+            f.write(trace.format_op(_op("write", 0, 4096)))
+        prod, test = tv._profiles()
+        spec = dataclasses.replace(testvol.spec_from_profile(test), mountpoint=os.path.join(d, "mnt"))
+
+        def fake_write(path, cl, length):
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            open(path, "w").close()
+        logs = []
+        ps = [mock.patch("replay.testvol.safety_check"), mock.patch("replay.testvol.up"),
+              mock.patch("os.path.ismount", return_value=False), mock.patch.object(seed, "write_seed", fake_write),
+              mock.patch("replay.seed.subprocess.run", return_value=mock.Mock(returncode=0)),
+              mock.patch.object(seed, "verify_block_shape", return_value=[])]
+        for p in ps:
+            p.start()
+            self.addCleanup(p.stop)
+        try:
+            r = seed.seed(t, test, spec=spec, up_kw=dict(prod=prod, prod_redis=tv.PROD_REDIS), log=logs.append,
+                          scrape=scrape, flush_max_s=flush_max_s, poll_s=0)
+        except seed.SeedError as e:
+            r = e
+        return r, logs, os.path.join(d, "seed.json")
+
+    def test_seed_waits_for_upload(self):
+        vals = iter([{"juicefs_staging_blocks": 5, "juicefs_object_request_uploading": 2}] * 3 +
+                    [{"juicefs_staging_blocks": 0, "juicefs_object_request_uploading": 0}] * 2)
+        r, logs, sj = self._seed_with_fakes(lambda: next(vals), 3600)
+        self.assertIsInstance(r, dict)
+        self.assertTrue(any("staging_blocks=5" in m for m in logs), logs)  # 進み具合を出す
+        self.assertTrue(any("書き出しが終わった" in m for m in logs), logs)
+        self.assertTrue(os.path.exists(sj))
+
+    def test_seed_flush_timeout_is_clear_error(self):
+        r, logs, sj = self._seed_with_fakes(lambda: {"juicefs_staging_blocks": 1, "juicefs_object_request_uploading": 0}, 0)
+        self.assertIsInstance(r, seed.SeedError)
+        self.assertIn("書き出し", str(r))
+        self.assertTrue(os.path.exists(sj))  # 種はできている（書き出しを待ってから run する）
+
+
 class TestSeedIntegration(unittest.TestCase):
     def test_seed_local_storage(self):
         common = config.load_common()

@@ -29,6 +29,41 @@ def _scrape_fuse(url):
         return None
 
 
+def check_new_output(out):
+    """record の出力が新しいことを確かめる。trace に中身があるか <out>.meta.json があれば FileExistsError
+    （黙って追記すると前の記録と混ざり、meta の数と合わなくなるため）。空の trace ファイルはよい。"""
+    try:
+        if os.path.getsize(out) > 0:
+            raise FileExistsError("記録の出力 %s に中身がある（上書き・追記はしない。別の名前にする）" % out)
+    except FileNotFoundError:
+        pass
+    if os.path.lexists(out + ".meta.json"):
+        raise FileExistsError("%s.meta.json がすでにある（前の記録。別の名前にする）" % out)
+
+
+def pid_is_record(pid):
+    """pid が生きた `jfsreplay record` か（/proc/<pid>/cmdline で確かめる）。別の process に再利用された pid は False。"""
+    try:
+        with open("/proc/%d/cmdline" % pid, "rb") as f:
+            args = f.read().split(b"\0")
+    except OSError:
+        return False
+    return any(os.path.basename(a) == b"jfsreplay" for a in args) and b"record" in args
+
+
+def stop_record(out):
+    """<out>.pid の record を SIGTERM で止める。pid が record でなければ signal を送らず、古い pidfile だけ消して
+    ProcessLookupError。pidfile が読めなければ OSError／ValueError。"""
+    pidfile = out + ".pid"
+    with open(pidfile) as f:
+        pid = int(f.read())
+    if not pid_is_record(pid):
+        os.unlink(pidfile)
+        raise ProcessLookupError("pid %d は jfsreplay record ではない（古い pidfile を消した。signal は送っていない）" % pid)
+    os.kill(pid, signal.SIGTERM)
+    return pid
+
+
 class _Stop(Exception):
     """signal で記録を止めるための内部の例外。"""
 
@@ -37,7 +72,9 @@ def record(out, inode, accesslog_path, exit_at_eof=False, poll_s=0.1, metrics_ur
     """accesslog_path を読み続け、対象 inode の Op だけを out に追記する。行を読んだらすぐ絞って書く
     （mount 側の buffer 10,240 行を溢れさせないため）。metrics_url があれば、.accesslog を開いた直後と閉じる直前の fuse_written_size_bytes を meta に保存する（verify の厳密な突き合わせ用）。
     止まるときに out.meta.json へ行の総数と Unknown の数を書く。
+    出力に前の記録（中身のある trace か meta.json）があれば、何も開かずに FileExistsError。
     戻り値は meta の dict。"""
+    check_new_output(out)
     f = open(accesslog_path, "rb")  # 開けること自体が開始時の確認になる（失敗は OSError）
     meta = {"inode": inode, "lines_total": 0, "keepalive": 0, "unknown": 0, "ops": 0, "unknown_samples": [],
             "all_write_ops": 0, "all_write_bytes": 0, "started": time.time()}
@@ -266,6 +303,8 @@ def _run(a):
         print("落ち着きの判定: %s（%s 秒）" % (res["settle"]["state"], res["settle"]["seconds"]))
     for r in res["reasons"]:
         print("理由: %s" % r, file=sys.stderr)
+    for w in res.get("warnings") or []:
+        print("警告: %s" % w, file=sys.stderr)
     return 0 if res["status"] == "ok" else 1
 
 
@@ -348,6 +387,9 @@ def main(argv=None):
         url = a.metrics_url if a.metrics_url is not None else config.load_profile(a.profile).metrics_url
         try:
             meta = record(a.out, a.inode, path, a.exit_at_eof, metrics_url=url)
+        except FileExistsError as e:
+            print("エラー: %s" % e, file=sys.stderr)
+            return 2
         except OSError as e:
             print("エラー: %s を開けません（%s）" % (path, e), file=sys.stderr)
             return 2
@@ -355,8 +397,7 @@ def main(argv=None):
         return 0
     if a.cmd == "stop":
         try:
-            with open(a.out + ".pid") as f:
-                os.kill(int(f.read()), signal.SIGTERM)
+            stop_record(a.out)
         except (OSError, ValueError) as e:
             print("エラー: record を止められません（%s）" % e, file=sys.stderr)
             return 2

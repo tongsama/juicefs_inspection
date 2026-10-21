@@ -197,5 +197,59 @@ class VerifyTest(unittest.TestCase):
         self.assertEqual((meta["all_write_ops"], meta["all_write_bytes"]), (1, 10))
 
 
+class RecordSafetyTest(unittest.TestCase):
+    """record の出力の上書きの拒否と、stop の pid の確かめ（一時ファイルと子の process だけを使う）。"""
+
+    def test_record_refuses_existing_output(self):
+        with tempfile.TemporaryDirectory() as d:
+            out = os.path.join(d, "t.tsv")
+            with open(out, "w") as f:
+                f.write("old\n")
+            with self.assertRaises(FileExistsError):
+                cli.record(out, INO, SAMPLE, exit_at_eof=True)
+            with open(out) as f:
+                self.assertEqual(f.read(), "old\n")  # 追記していない
+            self.assertFalse(os.path.exists(out + ".meta.json"))
+            self.assertEqual(cli.main(["record", out, "--inode", str(INO), "--accesslog", SAMPLE,
+                                       "--exit-at-eof", "--metrics-url", ""]), 2)
+            out2 = os.path.join(d, "u.tsv")
+            open(out2, "w").close()  # 空の trace はよい
+            with open(out2 + ".meta.json", "w") as f:
+                f.write("{}")
+            with self.assertRaises(FileExistsError):  # meta.json があれば止める
+                cli.record(out2, INO, SAMPLE, exit_at_eof=True)
+            os.unlink(out2 + ".meta.json")
+            self.assertGreater(cli.record(out2, INO, SAMPLE, exit_at_eof=True)["ops"], 0)
+
+    def test_stop_refuses_pid_that_is_not_record(self):
+        with tempfile.TemporaryDirectory() as d:
+            out = os.path.join(d, "t.tsv")
+            with open(out + ".pid", "w") as f:
+                f.write(str(os.getpid()))  # この試験の process（record ではない）
+            self.assertEqual(cli.main(["stop", out]), 2)  # signal を送れば試験の process が止まるので、生きていれば送っていない
+            self.assertFalse(os.path.exists(out + ".pid"))  # 古い pidfile だけ消す
+            self.assertFalse(cli.pid_is_record(os.getpid()))
+
+    def test_stop_signals_running_record(self):
+        import subprocess
+        import sys
+        with tempfile.TemporaryDirectory() as d:
+            out = os.path.join(d, "t.tsv")
+            src = os.path.join(d, "accesslog")
+            with open(src, "w") as f:
+                f.write(_line("13:00:10.500000", 5, "write (%d,4096,0): (4096)" % INO))
+            p = subprocess.Popen([sys.executable, "-I", os.path.join(HERE, "jfsreplay"), "record", out, "--inode",
+                                  str(INO), "--accesslog", src, "--metrics-url", ""], stdout=subprocess.DEVNULL,
+                                 stderr=subprocess.DEVNULL)
+            self.addCleanup(lambda: p.poll() is None and p.kill())
+            end = time.time() + 10
+            while not os.path.exists(out + ".pid") and time.time() < end:
+                time.sleep(0.05)
+            self.assertTrue(cli.pid_is_record(p.pid))
+            self.assertEqual(cli.main(["stop", out]), 0)
+            self.assertEqual(p.wait(timeout=10), 0)
+            self.assertTrue(os.path.exists(out + ".meta.json"))
+
+
 if __name__ == "__main__":
     unittest.main()

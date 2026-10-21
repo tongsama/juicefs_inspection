@@ -83,7 +83,8 @@ def binary_info(path):
 
 
 def kaz_log_lines(log_glob, limit=50):
-    """log_glob で一番新しいログの末尾から、kaz を含む行を最大 limit 行返す（起動時の設定の記録）。"""
+    """log_glob で一番新しいログの末尾から、kaz を含む行を最大 limit 行返す（起動時の設定の記録）。
+    "://" を含む行（接続の URL が入りうる）は run.json に残さないよう落とす。"""
     files = sorted(glob.glob(log_glob), key=os.path.getmtime)
     if not files:
         return []
@@ -91,7 +92,38 @@ def kaz_log_lines(log_glob, limit=50):
         f.seek(0, os.SEEK_END)
         f.seek(max(0, f.tell() - (4 << 20)))
         lines = f.read().decode("utf-8", "replace").splitlines()
-    return [l for l in lines if "kaz" in l.lower()][-limit:]
+    return [l for l in lines if "kaz" in l.lower() and "://" not in l][-limit:]
+
+
+def _under(a, b):
+    """a が b と同じか、b の下にあるか（どちらも絶対 path の文字列）。"""
+    return a == b or a.startswith(b.rstrip("/") + "/")
+
+
+def prod_overlap(outdir, prod):
+    """出力ディレクトリが本番の mountpoint か本番のキャッシュと同じかその下なら理由の文字列、違えば None。
+    先に文字列で比べ（本番の FUSE の root に stat を送らない）、次に realpath で symlink を解いて比べる。
+    本番の mountpoint は親だけを realpath で解く（mount の root 自体は stat しない）。"""
+    a = os.path.abspath(os.path.expanduser(outdir))
+    mp = os.path.abspath(os.path.expanduser(prod.mountpoint))
+    cache = os.path.abspath(os.path.expanduser(prod.cache_dir))
+    for label, b in (("本番の mountpoint", mp), ("本番のキャッシュ", cache)):
+        if _under(a, b):
+            return "出力ディレクトリが%sと重なる: %s" % (label, a)
+    real = os.path.realpath(a)
+    mp_real = os.path.join(os.path.realpath(os.path.dirname(mp)), os.path.basename(mp))
+    for label, b in (("本番の mountpoint", mp_real), ("本番のキャッシュ", os.path.realpath(cache))):
+        if _under(real, b):
+            return "出力ディレクトリが%sと重なる（symlink を解いた先 %s）" % (label, real)
+    return None
+
+
+def load_prod(profiles=None):
+    """本番のプロファイル。profiles に prod が無ければ既定の profiles.toml の prod を使う（安全の確かめ用）。"""
+    try:
+        return config.load_profile("prod", profiles)
+    except KeyError:
+        return config.load_profile("prod")
 
 
 def cmd_start(a, profile, common):
@@ -282,6 +314,10 @@ def main(argv=None):
             return 1
         a.profiles = a.profiles or (run or {}).get("profiles_path")
         profile, common = config.load_profile(pname, a.profiles), config.load_common(a.profiles)
+        why = prod_overlap(a.outdir, load_prod(a.profiles))
+        if why:  # 計測の材料を本番の mount やキャッシュの中に書かない
+            print("停止: %s" % why, file=sys.stderr)
+            return 3
     return {"start": cmd_start, "check": cmd_check, "stop": cmd_stop, "capture": cmd_capture,
             "progress": cmd_progress, "compare": cmd_compare, "boot": cmd_boot}[a.cmd](a, profile, common)
 
