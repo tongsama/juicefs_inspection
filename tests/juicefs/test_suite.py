@@ -6,7 +6,7 @@ import tempfile
 import unittest
 
 from replay import run as runmod
-from replay import suite
+from replay import suite, testvol
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 GiB = 1 << 30
@@ -36,14 +36,39 @@ class SuiteTest(unittest.TestCase):
         self.assertEqual([g[0] for g in got], ["default", "trigger30", "trigger50", "trigger200", "block-ratio75", "block"])
         d = dict((g[0], g) for g in got)
         self.assertEqual(d["default"][2], {"kaz-compaction-delta-trigger": 99, "kaz-compaction-delta-block-ratio": 0.5})
-        self.assertEqual(d["trigger30"][2], {"kaz-compaction-delta-trigger": 30})
-        self.assertEqual(d["trigger50"][2], {"kaz-compaction-delta-trigger": 50})
-        self.assertEqual(d["trigger200"][2], {"kaz-compaction-delta-trigger": 200})
-        self.assertEqual(d["block-ratio75"][2], {"kaz-compaction-delta-block-ratio": 0.75})
+        self.assertEqual(d["trigger30"][2], {"kaz-compaction-delta-trigger": 30, "kaz-compaction-delta-block-ratio": 0.5})
+        self.assertEqual(d["trigger50"][2], {"kaz-compaction-delta-trigger": 50, "kaz-compaction-delta-block-ratio": 0.5})
+        self.assertEqual(d["trigger200"][2], {"kaz-compaction-delta-trigger": 200, "kaz-compaction-delta-block-ratio": 0.5})
+        self.assertEqual(d["block-ratio75"][2], {"kaz-compaction-delta-trigger": 99, "kaz-compaction-delta-block-ratio": 0.75})
         self.assertEqual(d["block"][1], "block")
         # run.load_settings と同じ形で読める
         self.assertEqual(runmod.load_settings("trigger30", os.path.join(HERE, "settings.toml"))["flags"],
-                         {"kaz-compaction-delta-trigger": 30})
+                         {"kaz-compaction-delta-trigger": 30, "kaz-compaction-delta-block-ratio": 0.5})
+
+    def test_no_inheritance_in_mount_args(self):
+        """各既定の設定で、[compaction] の行が意図した値になる（mount_flags.txt の本番の値を引き継がない）。"""
+        base = {e.name: str(e.value) for e in testvol.read_mount_flags() if e.mark == "compaction"}
+        for s in suite.load_all_settings(os.path.join(HERE, "settings.toml")):
+            args = testvol.build_mount_args(testvol.FLAGS_PATH, s)
+            got = {}
+            for i, a in enumerate(args):
+                if a.startswith("--kaz-compaction-"):
+                    k, eq, v = a[2:].partition("=")
+                    got[k] = v if eq else args[i + 1]
+            want = dict(base)
+            want["kaz-compaction-mode"] = s["mode"]
+            want.update({k: str(v) for k, v in s["flags"].items()})
+            self.assertEqual({k: got[k] for k in want}, want, s["name"])
+            if s["mode"] == "delta":
+                self.assertEqual(set(s["flags"]), {"kaz-compaction-delta-trigger", "kaz-compaction-delta-block-ratio"})
+
+    def test_failed_in_table_sets_status(self):
+        with tempfile.TemporaryDirectory() as root:
+            def runner(trace, name, out, age):
+                os.makedirs(out, exist_ok=True)  # metrics が無い
+                return {"status": "ok", "reasons": [], "settle": {"state": "落ち着いた", "seconds": 1}}
+            res = suite.run_suite("t.tsv", ["a"], results_root=root, runner=runner, stamp="W")
+            self.assertEqual(res["status"], "failed")
 
     def test_summary_table_columns(self):
         with tempfile.TemporaryDirectory() as root:

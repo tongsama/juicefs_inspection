@@ -44,7 +44,7 @@ mode = "delta"                       # 省略すると mount_flags.txt のまま
 flags = { "kaz-compaction-delta-trigger" = 30 }
 ```
 
-`flags` は `mount_flags.txt` の `[compaction]` の印のある行の置き換えです。ファイルを書き換えれば組を変えられ、`--settings-file` で別のファイルも使えます。
+`flags` は `mount_flags.txt` の `[compaction]` の印のある行の置き換えです。**書かなかった項目は `mount_flags.txt` の値（本番の実効値。例: trigger 50）のまま**になるので、既定の組は delta の各設定に mode、`kaz-compaction-delta-trigger`、`kaz-compaction-delta-block-ratio` を全部書いています（block は mode だけで、ほかは `mount_flags.txt` のまま固定）。`test_no_inheritance_in_mount_args` が、各設定の mount のオプションが意図した値であることを確かめます。ファイルを書き換えれば組を変えられ、`--settings-file` で別のファイルも使えます（この旗は `suite` だけ。`run` は `settings.toml` 固定）。
 
 ## 3. mount_flags.txt の作り方（本番の実効値から）
 

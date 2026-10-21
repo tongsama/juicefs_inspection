@@ -2,6 +2,8 @@
 # name  : 結果の名前
 # mode  : compaction の mode（delta／block）。省略すると mount_flags.txt のまま
 # flags : mount_flags.txt の [compaction] の印のある行を置き換える値（先頭の -- は付けない）
+# 書かなかった項目は mount_flags.txt の値（本番の実効値）のまま。比較の基準がずれないよう、delta の設定は
+# mode、trigger、block-ratio を全部書く（block は mode だけ。ほかの値は mount_flags.txt のまま固定）。
 # 書き換え・追加・削除は自由。`jfsreplay suite --only 名前,名前` で一部だけ流せる。
 
 [[settings]]
@@ -12,22 +14,22 @@ flags = { "kaz-compaction-delta-trigger" = 99, "kaz-compaction-delta-block-ratio
 [[settings]]
 name = "trigger30"
 mode = "delta"
-flags = { "kaz-compaction-delta-trigger" = 30 }
+flags = { "kaz-compaction-delta-trigger" = 30, "kaz-compaction-delta-block-ratio" = 0.5 }
 
 [[settings]]
 name = "trigger50"
 mode = "delta"
-flags = { "kaz-compaction-delta-trigger" = 50 }
+flags = { "kaz-compaction-delta-trigger" = 50, "kaz-compaction-delta-block-ratio" = 0.5 }
 
 [[settings]]
 name = "trigger200"
 mode = "delta"
-flags = { "kaz-compaction-delta-trigger" = 200 }
+flags = { "kaz-compaction-delta-trigger" = 200, "kaz-compaction-delta-block-ratio" = 0.5 }
 
 [[settings]]
 name = "block-ratio75"
 mode = "delta"
-flags = { "kaz-compaction-delta-block-ratio" = 0.75 }
+flags = { "kaz-compaction-delta-trigger" = 99, "kaz-compaction-delta-block-ratio" = 0.75 }
 
 # 参考: ブロック単位の compaction
 [[settings]]

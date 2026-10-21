@@ -306,7 +306,7 @@ def main(argv=None):
     m = sp.add_parser("mark", help="今の時刻をラベル付きで記録する")
     m.add_argument("out")
     m.add_argument("label")
-    v = sp.add_parser("verify", help="記録の write のバイトを計測の staging_write_bytes と比べる")
+    v = sp.add_parser("verify", help="記録の全 inode の write の回数とバイトを、計測の fuse_written_size_bytes の増分と比べる")
     v.add_argument("out")
     v.add_argument("outdir")
     tv = sp.add_parser("testvol", help="試験の volume（一時の Redis、RTT の中継、format／mount）を操作する")

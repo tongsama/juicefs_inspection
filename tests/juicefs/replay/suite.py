@@ -169,25 +169,29 @@ def run_suite(trace, names, repeat=1, age=0, results_root=None, runner=None, sta
     base = os.path.join(results_root, stamp)
     os.makedirs(base, exist_ok=True)
     entries, stop = [], False
-    for name in names:
-        for i in range(1, repeat + 1):
-            label = name if repeat == 1 or i == 1 else "%s#%d" % (name, i)
-            out = os.path.join(base, label.replace("#", "-"))
-            log("== %s を流す ==" % label)
-            try:
-                res = runner(trace, name, out, age)
-            except Exception as e:  # 安全の確かめ・続けられないエラーも、その列の失敗として表に出して止める
-                res = {"status": "failed", "reasons": ["%s: %s" % (type(e).__name__, e)], "settle": None}
-            settle = res.get("settle") or {}
-            st = FAILED if res["status"] != "ok" else NOT_SETTLED if settle.get("state") == NOT_SETTLED else "ok"
-            entries.append({"label": label, "setting": name, "dir": out, "status": st,
-                            "reasons": list(res.get("reasons") or []), "settle": settle})
-            if st == FAILED:
-                stop = True
-                break
-        if stop:
-            break
     summary = os.path.join(base, "summary.md")
-    with open(summary, "w", encoding="utf-8") as f:
-        f.write(build_summary(entries, trace, age, stamp))
+    try:
+        for name in names:
+            for i in range(1, repeat + 1):
+                label = name if repeat == 1 or i == 1 else "%s#%d" % (name, i)
+                out = os.path.join(base, label.replace("#", "-"))
+                log("== %s を流す ==" % label)
+                try:
+                    res = runner(trace, name, out, age)
+                except Exception as e:  # 安全の確かめ・続けられないエラーも、その列の失敗として表に出して止める
+                    res = {"status": "failed", "reasons": ["%s: %s" % (type(e).__name__, e)], "settle": None}
+                settle = res.get("settle") or {}
+                st = FAILED if res["status"] != "ok" else NOT_SETTLED if settle.get("state") == NOT_SETTLED else "ok"
+                entries.append({"label": label, "setting": name, "dir": out, "status": st,
+                                "reasons": list(res.get("reasons") or []), "settle": settle})
+                if st == FAILED:
+                    stop = True
+                    break
+            if stop:
+                break
+    finally:  # Ctrl-C でも、終わった列までの表を残す
+        text = build_summary(entries, trace, age, stamp)
+        with open(summary, "w", encoding="utf-8") as f:
+            f.write(text)
+    stop = stop or any(e["status"] == FAILED for e in entries)  # 表を作れず失敗にした列も反映する
     return {"status": "failed" if stop else "ok", "summary": summary, "dir": base, "entries": entries}
