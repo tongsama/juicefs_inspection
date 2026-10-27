@@ -24,9 +24,9 @@ rclone の改修は `tongsama/rclone`（リモート名 `kaz`、upstream は `or
 
 - 配布先: [GitHub Releases](https://github.com/tongsama/juicefs_inspection/releases)。1つの Release に1製品・1版を置きます。
 - 製品ごとの絞り込み: [JuiceFS](https://github.com/tongsama/juicefs_inspection/releases?q=juicefs)、[rclone](https://github.com/tongsama/juicefs_inspection/releases?q=rclone)。
-- タグは `juicefs-v<版>-kaz.<n>`（JuiceFS の最新は `juicefs-v1.4.1-kaz.6`）と `rclone-v<版>-kaz.<n>`（最初の版は `rclone-v1.75.1-kaz.1`、2026-10-08 公開）です。
+- タグは `juicefs-v<版>-kaz.<n>`（JuiceFS の最新は `juicefs-v1.4.2-kaz.1`、2026-10-27 公開。本家 v1.4.2 ベース）と `rclone-v<版>-kaz.<n>`（最初の版は `rclone-v1.75.1-kaz.1`、2026-10-08 公開）です。
 - 古い形のタグ `v1.4.1-kaz.1`〜`.3` はそのまま残し、JuiceFS として扱います。最新の版を探すときも JuiceFS の候補に入ります。
-- 「Latest」の印は、既存の `v1.4.1-kaz.3` に残っています。新しい Release は印を付けない指定で作るため、`releases/latest` は使いません。install スクリプトは製品ごとに GitHub API で最新の版を探します。
+- 「Latest」の印は、2026-10-27 の公開で `juicefs-v1.4.2-kaz.1` に付いています（それまでは `v1.4.1-kaz.3`）。workflow は印を付けない指定で draft を作り、印は公開のときに決まります。2 製品で 1 つの印を共有するので、install スクリプトは `releases/latest` を使いません。install スクリプトは製品ごとに GitHub API で最新の版を探します。
 - 対象: `linux-amd64`、`linux-arm64`（aarch64）、`windows-amd64`。32bit ARM（armv7）と macOS は対象外です。
 - 各版のビルド元となる commit は [`release/juicefs/versions.json`](release/juicefs/versions.json) と [`release/rclone/versions.json`](release/rclone/versions.json) に、変更内容は各 `notes/` にあります。
 

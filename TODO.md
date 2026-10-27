@@ -23,6 +23,9 @@
   - [x] 2026-10-27 取り込みやすさのリファクタリング（計画 `docs/superpowers/plans/2026-10-27-kaz-upstream-friendly-refactor.md`、Task 0〜7）を本体 `refactor/kaz-upstream-friendly` で実施。upstream のファイルの差分 25 files +2,061 → 20 files +425、kaz が原因の衝突 13 → 9。最終レビューは「実機テスト後に merge 可」。報告書 9 章。
   - [x] 2026-10-27 ユーザーの実機テストで問題なし（テスト版 `~/.local/bin/kaz-test/juicefs-142-refactor-6c558773`）。ユーザーの指示で `refactor/kaz-upstream-friendly`（HEAD 4049d608）を `1.4.2-improve-kaz` へ `--no-ff` で merge（d246b0f7）。ユーザーの指示で `1.4.2-improve-kaz` を kaz へ push し、GitHub の既定ブランチを `1.4.2-improve-kaz` に切り替えた（2026-10-27）。項目ごとのブランチは push していない。worktree（juicefs-1.4.2-wt、juicefs-delta-wt）は削除し、`juicefs/` の checkout を `1.4.2-improve-kaz`（追跡先 kaz/1.4.2-improve-kaz）に切り替えた。
   - [x] 2026-10-27 `_common_options.mdx` の kaz の行を `docs/{en,zh_cn}/reference/kaz_options.md` へ移した（本体 647b0a59、衝突 9 → 6）。日本語版 `docs/ja/reference/kaz_options.md` も追加（4049d608。本家に日本語の docs はなく、kaz のページだけ）。
+  - [x] 2026-10-27 リリース: 調査リポジトリを commit（789bbb8 文書、a2e3912 release）して original へ push、タグ `juicefs-v1.4.2-kaz.1`（本体 d246b0f7）を push。release-juicefs の workflow は成功（run 40464374598）、draft を作成（linux amd64/arm64、windows amd64、install.sh/ps1、checksums）。linux-amd64 の checksum と `juicefs version`（1.4.2+2026-10-27.d246b0f7-kaz.1）を確認。
+  - [x] 2026-10-27 ユーザーが公開（07:08 UTC、Latest の印も付いた）。install.sh／install.ps1 の版の比較（major, minor, patch, kaz の数値の順）で、kaz.8 より新しい版として選ばれることを、公開中の一覧で確認した。
+  - [ ] 本番を 1.4.2-kaz.1 へ入れ替えたら、mount スクリプトと `tests/juicefs/mount_flags.txt` のフラグを新しい名前に直す（旧名でも動くが警告が出る）。
   - [ ] 1.5 系への追従のときに、`upload` の staging・`flush`・`commitThread` の移動と、`remove` の `scanned` の条件の見直し、phase の並びのテスト。
   - [ ] 取り込みやすさの改善 P1（upstream 関数に足した doc コメントを戻す、AGENTS.md の例外）→ P4（rerere）→ P2（埋め込み struct）→ P3（`*_kaz.go` へ移して hook 化、`RetireSlice` の番号、`WriteSlices` を任意の interface に）→ P6 → P5（upstream への PR 候補を分ける。PR はユーザー確認後）。
   - [x] 2026-10-27 findings に追記した: whole read は zstd では追加の効果がない（フラグ名は誤りで、内部の設定）。upstream の「上に重ねる」は、root でないと古い mount を強制的に外す。
