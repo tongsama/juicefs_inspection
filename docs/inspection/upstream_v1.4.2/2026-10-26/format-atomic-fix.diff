@@ -1,0 +1,76 @@
+diff --git a/pkg/meta/compaction_block_kaz_helpers_test.go b/pkg/meta/compaction_block_kaz_helpers_test.go
+index 86b73c5a..21942c22 100644
+--- a/pkg/meta/compaction_block_kaz_helpers_test.go
++++ b/pkg/meta/compaction_block_kaz_helpers_test.go
+@@ -170,7 +170,7 @@ func newKazBlockEnv(t *testing.T, backend string, blockKiB int) *kazBlockEnv {
+ 	t.Helper()
+ 	b := newGCTestBackend(t, backend)
+ 	b.Lock()
+-	b.fmt.BlockSize = blockKiB
++	b.getFormat().BlockSize = blockKiB
+ 	b.Unlock()
+ 	b.conf.KazCompactionMode = KazCompactionModeBlock
+ 	b.dSliceMu.Lock()
+diff --git a/pkg/meta/compaction_block_kaz_test.go b/pkg/meta/compaction_block_kaz_test.go
+index 4abd50ba..def2f5a2 100644
+--- a/pkg/meta/compaction_block_kaz_test.go
++++ b/pkg/meta/compaction_block_kaz_test.go
+@@ -189,7 +189,7 @@ func TestKazBlockCompactionTrash(t *testing.T) {
+ 		t.Run(backend, func(t *testing.T) {
+ 			e := newKazBlockEnv(t, backend, 4)
+ 			e.Lock()
+-			e.fmt.TrashDays = 1
++			e.getFormat().TrashDays = 1
+ 			e.Unlock()
+ 			inode := e.file(t)
+ 			e.write(t, inode, 0, 16*kazEB)
+@@ -233,7 +233,7 @@ func TestKazBlockCompactionUnusableBlockSize(t *testing.T) {
+ 			e.write(t, inode, kazEB+1, 10)
+ 			before := kazIDs(e.records(t, inode))
+ 			e.Lock()
+-			e.fmt.BlockSize = 0
++			e.getFormat().BlockSize = 0
+ 			e.Unlock()
+ 			require.Equal(t, before, kazIDs(kazRun(t, e, inode)))
+ 			require.Zero(t, e.store.callCount())
+diff --git a/pkg/meta/compaction_delta_kaz_test.go b/pkg/meta/compaction_delta_kaz_test.go
+index f9f15209..4488ae57 100644
+--- a/pkg/meta/compaction_delta_kaz_test.go
++++ b/pkg/meta/compaction_delta_kaz_test.go
+@@ -192,7 +192,7 @@ func TestKazDeltaPruneTrash(t *testing.T) {
+ 		t.Run(backend, func(t *testing.T) {
+ 			e := newKazDeltaEnv(t, backend)
+ 			e.Lock()
+-			e.fmt.TrashDays = 1
++			e.getFormat().TrashDays = 1
+ 			e.Unlock()
+ 			inode := e.file(t)
+ 			old := e.write(t, inode, 3*kazEB, kazEB)
+diff --git a/pkg/meta/tkv.go b/pkg/meta/tkv.go
+index fc8267dd..aa8a1c54 100644
+--- a/pkg/meta/tkv.go
++++ b/pkg/meta/tkv.go
+@@ -2718,7 +2718,7 @@ func (m *kvMeta) doWrite(ctx Context, inode Ino, indx uint32, off uint32, slice
+ // slices the chunk already holds (as doWrite does), and sets the chunk and the
+ // inode once.
+ func (m *kvMeta) doWriteSlices(ctx Context, inode Ino, indx uint32, slices []SliceWrite, mtime time.Time, numSlices *int, delta *dirStat, attr *Attr) syscall.Errno {
+-	if m.fmt.ChangeLog && len(slices) > 1 {
++	if m.getFormat().ChangeLog && len(slices) > 1 {
+ 		// genLog keys a record by the transaction ID, so several WRITE records in
+ 		// one transaction could overwrite each other; keep one record per write.
+ 		return errWriteSlicesFallback
+diff --git a/pkg/meta/write_slices_test.go b/pkg/meta/write_slices_test.go
+index 0d5bfdd1..93be7daa 100644
+--- a/pkg/meta/write_slices_test.go
++++ b/pkg/meta/write_slices_test.go
+@@ -399,8 +399,8 @@ func TestWriteSlicesSQLKeepsChunkBelowMaxSlices(t *testing.T) {
+ func TestWriteSlicesTKVChangeLogFallsBack(t *testing.T) {
+ 	m := newWriteSlicesMemKV(t)
+ 	b := m.getBase()
+-	b.fmt.ChangeLog = true
+-	defer func() { b.fmt.ChangeLog = false }()
++	b.getFormat().ChangeLog = true
++	defer func() { b.getFormat().ChangeLog = false }()
+ 	bw := b.en.(sliceBatchWriter)
+ 	_, f := createIn(t, m, "changelog")
+ 	var n int

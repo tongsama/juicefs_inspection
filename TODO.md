@@ -12,6 +12,22 @@
 
 ## 次の優先作業
 
+- [ ] **upstream v1.4.2 への追従（2026-10-26、調査済み・未実施）:** [調査報告](docs/inspection/upstream_v1.4.2/2026-10-26/port-investigation-ja.md)。kaz HEAD b6a0e24b に v1.4.2 を merge でき、衝突は cached_store.go・base.go・vfs.go の 3 ファイル。ほかに format の atomic 化（#7378）で TKV の `doWriteSlices` とテスト 4 ファイルが build できない（`getFormat()` に置き換える）。#7500／#7503／#7509 と同じ不具合が kaz HEAD にあり（#7500 は再現済み）、upstream の形を採る。2026-10-27 ユーザーの判断で、本家のタグごとにブランチを切り、前の kaz を merge する形にした。本体 `1.4.2-improve-kaz`（起点 v1.4.2、worktree `/home/kwatanabe/tmp_local/juicefs-1.4.2-wt`）に merge して衝突を解消し、whole read の注記と `--kaz-upgrade-busy`（既定 fail）を足した。テストは ok（報告 6 章）。
+  - [x] 2026-10-27 本体を commit した（ユーザー承認）。項目ごとのブランチ（`port/kaz-onto-v1.4.2`、`docs/kaz-whole-read-compressed`、`feat/kaz-upgrade-busy`）を `1.4.2-improve-kaz` へ `--no-ff` で merge した。HEAD は `97254d5d`。
+  - [ ] push、既定ブランチの切り替え、`juicefs-v1.4.2-kaz.1` の release は、それぞれユーザーに確認してから行う。調査リポジトリの文書の commit も確認待ち。
+  - 2026-10-27 ユーザー方針: 本家へ PR は出さない。提案 P5（upstream-fix の分離）は行わない。
+  - [x] 2026-10-27 P1 を本体 `refactor/kaz-upstream-comments`（1.4.2-improve-kaz から、未 commit）で実施。upstream の関数の直前の kaz の doc コメント 49 か所を元に戻し、関数の中の kaz の変更行の上に `// kaz:` を 39 か所入れた（コメントと空行だけの変更）。本家 main との衝突ブロックのうち kaz が原因の分は 16 → 13。調査リポジトリの AGENTS.md の例外の文面はユーザーの承認待ち。
+  - [x] 2026-10-27 P4: 本体で `rerere.enabled=true`、v1.4.2 の解消を学習。手順書とスクリプトは `docs/development/upstream-sync/`。
+  - [x] 2026-10-27 kaz- の接頭辞が付いていない kaz のフラグ 9 個（compaction-gc-mode、compaction-scheduler、writeback-fsync、slice-flush-wait、slice-flush-idle、writer-reuse-window、writer-flush-timeout、writer-flush-scope、meta-write-batch）を `kaz-` に改名した（本体 `feat/kaz-flag-prefix`、未 commit）。旧名は別名として残り、使うと起動時に警告が出る。実際の mount で旧名の値が `.config` に入ることを確認した。
+  - [ ] 1.4.2 系を本番に入れるときに、本番の mount スクリプトと `tests/juicefs/mount_flags.txt`（44〜52 行）を新しい名前に切り替える。旧名のままでも動くが、警告が出る。kaz.8 以前のバイナリには新しい名前がないので、バイナリより先にスクリプトを変えない。旧名の別名は、何版か後に消す。
+  - [x] 2026-10-27 取り込みやすさのリファクタリング（計画 `docs/superpowers/plans/2026-10-27-kaz-upstream-friendly-refactor.md`、Task 0〜7）を本体 `refactor/kaz-upstream-friendly` で実施。upstream のファイルの差分 25 files +2,061 → 20 files +425、kaz が原因の衝突 13 → 9。最終レビューは「実機テスト後に merge 可」。報告書 9 章。
+  - [x] 2026-10-27 ユーザーの実機テストで問題なし（テスト版 `~/.local/bin/kaz-test/juicefs-142-refactor-6c558773`）。ユーザーの指示で `refactor/kaz-upstream-friendly`（HEAD 4049d608）を `1.4.2-improve-kaz` へ `--no-ff` で merge（d246b0f7）。ユーザーの指示で `1.4.2-improve-kaz` を kaz へ push し、GitHub の既定ブランチを `1.4.2-improve-kaz` に切り替えた（2026-10-27）。項目ごとのブランチは push していない。worktree（juicefs-1.4.2-wt、juicefs-delta-wt）は削除し、`juicefs/` の checkout を `1.4.2-improve-kaz`（追跡先 kaz/1.4.2-improve-kaz）に切り替えた。
+  - [x] 2026-10-27 `_common_options.mdx` の kaz の行を `docs/{en,zh_cn}/reference/kaz_options.md` へ移した（本体 647b0a59、衝突 9 → 6）。日本語版 `docs/ja/reference/kaz_options.md` も追加（4049d608。本家に日本語の docs はなく、kaz のページだけ）。
+  - [ ] 1.5 系への追従のときに、`upload` の staging・`flush`・`commitThread` の移動と、`remove` の `scanned` の条件の見直し、phase の並びのテスト。
+  - [ ] 取り込みやすさの改善 P1（upstream 関数に足した doc コメントを戻す、AGENTS.md の例外）→ P4（rerere）→ P2（埋め込み struct）→ P3（`*_kaz.go` へ移して hook 化、`RetireSlice` の番号、`WriteSlices` を任意の interface に）→ P6 → P5（upstream への PR 候補を分ける。PR はユーザー確認後）。
+  - [x] 2026-10-27 findings に追記した: whole read は zstd では追加の効果がない（フラグ名は誤りで、内部の設定）。upstream の「上に重ねる」は、root でないと古い mount を強制的に外す。
+  - [ ] VM が動いている状態で graceful upgrade が busy になるかを、試験の suite で確かめる（未検証）。
+
 - [ ] **長時間の稼働でキャッシュが入れ替わり、起動が遅くなる（2026-10-19、ユーザー報告、検討中）:** 仮説 H1（無効なブロックが容量を占める）、H2（書き込みと compaction の出力が LRU の先頭に入り、起動用のブロックを押し出す。ソース上はこちらが有力）、H3（キャッシュミス以外が原因）。計測案 A-1〜A-3（読み取りのみ）と対策案（早期回収、2Q の受け入れ方針）は agent_memo 2026-10-19。**前提（ユーザー方針）:** 無改良の JuiceFS との互換性を保つ（キャッシュのファイル名・配置・形式は変えない、追加の状態は無改良版が無視でき、無いときは従来の LRU で動く）、upstream の更新に載せ直しやすい作り。
   - [x] 2026-10-19 A-2（[報告](docs/inspection/cache_churn/2026-10-19/report-ja.md)）: 無効な容量は約 1.3 GiB（7%）、dead 0。H1 は小さい。
   - [ ] A-1 の時系列（`metrics.tsv`、5 分間隔で常駐、PID 197922）から、アイドル中の流入の速さと 20G が一周する時間を見積もる。

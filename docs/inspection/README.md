@@ -25,4 +25,5 @@ JuiceFS 本体（`juicefs/`）と rclone 本体（`rclone/`）以外の、調査
 | cache_churn | 2026-10-19〜20 | 長時間の稼働でキャッシュが入れ替わる件。metrics の定期取得、キャッシュの中身の生死の内訳、kaz-2q の実機の判定、夜間の compaction の量の解析 | [報告](cache_churn/2026-10-19/report-ja.md)、[夜間の compaction](cache_churn/2026-10-20/compaction-overnight-ja.md) |
 | delta_slice | 2026-10-20 | 差分 slice 方式（同じ chunk の小さい書き込みを 1 つの slice に集め、複数の record で参照する compaction）の実現可能性。参照数、読み込み、compaction、gc、改造していない client との互換、壊れ方の一覧（ソースの読み取りのみ） | [調査報告](delta_slice/2026-10-20/feasibility-ja.md) |
 | kaz_measure_replay_suite | 2026-10-21 | 計測と流し直しの suite（`tests/juicefs/`）。本番の計測、write の記録と試験の volume への流し直し、compaction の設定 6 つを 1 枚の表で比べる | [README](../../tests/juicefs/README-ja.md)、[設計](../superpowers/specs/2026-10-21-kaz-measure-replay-suite-design.md) |
+| upstream_v1.4.2 | 2026-10-26 | kaz の改修を upstream v1.4.2 へ載せるときの衝突、upstream を採る重複の修正、意味の衝突（format の atomic 化）、今後取り込みやすくする改善提案 | [調査報告](upstream_v1.4.2/2026-10-26/port-investigation-ja.md) |
 | doc_migration_2026-10-03 | 2026-10-03 | 調査文書を本体リポジトリから分離したときの移設と確認の記録 | [ディレクトリ](doc_migration_2026-10-03/) |

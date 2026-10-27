@@ -1,0 +1,211 @@
+diff --cc pkg/chunk/cached_store.go
+index f968806c,accb7e0e..00000000
+--- a/pkg/chunk/cached_store.go
++++ b/pkg/chunk/cached_store.go
+@@@ -774,58 -703,13 +774,72 @@@ func logRequest(typeStr, key, param, re
+  
+  var errTryFullRead = errors.New("try full read")
+  
+ +// headerTimeoutMemory is how long a key cut by GetHeaderTimeout is remembered.
+ +var headerTimeoutMemory = 5 * time.Minute
+ +
+ +// maxHeaderTimedOut bounds the number of remembered keys.
+ +const maxHeaderTimedOut = 4096
+ +
+ +// headerTimedOutRecently reports whether key was cut by GetHeaderTimeout within
+ +// headerTimeoutMemory, forgetting it once that has passed.
+ +func (store *cachedStore) headerTimedOutRecently(key string) bool {
+ +	store.headerTimedOutMu.Lock()
+ +	defer store.headerTimedOutMu.Unlock()
+ +	t, ok := store.headerTimedOut[key]
+ +	if ok && time.Since(t) > headerTimeoutMemory {
+ +		delete(store.headerTimedOut, key)
+ +		return false
+ +	}
+ +	return ok
+ +}
+ +
+ +// rememberHeaderTimeout records that key was cut by GetHeaderTimeout.
+ +// When too many keys are remembered, the expired ones are dropped first and,
+ +// if that is not enough, all of them.
+ +func (store *cachedStore) rememberHeaderTimeout(key string) {
+ +	store.headerTimedOutMu.Lock()
+ +	defer store.headerTimedOutMu.Unlock()
+ +	if store.headerTimedOut == nil {
+ +		store.headerTimedOut = make(map[string]time.Time)
+ +	}
+ +	if len(store.headerTimedOut) >= maxHeaderTimedOut {
+ +		for k, t := range store.headerTimedOut {
+ +			if time.Since(t) > headerTimeoutMemory {
+ +				delete(store.headerTimedOut, k)
+ +			}
+ +		}
+ +		if len(store.headerTimedOut) >= maxHeaderTimedOut {
+ +			clear(store.headerTimedOut)
+ +		}
+ +	}
+ +	store.headerTimedOut[key] = time.Now()
+ +}
+ +
+ +// forgetHeaderTimeout drops key once it has been downloaded.
+ +func (store *cachedStore) forgetHeaderTimeout(key string) {
+ +	store.headerTimedOutMu.Lock()
+ +	defer store.headerTimedOutMu.Unlock()
+ +	delete(store.headerTimedOut, key)
+ +}
+ +
+ +// errGetHeaderTimeout reports a full-block GET abandoned by GetHeaderTimeout.
+ +var errGetHeaderTimeout = errors.New("no response headers within --kaz-get-header-timeout")
+ +
+- func (store *cachedStore) loadRange(ctx context.Context, key string, page *Page, off int) (n int, err error) {
+++// getResult holds what one GET callback produced. The callback fills its own
+++// copy and the caller adopts it only when utils.WithTimeout reports success, so
+++// a callback abandoned by a timeout or cancel can neither race with the caller
+++// nor turn a failed read into a success (upstream #7500).
++ type getResult struct {
++ 	n     int
++ 	reqID string
++ 	sc    string
++ }
++ 
+++// loadRange reads len(page.Data) bytes of key at off with a range GET.
+++// It returns errTryFullRead only for failures after which a full read is safe;
+++// a timeout is returned as is, because the abandoned GET may still be writing
+++// into page (upstream #7509/#7520).
++ func (store *cachedStore) loadRange(ctx context.Context, key string, page *Page, off int) (int, error) {
+  	p := page.Data
+  	fullPage, err := store.group.TryPiggyback(key)
+  	if fullPage != nil {
+@@@ -863,15 -748,16 +878,18 @@@
+  	if errors.Is(err, context.Canceled) {
+  		return 0, err
+  	}
+- 	store.objectDataBytes.WithLabelValues("GET", sc).Add(float64(n))
+- 	store.objectReqsHistogram.WithLabelValues("GET", sc).Observe(used.Seconds())
++ 	store.objectDataBytes.WithLabelValues("GET", res.sc).Add(float64(res.n))
++ 	store.objectReqsHistogram.WithLabelValues("GET", res.sc).Observe(used.Seconds())
+  	if err == nil {
+ -		store.fetcher.fetch(key)
+ +		if !store.kazCompactionRead(ctx) {
+ +			store.fetcher.fetch(key)
+ +		}
+- 		return n, nil
++ 		return res.n, nil
+  	}
+  	store.objectReqErrors.Add(1)
++ 	if errors.Is(err, utils.ErrFuncTimeout) {
++ 		return 0, err
++ 	}
+  	// fall back to full read
+  	return 0, errTryFullRead
+  }
+@@@ -1062,35 -793,39 +1077,39 @@@ func (store *cachedStore) fetchBlock(ct
+  	err = utils.WithTimeout(ctx, func(cCtx context.Context) error {
+  		defer p.Release()
+  		// it will be retried in the upper layer.
+- 		in, err = store.getWithHeaderTimeout(cCtx, key, object.WithRequestID(&reqID), object.WithStorageClass(&sc))
+- 		if err == nil {
+- 			n, err = io.ReadFull(in, p.Data)
+ -		in, getErr := store.storage.Get(cCtx, key, 0, -1, object.WithRequestID(&tmp.reqID), object.WithStorageClass(&tmp.sc))
+++		in, getErr := store.getWithHeaderTimeout(cCtx, key, object.WithRequestID(&tmp.reqID), object.WithStorageClass(&tmp.sc))
++ 		if getErr == nil {
++ 			tmp.n, getErr = io.ReadFull(in, p.Data)
+  			_ = in.Close()
+  		}
+- 		if compressed && err == io.ErrUnexpectedEOF {
+- 			err = nil
++ 		if compressed && getErr == io.ErrUnexpectedEOF {
++ 			getErr = nil
+  		}
+- 		return err
++ 		return getErr
+  	}, store.conf.GetTimeout)
+  	if errors.Is(err, context.Canceled) {
+  		return err
+  	}
+  	used := time.Since(start)
+- 	logRequest("GET", key, "", reqID, err, used)
++ 	res := getResult{sc: object.DefaultStorageClass}
++ 	if err == nil {
++ 		res = tmp
++ 	}
++ 	logRequest("GET", key, "", res.reqID, err, used)
+  	if store.downLimit != nil && compressed {
+- 		store.downLimit.Wait(int64(n))
++ 		store.downLimit.Wait(int64(res.n))
+  	}
+- 	store.objectDataBytes.WithLabelValues("GET", sc).Add(float64(n))
+- 	store.objectReqsHistogram.WithLabelValues("GET", sc).Observe(used.Seconds())
++ 	store.objectDataBytes.WithLabelValues("GET", res.sc).Add(float64(res.n))
++ 	store.objectReqsHistogram.WithLabelValues("GET", res.sc).Observe(used.Seconds())
+  	if err != nil {
+  		store.objectReqErrors.Add(1)
+ -		return fmt.Errorf("get %s: %s", key, err)
+ +		return fmt.Errorf("get %s: %w", key, err)
+  	}
+  	if compressed {
+- 		n, err = store.compressor.Decompress(page.Data, p.Data[:n])
++ 		res.n, err = store.compressor.Decompress(page.Data, p.Data[:res.n])
+  	}
+- 	if err != nil || n < len(page.Data) {
+- 		return fmt.Errorf("read %s fully: %v (%d < %d) after %s", key, err, n, len(page.Data), used)
++ 	if err != nil || res.n < len(page.Data) {
++ 		return fmt.Errorf("read %s fully: %v (%d < %d) after %s", key, err, res.n, len(page.Data), used)
+  	}
+  	if cache {
+  		store.bcache.cache(key, page, forceCache, !store.conf.OSCache)
+diff --cc pkg/meta/base.go
+index 646c78d9,471c55d3..00000000
+--- a/pkg/meta/base.go
++++ b/pkg/meta/base.go
+@@@ -778,7 -777,13 +791,14 @@@ func (m *baseMeta) newSessionInfo() []b
+  	return buf
+  }
+  
++ func (m *baseMeta) currentSessionInfo() []byte {
++ 	if data := m.sessionJSON.Load(); data != nil {
++ 		return data.([]byte)
++ 	}
++ 	return m.newSessionInfo()
++ }
++ 
+ +// NewSession attaches session workers and optional request-derived compaction scheduling.
+  func (m *baseMeta) NewSession(record bool) error {
+  	m.sessCtx = Background()
+  	ctx := m.sessCtx
+diff --cc pkg/vfs/vfs.go
+index 6d14fa5b,5ef373e9..00000000
+--- a/pkg/vfs/vfs.go
++++ b/pkg/vfs/vfs.go
+@@@ -121,9 -121,9 +121,10 @@@ type SecurityConfig struct 
+  	EnableSELinux bool
+  }
+  
+ +// Config controls VFS caching, write scheduling and flush completion policy.
+  type Config struct {
+- 	Meta                 *meta.Config
++ 	Meta *meta.Config
++ 	// Format is the startup snapshot; Meta.GetFormat returns the current one
+  	Format               meta.Format
+  	Chunk                *chunk.Config
+  	Security             *SecurityConfig
+@@@ -600,7 -589,18 +596,19 @@@ func (v *VFS) Open(ctx Context, ino Ino
+  	return
+  }
+  
++ // marshalConf renders the config with the latest format on a private copy.
++ func (v *VFS) marshalConf() []byte {
++ 	conf := *v.Conf
++ 	conf.Format = v.Meta.GetFormat()
++ 	if v.UpdateFormat != nil {
++ 		v.UpdateFormat(&conf.Format)
++ 	}
++ 	conf.Format.RemoveSecret()
++ 	data, _ := json.MarshalIndent(&conf, "", " ")
++ 	return data
++ }
++ 
+ +// Truncate flushes pending writes before changing file length.
+  func (v *VFS) Truncate(ctx Context, ino Ino, size int64, fh uint64, attr *Attr) (err syscall.Errno) {
+  	// defer func() { logit(ctx, "truncate (%d,%d): %s", ino, size, strerr(err)) }()
+  	if IsSpecialNode(ino) {

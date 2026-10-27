@@ -244,3 +244,10 @@ DEBUGはログ容量の約99.7〜99.9%、正常checksum DEBUGだけで60〜72%�
 - [未検証] 複数の晩での再現、ゲストの書き込みの場所が違うときの差。
 - [観測、試験 1 回ずつ] 本番の書き込みを記録して流し直す試験で、`--kaz-compaction-delta-trigger` を 99 から 30 に下げると、PUT の回数が約 16% 減った（7,493 → 6,305）。アップロード前に片付けた slice は 13,151 から 14,161 に増え、DELETE の回数は少し増えた。block モードの compaction の出力は、delta の約 4.5 倍（[比較](inspection/delta_slice/2026-10-21-suite/README-ja.md)）。
 - **訂正（2026-10-21）**: 差分 slice 方式の「PUT 約 9 割減」は compaction の出力の PUT だけの見積もりだった。PUT の回数の約 93% は staging のアップロード（ゲストの書き込みの slice）で、compaction は約 7%（10/20 12:28〜14:03 の本番、28,002 回中 1,887 回）。差分方式は compaction のバイトと回数を減らすが、PUT 全体の回数はほとんど変えない。回数を減らすには、アップロード前の片付け（retire）を増やすか、staging のアップロードを減らす手が要る。
+- **[ソースで確認、2026-10-26]** delta モードの「小さい object を丸ごと取る」（内部の設定 `KazWholeReadMax`、1 MiB。delta モードのときだけ入る。単独のフラグはない）は、圧縮していない volume でだけ意味がある。lz4 や zstd の volume では `seekable` が false（`cached_store.go` の `CompressBound(0) == 0`）になり、キャッシュミスは最初から常に object 全体の GET だからである。本番の zstd では追加の効果も害もない。`--kaz-compaction-mode` の help に記載した（本体 `1.4.2-improve-kaz`）。
+- **[実 FUSE で観測、2026-10-27] upstream の graceful upgrade の「mount on top of it」:** 引き継ぎに失敗したときの動きは、root かどうかで分かれる。
+  - root なら、2 重 mount になる。
+  - root でなければ、fusermount が重ねる mount を拒否する。すると supervisor の再起動ループが古い mount を強制的に外し（`doUmount(mp, true)`）、新しい mount に置き換える。
+  - v1.4.2 では、busy で引き継ぎを諦めたときもこの経路を通る。v1.4.1 では、3 秒後に処理中の request を中断する（EINTR）。
+  - 本体 `1.4.2-improve-kaz` の `--kaz-upgrade-busy=fail`（既定）は、まだ動いている JuiceFS の mount の上には mount せず、エラーで終わる。詳細は [調査報告 6 章](inspection/upstream_v1.4.2/2026-10-26/port-investigation-ja.md#6-実施2026-10-27)。
+  - kaz.8（v1.4.1 ベース）の本番では、VM が動いている mountpoint に `juicefs mount` を実行しない。
