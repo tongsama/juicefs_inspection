@@ -25,7 +25,7 @@ bucket = "juicefs-kaz-test"
 [common]
 redis_compose_file = "replay/docker-compose.yml"  # 試験の Redis の compose（tests/juicefs からの相対）
 redis_compose_project = "jfs-kaz-test"  # 固定の project 名（他の compose と衝突させない）
-test_binary = "~/.local/bin/kaz-test/juicefs-delta-7336466c"
+test_binary = "~/.local/bin/kaz-test/juicefs-pack-145fc631"
 rtt_proxy_addr = "127.0.0.1:16380"
 rtt_one_way_ms = 5
 seed_limit_gib = 32

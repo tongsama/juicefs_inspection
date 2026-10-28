@@ -33,6 +33,9 @@ PROD_FORMAT_FALLBACK = (4096, "zstd")
 VOLUME_NAME = "juicefs-kaz-test"
 META_DB = 1
 COMPACTION_PREFIX = "kaz-compaction-"
+# kaz: staging pack の bool フラグ。mount_flags.txt には書かず（古い binary は知らない）、settings で true にしたときだけ末尾に足す。
+# debug は原因を調べる短い試験のためのもの（log が大きくなるので比べる試験では使わない）
+EXTRA_SETTINGS_FLAGS = ("kaz-staging-pack", "kaz-skip-unuploaded-delete", "debug")
 
 
 class SafetyError(Exception):
@@ -183,7 +186,7 @@ def safety_check(profile, spec=None, prod=None, prod_redis=None, mount_script=MO
 @dataclasses.dataclass(frozen=True)
 class MountFlag:
     """mount_flags.txt の 1 行。name は先頭の - を除いた名前、value は値（無ければ None）、
-    eq は --name=value の形か、mark は "compaction"／"test"／""。"""
+    eq は --name=value の形か、mark は "compaction"／"kaz"／"test"／""。"""
     name: str
     value: object
     eq: bool
@@ -209,14 +212,20 @@ def _fmt(v):
     return str(v)
 
 
+# settings で置き換えられる行の印（[kaz] は kaz の機能を外した vanilla 相当との比べのため）
+SETTINGS_MARKS = ("compaction", "kaz")
+
+
 def read_mount_flags(path=FLAGS_PATH):
-    """mount_flags.txt を MountFlag の list にする。# 以降は注釈で、[compaction]／[test] の印を読む。
+    """mount_flags.txt を MountFlag の list にする。# 以降は注釈で、[compaction]／[kaz]／[test] の印を読む。
     行の続き（\\）や、1 行に複数のオプションは ValueError（今回の mount スクリプトの件の再発防止）。"""
     out = []
     with open(path, encoding="utf-8") as f:
         for n, line in enumerate(f, 1):
             body, _, comment = line.partition("#")
-            mark = "compaction" if "[compaction]" in comment else "test" if "[test]" in comment else ""
+            # kaz: [kaz] は kaz の機能の行（vanilla との比べで settings が置き換え・削除できる）
+            mark = ("compaction" if "[compaction]" in comment else "kaz" if "[kaz]" in comment
+                    else "test" if "[test]" in comment else "")
             if "\\" in body:
                 raise ValueError("%s:%d: 行の続き（\\）は使えない" % (path, n))
             toks = shlex.split(body)
@@ -245,17 +254,17 @@ def _settings_flags(settings):
 
 def build_mount_args(path, settings, test_values=None):
     """mount_flags.txt と settings から juicefs mount のオプションの列を作る（--background、--log、
-    --cache-dir、META、mountpoint は含めない）。settings で変えられるのは [compaction] の行と、
-    本番の mount に無い kaz-compaction-* だけ（末尾に足す）。test_values は [test] の行だけを置き換える。"""
+    --cache-dir、META、mountpoint は含めない）。settings で変えられるのは [compaction]／[kaz] の行と、
+    本番の mount に無い kaz-compaction-* と EXTRA_SETTINGS_FLAGS だけ（末尾に足す）。test_values は [test] の行だけを置き換える。"""
     entries = read_mount_flags(path)
     comp = _settings_flags(settings)
     test_values = dict(test_values or {})
     by_name = {e.name: e for e in entries}
     for k in comp:
         e = by_name.get(k)
-        if e is not None and e.mark != "compaction":
+        if e is not None and e.mark not in SETTINGS_MARKS:
             raise ValueError("compaction 以外の設定は settings で変えられない: %s" % k)
-        if e is None and not k.startswith(COMPACTION_PREFIX):
+        if e is None and not (k.startswith(COMPACTION_PREFIX) or k in EXTRA_SETTINGS_FLAGS):
             raise ValueError("compaction の設定ではない: %s" % k)
     for k in test_values:
         e = by_name.get(k)
@@ -263,7 +272,7 @@ def build_mount_args(path, settings, test_values=None):
             raise ValueError("[test] の印の無い行は試験の値で変えられない: %s" % k)
     args = []
     for e in entries:
-        args += e.tokens(comp.get(e.name) if e.mark == "compaction" else test_values.get(e.name))
+        args += e.tokens(comp.get(e.name) if e.mark in SETTINGS_MARKS else test_values.get(e.name))
     for k, v in comp.items():
         if k not in by_name:
             args += MountFlag(k, None, False, "compaction").tokens(v)

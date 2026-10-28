@@ -8,6 +8,9 @@
 #
 # 印:
 #   [compaction] … settings（mode／flags）の値で置き換えてよい行。それ以外の行は置き換えない。
+#                  compaction の行のほか、比べるために upload-delay も置き換えてよい（2026-10-28）。
+#   [kaz]        … kaz の機能の行（kaz-2q のキャッシュを含む）。vanilla 相当と比べるために settings で
+#                  置き換え・削除（false）してよい（2026-10-28）。writeback-fsync は vanilla でも有効にするので印を付けない。
 #   [test]       … 試験の volume の値（本番と別にする）。testvol が spec の値で置き換える。
 #
 # 試験では入れないもの: --log、--cache-dir、mountpoint、--background（testvol が試験の path で足す）。
@@ -26,12 +29,12 @@
 --writeback
 --writeback-threshold-size 4194305
 --cache-size 20480
---cache-eviction kaz-2q
+--cache-eviction kaz-2q                                      # [kaz]
 --cache-expire 0
 --cache-large-write
 --verify-cache-checksum extend
 --free-space-ratio 0.2
---upload-delay 0
+--upload-delay 0                                             # [compaction]
 --max-uploads 18
 --max-stage-write 0
 --max-downloads 60
@@ -41,23 +44,23 @@
 --io-retries 5
 
 # 本番の JUICEFS_CUSTOM_OPTIONS
---slice-flush-wait 30s
---slice-flush-idle 16s
---writer-flush-timeout 0s
---compaction-gc-mode deferred
---compaction-scheduler priority
---writer-reuse-window 32
+--slice-flush-wait 30s                                       # [kaz]
+--slice-flush-idle 16s                                       # [kaz]
+--writer-flush-timeout 0s                                    # [kaz]
+--compaction-gc-mode deferred                                # [kaz]
+--compaction-scheduler priority                              # [kaz]
+--writer-reuse-window 32                                     # [kaz]
 --writeback-fsync
---writer-flush-scope=range
---meta-write-batch=64
---kaz-finish-canceled-get
---kaz-get-header-timeout 10s
+--writer-flush-scope=range                                   # [kaz]
+--meta-write-batch=64                                        # [kaz]
+--kaz-finish-canceled-get                                    # [kaz]
+--kaz-get-header-timeout 10s                                 # [kaz]
 --kaz-compaction-read-min 100                                # [compaction]
---kaz-cache-probation-ratio 0.25
---kaz-cache-compaction-placement share
---kaz-cache-compaction-placement-share-ratio 0.5
---kaz-cache-demote-unread-first
---kaz-cache-compaction-hot-age 30m
+--kaz-cache-probation-ratio 0.25                             # [kaz]
+--kaz-cache-compaction-placement share                       # [kaz]
+--kaz-cache-compaction-placement-share-ratio 0.5             # [kaz]
+--kaz-cache-demote-unread-first                              # [kaz]
+--kaz-cache-compaction-hot-age 30m                           # [kaz]
 --kaz-compaction-mode delta                                  # [compaction]
 --kaz-compaction-delta-min-file-size 1G                      # [compaction]
 --kaz-compaction-delta-trigger 50                            # [compaction]

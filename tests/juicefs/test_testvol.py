@@ -270,6 +270,15 @@ class TestMountFlags(unittest.TestCase):
         for bad in ({"flags": {"max-uploads": 50}}, {"flags": {"metrics": "127.0.0.1:9567"}}):
             with self.subTest(bad=bad), self.assertRaises(ValueError):
                 testvol.build_mount_args(FLAGS, bad)
+        # kaz: [kaz] の印の行は、kaz の機能を外した比べのために値で置き換えたり false で消したりできる
+        kaz = [e.name for e in base if e.mark == "kaz"]
+        self.assertIn("cache-eviction", kaz)
+        self.assertIn("kaz-finish-canceled-get", kaz)
+        self.assertNotIn("writeback-fsync", kaz)
+        a4 = testvol.build_mount_args(FLAGS, {"flags": {"cache-eviction": "lru", "kaz-finish-canceled-get": False}})
+        self.assertEqual(a4[a4.index("--cache-eviction") + 1], "lru")
+        self.assertNotIn("--kaz-finish-canceled-get", a4)
+        self.assertEqual(len(a4), len(a0) - 1)
         # [test] の行は試験の値で置き換わる
         a3 = testvol.build_mount_args(FLAGS, {}, test_values={"metrics": "127.0.0.1:19568"})
         self.assertEqual(a3[a3.index("--metrics") + 1], "127.0.0.1:19568")

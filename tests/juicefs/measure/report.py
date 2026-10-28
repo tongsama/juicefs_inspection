@@ -1,5 +1,6 @@
 """計測の記録（metrics.tsv、llen.tsv、config.json）から表を作る。progress／compare の本体。
-counter の差は lib.metrics_io.delta（mount のし直しで 0 に戻る分は足し合わせ、窓の始まりは a 以後の最初のサンプル）で取る。"""
+counter の差は lib.metrics_io.delta（mount のし直しで 0 に戻る分は足し合わせ、窓の始まりは a 以後の最初のサンプル。
+記録の途中で初めて現れた系列は、現れる前を 0 とみなす）で取る。"""
 import collections
 import json
 import os
@@ -48,14 +49,20 @@ def sample_times(m):
     return sorted({t for v in m.values() for t, _ in v})
 
 
+def _first_time(m):
+    """記録の最初のサンプルの時刻（これより後に現れた系列は、現れる前を 0 とみなす）。"""
+    return min((v[0][0] for v in m.values() if v), default=None)
+
+
 def _D(m, name, a, b):
-    """系列 name の窓 [a, b] の増分（無ければ 0）。"""
-    return metrics_io.delta(m.get(name, []), a, b)
+    """系列 name の窓 [a, b] の増分（無ければ 0）。窓の中で生まれた系列は 0 から数える。"""
+    return metrics_io.delta(m.get(name, []), a, b, born_after=_first_time(m))
 
 
 def _Dsum(m, base, a, b):
     """name が base、または base{...} の系列すべての増分の合計。"""
-    return sum(metrics_io.delta(v, a, b) for k, v in m.items() if k == base or k.startswith(base + "{"))
+    t0 = _first_time(m)
+    return sum(metrics_io.delta(v, a, b, born_after=t0) for k, v in m.items() if k == base or k.startswith(base + "{"))
 
 
 def _last(m, name, a, b):

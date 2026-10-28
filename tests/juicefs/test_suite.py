@@ -33,7 +33,7 @@ def _fake_result(dirpath, put, comp, status="ok", config=None):
 class SuiteTest(unittest.TestCase):
     def test_settings_default_six(self):
         got = [(s["name"], s["mode"], s["flags"]) for s in suite.load_all_settings(os.path.join(HERE, "settings.toml"))]
-        self.assertEqual([g[0] for g in got], ["default", "trigger30", "trigger50", "trigger200", "block-ratio75", "block"])
+        self.assertEqual([g[0] for g in got], ["default", "trigger30", "trigger50", "trigger200", "block-ratio75", "pack", "skipdel", "pack-skipdel", "trigger30-delay1", "skipdel-delay1", "pack-skipdel-delay1", "pack-skipdel-delay2", "pack-skipdel-delay5", "t50-pack-skipdel-delay5", "t100-pack-skipdel-delay5", "vanilla", "kaz-all", "block"])
         d = dict((g[0], g) for g in got)
         self.assertEqual(d["default"][2], {"kaz-compaction-delta-trigger": 99, "kaz-compaction-delta-block-ratio": 0.5})
         self.assertEqual(d["trigger30"][2], {"kaz-compaction-delta-trigger": 30, "kaz-compaction-delta-block-ratio": 0.5})
@@ -52,15 +52,24 @@ class SuiteTest(unittest.TestCase):
             args = testvol.build_mount_args(testvol.FLAGS_PATH, s)
             got = {}
             for i, a in enumerate(args):
-                if a.startswith("--kaz-compaction-"):
+                if a.startswith("--kaz-compaction-") or a.startswith("--upload-delay"):
                     k, eq, v = a[2:].partition("=")
                     got[k] = v if eq else args[i + 1]
             want = dict(base)
-            want["kaz-compaction-mode"] = s["mode"]
-            want.update({k: str(v) for k, v in s["flags"].items()})
+            if s["mode"]:
+                want["kaz-compaction-mode"] = s["mode"]
+            # kaz: upload-delay も [compaction] の印の行なので、settings の値で置き換わる
+            want.update({k: str(v) for k, v in s["flags"].items() if k.startswith("kaz-compaction-") or k == "upload-delay"})
+            # kaz: false の値はその行を消す（vanilla 相当）
+            for k in [k for k, v in want.items() if v == "False"]:
+                del want[k]
+                self.assertNotIn("--" + k, args, (s["name"], k))
+            for k in testvol.EXTRA_SETTINGS_FLAGS:  # bool は true のときだけ値なしで付き、false／未指定なら付かない
+                self.assertEqual(("--" + k in args), s["flags"].get(k) is True, (s["name"], k))
             self.assertEqual({k: got[k] for k in want}, want, s["name"])
             if s["mode"] == "delta":
-                self.assertEqual(set(s["flags"]), {"kaz-compaction-delta-trigger", "kaz-compaction-delta-block-ratio"})
+                # kaz: staging pack／skip-unuploaded-delete の設定は、この 2 つに加えて自分のフラグを持つ
+                self.assertLessEqual({"kaz-compaction-delta-trigger", "kaz-compaction-delta-block-ratio"}, set(s["flags"]))
 
     def test_failed_in_table_sets_status(self):
         with tempfile.TemporaryDirectory() as root:

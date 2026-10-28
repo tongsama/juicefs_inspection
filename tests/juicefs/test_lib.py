@@ -71,6 +71,16 @@ class TestMetrics(unittest.TestCase):
         s = [(0, 1000), (50, 2000), (100, 3), (160, 13), (220, 33)]
         self.assertEqual(metrics_io.delta(s, 100, 220), 30)
 
+    def test_series_born_in_window_counts_from_zero(self):
+        # kaz: 最初の要求で初めて現れる counter（Prometheus の label 付きの系列）は、現れる前は 0
+        s = [(120, 210), (180, 400), (240, 500)]
+        self.assertEqual(metrics_io.delta(s, 0, 240, born_after=0), 500)
+        # 記録の始めからある系列や、born_after を渡さないときは従来どおり最初のサンプルが起点
+        self.assertEqual(metrics_io.delta(s, 0, 240, born_after=120), 290)
+        self.assertEqual(metrics_io.delta(s, 0, 240), 290)
+        # 窓の始まりが系列の誕生より後なら、窓の中の最初のサンプルが起点
+        self.assertEqual(metrics_io.delta(s, 150, 240, born_after=0), 100)
+
     def test_load_sorts_unsorted_append(self):
         with tempfile.TemporaryDirectory() as d:
             p = os.path.join(d, "m.tsv")

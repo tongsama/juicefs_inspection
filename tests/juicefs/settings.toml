@@ -31,6 +31,69 @@ name = "block-ratio75"
 mode = "delta"
 flags = { "kaz-compaction-delta-trigger" = 99, "kaz-compaction-delta-block-ratio" = 0.75 }
 
+[[settings]]
+name = "pack"
+mode = "delta"
+flags = { "kaz-compaction-delta-trigger" = 30, "kaz-compaction-delta-block-ratio" = 0.5, "kaz-staging-pack" = true }
+
+[[settings]]
+name = "skipdel"
+mode = "delta"
+flags = { "kaz-compaction-delta-trigger" = 30, "kaz-compaction-delta-block-ratio" = 0.5, "kaz-skip-unuploaded-delete" = true }
+
+[[settings]]
+name = "pack-skipdel"
+mode = "delta"
+flags = { "kaz-compaction-delta-trigger" = 30, "kaz-compaction-delta-block-ratio" = 0.5, "kaz-staging-pack" = true, "kaz-skip-unuploaded-delete" = true }
+
+[[settings]]
+name = "trigger30-delay1"
+mode = "delta"
+flags = { "kaz-compaction-delta-trigger" = 30, "kaz-compaction-delta-block-ratio" = 0.5, "upload-delay" = "1s" }
+
+[[settings]]
+name = "skipdel-delay1"
+mode = "delta"
+flags = { "kaz-compaction-delta-trigger" = 30, "kaz-compaction-delta-block-ratio" = 0.5, "kaz-skip-unuploaded-delete" = true, "upload-delay" = "1s" }
+
+[[settings]]
+name = "pack-skipdel-delay1"
+mode = "delta"
+flags = { "kaz-compaction-delta-trigger" = 30, "kaz-compaction-delta-block-ratio" = 0.5, "kaz-staging-pack" = true, "kaz-skip-unuploaded-delete" = true, "upload-delay" = "1s" }
+
+[[settings]]
+name = "pack-skipdel-delay2"
+mode = "delta"
+flags = { "kaz-compaction-delta-trigger" = 30, "kaz-compaction-delta-block-ratio" = 0.5, "kaz-staging-pack" = true, "kaz-skip-unuploaded-delete" = true, "upload-delay" = "2s" }
+
+[[settings]]
+name = "pack-skipdel-delay5"
+mode = "delta"
+flags = { "kaz-compaction-delta-trigger" = 30, "kaz-compaction-delta-block-ratio" = 0.5, "kaz-staging-pack" = true, "kaz-skip-unuploaded-delete" = true, "upload-delay" = "5s" }
+
+[[settings]]
+name = "t50-pack-skipdel-delay5"
+mode = "delta"
+flags = { "kaz-compaction-delta-trigger" = 50, "kaz-compaction-delta-block-ratio" = 0.5, "kaz-staging-pack" = true, "kaz-skip-unuploaded-delete" = true, "upload-delay" = "5s" }
+
+[[settings]]
+name = "t100-pack-skipdel-delay5"
+mode = "delta"
+flags = { "kaz-compaction-delta-trigger" = 100, "kaz-compaction-delta-block-ratio" = 0.5, "kaz-staging-pack" = true, "kaz-skip-unuploaded-delete" = true, "upload-delay" = "5s" }
+
+# kaz の機能を外した vanilla 相当（2026-10-28）。[kaz] の行と compaction の kaz の行を外す。writeback-fsync は有効のまま、
+# キャッシュは本家の lru。writer-flush-timeout は本家と同じ期限（auto）。upload-delay は本番と同じ 0。
+# 本体の中の kaz の変更のうち、フラグで切れないもの（FUSE の watchdog を止めたことなど）は残る。
+[[settings]]
+name = "vanilla"
+flags = { "kaz-compaction-mode" = false, "kaz-compaction-read-min" = false, "kaz-compaction-delta-min-file-size" = false, "kaz-compaction-delta-trigger" = false, "kaz-compaction-delta-block-ratio" = false, "kaz-compaction-delta-tiers" = false, "kaz-compaction-delta-max-records" = false, "kaz-compaction-delta-gap" = false, "cache-eviction" = "lru", "slice-flush-wait" = false, "slice-flush-idle" = false, "writer-flush-timeout" = "auto", "compaction-gc-mode" = false, "compaction-scheduler" = false, "writer-reuse-window" = false, "writer-flush-scope" = false, "meta-write-batch" = false, "kaz-finish-canceled-get" = false, "kaz-get-header-timeout" = false, "kaz-cache-probation-ratio" = false, "kaz-cache-compaction-placement" = false, "kaz-cache-compaction-placement-share-ratio" = false, "kaz-cache-demote-unread-first" = false, "kaz-cache-compaction-hot-age" = false }
+
+# vanilla と比べる kaz の全部入り（pack-skipdel-delay5 と同じ値。表で名前を分かりやすくするため別名で置く）
+[[settings]]
+name = "kaz-all"
+mode = "delta"
+flags = { "kaz-compaction-delta-trigger" = 30, "kaz-compaction-delta-block-ratio" = 0.5, "kaz-staging-pack" = true, "kaz-skip-unuploaded-delete" = true, "upload-delay" = "5s" }
+
 # 参考: ブロック単位の compaction
 [[settings]]
 name = "block"

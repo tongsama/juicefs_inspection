@@ -35,11 +35,16 @@ def load(path):
     return m
 
 
-def delta(series, a, b):
+def delta(series, a, b, born_after=None):
     """窓 [a, b] の counter の増分。始まりは a 以後の最初のサンプル、終わりは b 以前の最後のサンプル。
-    値が前より減った（mount のし直しで 0 に戻った）ときは、減った後の値を増分として足す。"""
+    値が前より減った（mount のし直しで 0 に戻った）ときは、減った後の値を増分として足す。
+    born_after（記録の最初のサンプルの時刻）を渡すと、それより後に初めて現れた系列は、現れる前を 0 とみなす
+    （label 付きの counter は最初の増加まで exposition に出ないため、最初の値を落とさない）。"""
     pts = [(t, v) for t, v in series if a <= t <= b]
     total = 0.0
+    # kaz: 窓の中で生まれた系列は、最初のサンプルの値も増分に入れる
+    if born_after is not None and pts and series[0][0] == pts[0][0] and pts[0][0] > born_after:
+        total += pts[0][1]
     for (_, v0), (_, v1) in zip(pts, pts[1:]):
         total += v1 - v0 if v1 >= v0 else v1
     return total
