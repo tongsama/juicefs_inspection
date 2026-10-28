@@ -251,3 +251,24 @@ DEBUGはログ容量の約99.7〜99.9%、正常checksum DEBUGだけで60〜72%�
   - v1.4.2 では、busy で引き継ぎを諦めたときもこの経路を通る。v1.4.1 では、3 秒後に処理中の request を中断する（EINTR）。
   - 本体 `1.4.2-improve-kaz` の `--kaz-upgrade-busy=fail`（既定）は、まだ動いている JuiceFS の mount の上には mount せず、エラーで終わる。詳細は [調査報告 6 章](inspection/upstream_v1.4.2/2026-10-26/port-investigation-ja.md#6-実施2026-10-27)。
   - kaz.8（v1.4.1 ベース）の本番では、VM が動いている mountpoint に `juicefs mount` を実行しない。
+
+## staging pack と DELETE の省略（2026-10-27〜28、本体 feat/kaz-staging-pack 145fc631）
+
+- 設計は [設計書](superpowers/specs/2026-10-27-kaz-staging-pack-design.md)、見積もりは [調査報告](inspection/staging_pack/2026-10-27/feasibility-ja.md)、試験は [suite の結果](inspection/staging_pack/2026-10-28/suite-ja.md)。
+- [観測] 試験の metrics で、staging のアップロードは平均 4〜6 分待っていた（PUT 平均 3.7 s、max-uploads 18）。DELETE の回数は片付けた slice の数とほぼ同じで、ほぼ全部が一度も PUT していない object への DELETE。
+- [観測、各 2 回] 本番の記録の流し直し（delta、trigger 30）で、`--kaz-staging-pack` は PUT を約 37% 減らした（6,360 → 4,035）。`--kaz-skip-unuploaded-delete` は DELETE を約 86% 減らした（12,803 → 1,825）が、PUT は約 9% 増えた。両方で PUT＋DELETE は約 61% 減った（19,163 → 7,540。PUT は −16%）。試験の volume に参照の無い object は残らなかった（gc で leaked 0）。
+- [推論] 待ち行列が早く流れるほど、アップロード前の片付けとまとめの相手が減る。DELETE を減らすと PUT が少し増えるのはこのため。
+- [観測、2026-10-28 debug の 600 秒] pack で増える片付けのローカルのエラー（compaction GC の local_error、約 6〜9 倍）は、すべて「その slice の PUT の最中に compaction が片付けた」もの（`ErrSliceUploadInFlight`）。unlink の失敗は 0、pack の出力の slice は含まれない。PUT が終わると 1 回 DELETE され、object は残らない（[報告](inspection/staging_pack/2026-10-28/local-error-ja.md)）。
+- [推論] pack は 1 回の PUT で約 11 個の slice を待ち行列から外すので、待ちが約 240 秒 → 約 30 秒（PUT 1 回あたりの目安）に縮み、書いたばかりの slice が数秒で PUT され、10 秒前後で来る片付けと重なる。pack の不具合ではなく、待ち行列が速く流れることの副作用で、重なった分は無駄な PUT と DELETE が 1 回ずつ。
+- [観測、各 1 回] `--upload-delay 1s` を足すと、pack-skipdel は PUT 5,361 → 4,848、DELETE 2,180 → 1,734（PUT＋DELETE は基準比 −61% → −66%）。skipdel だけ・基準には効かない（±1%）。skipdel の PUT +9% は 1 秒では戻らない（[報告](inspection/staging_pack/2026-10-28/suite-delay-ja.md)）。
+- [観測、各 1 回] pack-skipdel で upload-delay を 2 秒・5 秒にすると、PUT＋DELETE は 6,074（−68%）、4,757（−75%。PUT 3,899、DELETE 858）。5 秒で local_error は約 940 → 238。flush・read の p99 は変わらない（[報告](inspection/staging_pack/2026-10-28/suite-delay-ja.md) §4）。
+- [推論] 1 秒の delay は、書いた瞬間の即 PUT（空いた枠があるときの `beginImmediateStaging`）を止めて全部を待ち行列に通す効き方で、待ちの長さはほぼ変えない。片付けを PUT の前に間に合わせるには十数秒〜数十秒の delay が要る見込み [未確認]。
+- [観測、各 1 回] pack-skipdel・delay 5 秒で compaction の trigger を 30 → 50／100 にすると、PUT＋DELETE は 4,757 → 4,584／4,558（−75% → −76%）でほぼ同じ。PUT は ±2% 以内、DELETE は 858 → 760／721。compaction の出力は 248 → 205／192 slice に減り、pack がまとめる slice は 8,453 → 9,427／10,011 に増える。GET は 270 → 306／391 に増える（[報告](inspection/staging_pack/2026-10-28/suite-delay-ja.md) §5）。
+- [推論] pack＋skipdel＋delay 5 秒では、PUT と DELETE の回数は trigger にほとんど左右されない（PUT は pack、DELETE は skipdel で決まる）。trigger を上げた得は約 4%（約 200 回）で、GET の増加と、長い時間の断片の増え方（この試験では見えない）と引き換えになる。
+- [訂正、2026-10-28] suite の表の PUT／DELETE／GET は、label 付きの counter が記録の途中（120〜240 秒後）で初めて現れるため、最初の 1〜2 分の回数が抜けていた（PUT 2〜5%、DELETE 1〜13%）。道具を直し、主な値を出し直した。基準との差は ±1% 以内で、結論は変わらない（pack-skipdel-delay5 は PUT 4,044、DELETE 940、−75%）（[報告](inspection/vanilla_compare/2026-10-28/report-ja.md) §6）。
+
+## vanilla 相当と kaz の全部入りの比べ（2026-10-28）
+
+- [観測、各 1 回] 同じ本番の記録で、kaz の機能をフラグで外した vanilla 相当（lru、upstream compaction、flush 5 秒／1 秒、scope file、GC と scheduler は legacy、writeback-fsync は有効、upload-delay 0）は、再生が最大 41 分遅れた（1,038 秒の予定を 3,226 秒）。kaz の全部入り（pack、skipdel、trigger 30、upload-delay 5 秒）は予定どおりだった。write の p50 は 2,429 ms → 0.17 ms、read の p50 は 69.7 ms → 0.27 ms。PUT は 34,521 → 4,057（−88%）、GET は 3,777 → 361。DELETE は、同じ条件で比べられる vanilla の打ち切り時点で 30,764 以上、kaz で 989（[報告](inspection/vanilla_compare/2026-10-28/report-ja.md)）。
+- [観測] vanilla では compaction が 64 MiB の chunk を丸ごと 884 回書き直し（出力 55.2 GiB、kaz は 0.50 GiB）、キャッシュへ 75 GiB 書いて 13,583 block を追い出した。metadata の transaction は 9 倍（63,025 対 6,740）。staging の滞留は最大 38,362 block（約 4 GiB）。
+- [推論] vanilla の遅れの主因は、本家の compaction の書き直しの量（ディスクの取り合いとキャッシュの追い出し）。どの kaz の機能がどれだけ効いたかは分けていない [未確認]。

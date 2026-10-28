@@ -1,0 +1,1 @@
+scanned 5919 objects, 5056 valid, 863 pending delete (1652982 bytes), 0 compacted (0 bytes), 0 leaked (0 bytes), 0 delslices (0 bytes), 0 delfiles (0 bytes), 0 skipped (0 bytes) [gc@gc.go:386]

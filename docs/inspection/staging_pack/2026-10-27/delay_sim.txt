@@ -1,0 +1,5 @@
+delay=  0s base PUT=5290 retired=11921 | pack(delay を守る) PUT=3790 (-28%) | pack(若いものも取る) PUT=3790 (-28%)
+delay= 10s base PUT=5130 retired=12081 | pack(delay を守る) PUT=3644 (-29%) | pack(若いものも取る) PUT=3019 (-41%)
+delay= 30s base PUT=4910 retired=12301 | pack(delay を守る) PUT=3551 (-28%) | pack(若いものも取る) PUT=2578 (-47%)
+delay= 60s base PUT=4661 retired=12550 | pack(delay を守る) PUT=3395 (-27%) | pack(若いものも取る) PUT=2086 (-55%)
+delay=120s base PUT=4342 retired=12869 | pack(delay を守る) PUT=3160 (-27%) | pack(若いものも取る) PUT=1732 (-60%)
